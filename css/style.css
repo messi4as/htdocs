@@ -1,0 +1,86 @@
+.button-container {
+    display: flex;
+    gap: 10px;
+    /* Espaçamento entre os botões */
+    flex-wrap: wrap;
+    /* Permite que os botões quebrem linha se necessário */
+    justify-content: space-between;
+    /* Adicionado */
+  }
+
+  .btn-index {
+    background-color: rgb(172, 136, 62);
+    /* Verde Claro */
+    color: black;
+  }
+
+
+  .form-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    /* Adicionado */
+  }
+
+  .form-group {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    /* Adicionado */
+    margin: 0 10px;
+    /* Adicionado */
+  }
+
+  .form-label {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+  input[type="text"],
+  textarea,
+  select {
+    text-transform: none;
+    width: 100%;
+    /* Adicionado */
+  }
+
+  .btn {
+    flex: 0 0 auto;
+    /* Adicionado */
+    margin-left: 10px;
+    /* Adicionado */
+  }
+
+  body {
+    background-image: url('/images/LOGO ESCRITÓRIO.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center 55%; /* Ajuste o valor vertical conforme necessário */
+    background-attachment: fixed;
+}
+
+#fundo-transparente {
+    position: fixed;
+    top: 200px; /* Ajuste conforme necessário */
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que a imagem cubra sem distorcer muito */
+    z-index: -1; /* Coloca a imagem atrás do conteúdo */
+}
+
+.card {
+    background-color: rgba(172, 136, 62, 0.5); /* Ou qualquer outra cor de fundo que você queira como base */
+    opacity: 0.85; /* Ajuste este valor para a transparência desejada (ex: 0.5 para 50% de transparência) */
+    border: none !important; /* Opcional: remove a borda do card */
+}
+.card-header {
+    background-color:  rgba(172, 136, 62, 0.5); /* Cor de fundo cinza claro (exemplo) */
+    /* Outros estilos que você queira adicionar ao cabeçalho */
+    color: #333; /* Cor do texto (opcional) */
+}
+.audio-player {
+  margin-top: 20px; /* Espaçamento do conteúdo acima */
+  text-align: center; /* Centralizar o player */
+}

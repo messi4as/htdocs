@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 6.2.1  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="recibo_pj_pj" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b1ccd2bc-2665-4e53-9834-cb2ce566901f">
+	<parameter name="id_recibo" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[$F{cod_recibo}]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[SELECT *
+FROM recibo,
+	emissor,
+	emitente
+	where recibo.cod_emitente = emitente.cod_emitente and 
+	recibo.cod_emissor = emissor.cod_emissor and
+	recibo.cod_recibo = $P{id_recibo}]]>
+	</queryString>
+	<field name="cod_recibo" class="java.lang.Integer"/>
+	<field name="cod_emitente" class="java.lang.Integer"/>
+	<field name="cod_emissor" class="java.lang.Integer"/>
+	<field name="data_recibo" class="java.sql.Date"/>
+	<field name="local_recibo" class="java.lang.String"/>
+	<field name="valor_recibo" class="java.lang.String"/>
+	<field name="valor_ext_recibo" class="java.lang.String"/>
+	<field name="descricao_recibo" class="java.lang.String"/>
+	<field name="COLUMN_9" class="java.lang.Integer"/>
+	<field name="nome_emissor" class="java.lang.String"/>
+	<field name="cpf_emissor" class="java.lang.String"/>
+	<field name="cnpj_emissor" class="java.lang.String"/>
+	<field name="endereco_emissor" class="java.lang.String"/>
+	<field name="bairro_emissor" class="java.lang.String"/>
+	<field name="COLUMN_15" class="java.lang.Integer"/>
+	<field name="nome_emitente" class="java.lang.String"/>
+	<field name="nacionalidade_emitente" class="java.lang.String"/>
+	<field name="estado_civil_emitente" class="java.lang.String"/>
+	<field name="nome_empresa" class="java.lang.String"/>
+	<field name="cpf_emitente" class="java.lang.String"/>
+	<field name="rg_emitente" class="java.lang.String"/>
+	<field name="cnpj_emitente" class="java.lang.String"/>
+	<field name="endereco_emitente" class="java.lang.String"/>
+	<field name="bairro_emitente" class="java.lang.String"/>
+	<field name="cep_emitente" class="java.lang.String"/>
+	<field name="banco_emitente" class="java.lang.String"/>
+	<field name="agencia_emitente" class="java.lang.String"/>
+	<field name="conta_emitente" class="java.lang.String"/>
+	<field name="tipo_chave_pix_emitente" class="java.lang.String"/>
+	<field name="chave_pix_emitente" class="java.lang.String"/>
+	<field name="favorecido_emitente" class="java.lang.String"/>
+	<field name="cpf_favorecido_emitente" class="java.lang.String"/>
+	<variable name="formattedDate" class="java.lang.String">
+		<variableExpression><![CDATA[new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", new Locale("pt", "BR")).format($F{data_recibo})]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="98" splitType="Stretch">
+			<staticText>
+				<reportElement x="197" y="60" width="161" height="21" uuid="c7234671-2990-49e5-be01-5bb5d080ba7e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RECIBO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="385" splitType="Stretch">
+			<textField isStretchWithOverflow="true" evaluationTime="Auto">
+				<reportElement x="70" y="80" width="432" height="250" uuid="48027b03-9818-4cb7-b645-4b1b61ce56f8"/>
+				<textElement textAlignment="Justified" markup="html">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>"+
+$F{nome_empresa} + "</b>" + " inscrita no CNPJ sob o nº " + $F{cnpj_emitente} + ". "+"com sede a "+$F{endereco_emitente} + ", " +$F{bairro_emitente} + ", " + "representado(a) pelo(a) sócio(a) "+ "<b>" +$F{nome_emitente} +"</b>" + ", " + $F{nacionalidade_emitente} + ", " + $F{estado_civil_emitente} + ", " +"portador (a) do CPF nº " + $F{cpf_emitente} + " " + "e RG nº " + $F{rg_emitente}+ " residente e domiciliado(a) " + $F{endereco_emitente}+ " " + "CEP: " + $F{cep_emitente}+ 
+"<br>"+
+"<br>"+
+"<br>"+
+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+
+"Recebe e dá quitação neste ato a: "+ "<b>" +$F{nome_emissor}+ ", " +"</b>" +"devidamente inscrita no Cadastro Nacional da Pessoa Física (CPF) sob o número "+"<b>" + $F{cpf_emissor} + "</b>"+ ", sediada na " + $F{endereco_emissor} + " "+$F{bairro_emissor} + ", do" + " "+ "<b>" + "valor de"+ " " +$F{valor_recibo} + " (" +$F{valor_ext_recibo} + ")" + "</b>" + ", recebidos através de conta bancária, Banco: " + $F{banco_emitente} + ", Agencia: " + $F{agencia_emitente} + ", Conta: " + $F{conta_emitente} + ", Chave PIX " + "<b>" + $F{tipo_chave_pix_emitente}+ "</b>" + ": "+ "<b>"+ $F{chave_pix_emitente} +"</b>" + ", Favorecido(a): "+"<b>"+ $F{favorecido_emitente} + ", " + "</b>"+ "CPF: " + "<b>" + $F{cpf_favorecido_emitente}+", " + "</b>"+ $F{descricao_recibo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="342" y="3" width="160" height="30" uuid="b1c5d0f6-8b6b-4e0f-9397-d043e25c45eb"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_recibo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="319" splitType="Stretch">
+			<textField>
+				<reportElement x="97" y="1" width="360" height="30" uuid="0aa33d8a-5cc2-4995-aa4b-8ae0e0fcd76d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="html">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{local_recibo} + ","+ " " + $V{formattedDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="98" y="83" width="360" height="30" uuid="a28b3a03-4b1d-47d7-9098-ad3afe5ab243"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="98" y="99" width="360" height="30" uuid="be84739c-a392-4ab3-ae66-0f488f5558f4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_emitente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="98" y="114" width="360" height="30" uuid="74c1cae6-12fb-431e-931f-7fd4b0cb98d6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CNPJ: "+ $F{cnpj_emitente}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="98" y="75" width="358" height="20" uuid="d8a508d0-34d5-4f0d-83ef-b67c12131f12"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[_________________________________________________________]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+</jasperReport>
