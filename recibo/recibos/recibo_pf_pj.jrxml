@@ -21,13 +21,11 @@ FROM recibo,
 	<field name="valor_recibo" class="java.lang.String"/>
 	<field name="valor_ext_recibo" class="java.lang.String"/>
 	<field name="descricao_recibo" class="java.lang.String"/>
-	<field name="COLUMN_9" class="java.lang.Integer"/>
 	<field name="nome_emissor" class="java.lang.String"/>
 	<field name="cpf_emissor" class="java.lang.String"/>
 	<field name="cnpj_emissor" class="java.lang.String"/>
 	<field name="endereco_emissor" class="java.lang.String"/>
 	<field name="bairro_emissor" class="java.lang.String"/>
-	<field name="COLUMN_15" class="java.lang.Integer"/>
 	<field name="nome_emitente" class="java.lang.String"/>
 	<field name="nacionalidade_emitente" class="java.lang.String"/>
 	<field name="estado_civil_emitente" class="java.lang.String"/>
