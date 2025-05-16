@@ -130,7 +130,7 @@ require 'db_connect.php';
                     <div class="table-container">
                         <div class="card-header">
                             <h4>EDITAR VEÍCULOS
-                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
+                                <a href="lista_veiculos.php" class="btn btn-danger float-end"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</a>
                             </h4>
                         </div>
                         <div class="card-body">
@@ -182,7 +182,7 @@ require 'db_connect.php';
                                 }
                             </script>
 
-                            <form action="cadastrar.php"  method="post" enctype="multipart/form-data">
+                            <form action="cadastrar.php" method="post" enctype="multipart/form-data">
 
                                 <input type="hidden" name="id" value="<?= $veiculo['cod_veiculo'] ?>">
                                 <input type="hidden" name="foto_atual" value="<?= $foto_veiculo ?>">
