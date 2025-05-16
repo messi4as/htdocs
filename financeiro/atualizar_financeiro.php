@@ -40,7 +40,8 @@ if (isset($_FILES['arquivo_excel'])) {
         }
 
         // Redirecionar para evitar reenvio do formulário e passar o número de linhas atualizadas
-        header("Location: index.php?update_success=true&linhas_atualizadas=$linhas_atualizadas");
+         $_SESSION['mensagem'] = "Financeiro Atualizado! Total = $linhas_atualizadas Linhas Atualizadas!";
+        header("Location: importar.php?update_success=true&linhas_atualizadas=$linhas_atualizadas");
         exit();
     } catch (Exception $e) {
         echo "Erro ao processar o arquivo: " . $e->getMessage();

@@ -164,7 +164,7 @@ require 'db_connect.php';
                         <div class="card-header">
 
                             <h4>EDITAR VEÍCULOS
-                                <a href="lista_veiculos.php" class="btn btn-danger float-end"><span class="bi-arrow-left-square-fill"></span>&nbsp;Voltar</a>
+                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
                             </h4>
                         </div>
 

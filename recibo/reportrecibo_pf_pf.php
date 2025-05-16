@@ -25,7 +25,7 @@ $options = [
         'driver' => 'mysql',
         'username' => 'root',
         'host' => 'localhost',
-        'database' => 'recibo',
+        'database' => 'escritorio_m2',
         'port' => '3306'
     ]
 ];

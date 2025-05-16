@@ -48,7 +48,7 @@ $result_emissor = $conn->query($sql_emissor);
                     <div class="table-container">
                         <div class="card-header">
                             <h4>CADASTRO DE RECIBOS
-                                <a href="index.php" class="btn btn-danger float-end"><span class="bi-arrow-left-square-fill"></span>&nbsp;Voltar</a>
+                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
                             </h4>
                         </div>
                         <div class="card-body">

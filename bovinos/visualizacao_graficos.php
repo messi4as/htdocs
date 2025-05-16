@@ -99,7 +99,7 @@ $bovinosData = getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atua
                     <div class="table-container">
                         <div class="card-header">
                             <h4>VISUALIZAÇÃO DE BOVINOS - GRÁFICOS <div class="float-end">
-                                    <a href="index.php" class="btn btn-danger float-end"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</a>
+                                    <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
 
                             </h4>
                         </div>

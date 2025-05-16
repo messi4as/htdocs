@@ -129,7 +129,7 @@ require 'db_connect.php';
                         <div class="card-header">
 
                             <h4>EDITAR IMÓVEIS
-                                <a href="lista_imoveis.php" class="btn btn-danger float-end"><span class="bi-arrow-left-square-fill"></span>&nbsp;Voltar</a>
+                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
                             </h4>
                         </div>
 

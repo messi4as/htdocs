@@ -86,7 +86,7 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
                 <div class="card">
                     <div class="card-header">
                         <h4>EDITAR NASCIMENTO
-                            <a href="view_nascimentos.php" class="btn btn-danger float-end"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</a>
+                            <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
                         </h4>
                     </div>
                     <div class="card-body">

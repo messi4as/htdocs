@@ -42,7 +42,7 @@ require 'db_connect.php';
           <div class="card-body center-content">
             <h1>PLANTA DO ESCRITÓRIO</h1>
             <div class="qrcode">
-              <img src="/planta_escritorio.png" alt="QR Code">
+              <img src="images/planta_escritorio.png" alt="QR Code">
             </div>
             <h1>SALAS 514 A 516</h1>
           </div>
@@ -56,7 +56,7 @@ require 'db_connect.php';
           <div class="card-body center-content">
             <h1>TOPOLOGIA</h1>
             <div class="qrcode">
-              <img src="/topologia.png" alt="QR Code">
+              <img src="images/topologia.png" alt="QR Code">
             </div>
             <h1></h1>
             </div>
@@ -70,7 +70,7 @@ require 'db_connect.php';
           <div class="card-body center-content">
             <h1>RACK DO ESCRITÓRIO</h1>
             <div class="qrcode">
-              <img src="/rack.png" alt="QR Code">
+              <img src="images/rack.png" alt="QR Code">
             </div>
             <h1></h1>
           </div>

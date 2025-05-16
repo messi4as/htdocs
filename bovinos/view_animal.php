@@ -119,7 +119,7 @@ if (isset($_GET['id'])) {
           <div class="table-container">
             <div class="card-header">
               <h4>VISUALIZAR ANIMAL
-                <a href="index.php" class="btn btn-danger float-end"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</a>
+                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
               </h4>
             </div>
             <div class="card-body">
@@ -308,48 +308,48 @@ if (isset($_GET['id'])) {
     </div>
   </div>
   <script>
-  document.getElementById('ocorrenciaForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+    document.getElementById('ocorrenciaForm').addEventListener('submit', function(event) {
+      event.preventDefault();
 
-    var formData = new FormData(this);
+      var formData = new FormData(this);
 
-    fetch('salvar_ocorrencia.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data); // Adicione esta linha para depuração
-        if (data.success) {
-          // Atualizar a tabela de ocorrências
-          var table = document.getElementById('ocorrenciasTable');
-          var newRow = table.insertRow();
-          newRow.innerHTML = `
+      fetch('salvar_ocorrencia.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data); // Adicione esta linha para depuração
+          if (data.success) {
+            // Atualizar a tabela de ocorrências
+            var table = document.getElementById('ocorrenciasTable');
+            var newRow = table.insertRow();
+            newRow.innerHTML = `
           <td>${data.ocorrencia.data}</td>
           <td>${data.ocorrencia.local}</td>
           <td>${data.ocorrencia.tipo}</td>
           <td>${data.ocorrencia.peso}</td>
           <td>${data.ocorrencia.descricao}</td>
         `;
-          // Fechar o modal
-          var modalElement = document.getElementById('ocorrenciaModal');
-          var modal = bootstrap.Modal.getInstance(modalElement);
-          modal.hide();
-          modalElement.classList.remove('show');
-          modalElement.style.display = 'none';
-          document.body.classList.remove('modal-open');
-          document.querySelector('.modal-backdrop').remove();
-          // Adicionar um pequeno atraso antes de recarregar a página
-          setTimeout(function() {
-            location.reload();
-          }, 500); // 500 milissegundos de atraso
-        } else {
-          alert('Erro ao salvar ocorrência');
-        }
-      })
-      .catch(error => console.error('Erro:', error));
-  });
-</script>
+            // Fechar o modal
+            var modalElement = document.getElementById('ocorrenciaModal');
+            var modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+            modalElement.classList.remove('show');
+            modalElement.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            document.querySelector('.modal-backdrop').remove();
+            // Adicionar um pequeno atraso antes de recarregar a página
+            setTimeout(function() {
+              location.reload();
+            }, 500); // 500 milissegundos de atraso
+          } else {
+            alert('Erro ao salvar ocorrência');
+          }
+        })
+        .catch(error => console.error('Erro:', error));
+    });
+  </script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('.delete-ocorrencia').forEach(button => {

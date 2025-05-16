@@ -99,7 +99,7 @@
                     <div class="table-container">
                         <div class="card-header">
                             <h4>CADASTRO DE CONTRATOS
-                                <a href="lista_contratos.php" class="btn btn-danger float-end"><span class="bi-arrow-left-square-fill"></span>&nbsp;Voltar</a>
+                                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
                             </h4>
                         </div>
                         <div class="card-body">
@@ -148,7 +148,7 @@
                                                         <option value="ATIVO">ATIVO</option>
                                                         <option value="CANCELADO">CANCELADO</option>
                                                         <option value="FINALIZADO">FINALIZADO</option>
-                                                        
+
                                                     </select>
 
                                                     <label class="form-label">&nbsp;VALOR:</label>

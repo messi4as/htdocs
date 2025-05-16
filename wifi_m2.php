@@ -42,7 +42,7 @@ require 'db_connect.php';
           <div class="card-body center-content">
             <h1>ACESSO WI-FI M2</h1>
             <div class="qrcode">
-              <img src="/qrcode.png" alt="QR Code">
+              <img src="images/qrcode.png" alt="QR Code">
             </div>
             <h1>REDE: M2 SHOWS - 2.4GHz<br>SENHA: b1J512f4@M2</h1>
           </div>

@@ -98,10 +98,11 @@ function getBovinosData($conn, $local)
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <title>Galpão</title>
     <link rel="icon" href="/images/ico_m2.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+
+    <title>Galpão</title>
 
 </head>
 

@@ -10,7 +10,7 @@ if (isset($_GET['id'])) {
     if (mysqli_num_rows($query) > 0) {
         $contrato = mysqli_fetch_array($query);
         $descricao = $contrato['descricao'];
-     
+
 
         if (isset($contrato['anexo'])) {
             $documentos = json_decode($contrato['anexo'], true);
@@ -26,8 +26,6 @@ if (isset($_GET['id'])) {
         header("Location: lista_contratos.php");
         exit(0);
     }
-
-    
 } else {
     $_SESSION['mensagem'] = "ID do contrato não especificado.";
     header("Location: lista_contratos.php");
@@ -145,7 +143,7 @@ if (isset($_GET['id'])) {
             height: 40px;
         }
 
-       
+
 
         .close {
             color: #aaa;
@@ -175,7 +173,7 @@ if (isset($_GET['id'])) {
                     <div class="table-container">
                         <div class="card-header">
                             <h4>EDITAR CONTRATOS
-                                <a href="lista_contratos.php" class="btn btn-danger float-end"><span class="bi-arrow-left-square-fill"></span>&nbsp;Voltar</a>
+                                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
                             </h4>
                         </div>
                         <div class="card-body">
@@ -184,11 +182,11 @@ if (isset($_GET['id'])) {
                                 <input type="hidden" name="edit_contratos" value="true">
                                 <input type="hidden" name="id" value="<?= $contrato['id_contrato'] ?>">
                                 <input type="hidden" name="documentos_atuais" value='<?php echo json_encode($documentos) ?>'>
-                                
+
                                 <div class="form-container">
-                               
+
                                     <div class="form-container">
-                                 
+
                                         <div class="form-group">
                                             <label class="form-label">NOME:</label>
                                             <input type="text" name="nome" value="<?= $contrato['nome'] ?>" class="form-control" style="width:500px;" onchange="convertToUppercase()">
@@ -221,11 +219,11 @@ if (isset($_GET['id'])) {
                                                 <div class="form-group">
                                                     <label class="form-label">STATUS:</label>
                                                     <select name="status" class="form-control" required>
-                                                <option value="ATIVO" <?= $contrato['status'] == 'ATIVO' ? 'selected' : ''; ?>>ATIVO</option>
-                                                <option value="CANCELADO" <?= $contrato['status'] == 'CANCELADO' ? 'selected' : ''; ?>>CANCELADO</option>
-                                                <option value="FINALIZADO" <?= $contrato['status'] == 'FINALIZADO' ? 'selected' : ''; ?>>FINALIZADO</option>
-                                                
-                                            </select>
+                                                        <option value="ATIVO" <?= $contrato['status'] == 'ATIVO' ? 'selected' : ''; ?>>ATIVO</option>
+                                                        <option value="CANCELADO" <?= $contrato['status'] == 'CANCELADO' ? 'selected' : ''; ?>>CANCELADO</option>
+                                                        <option value="FINALIZADO" <?= $contrato['status'] == 'FINALIZADO' ? 'selected' : ''; ?>>FINALIZADO</option>
+
+                                                    </select>
 
                                                     <label class="form-label">VALOR:</label>
                                                     <input id="valor" type="text" name="valor" class="form-control" value="<?= $contrato['valor'] ?>" onchange="formatarValor(this)">
@@ -236,7 +234,7 @@ if (isset($_GET['id'])) {
                                 </div>
 
                                 <label class="form-label">&nbsp;DESCRIÇÃO:</label>
-                                <textarea name="descricao" class="form-control" style="height:150px;"><?= $contrato['descricao'];?></textarea>
+                                <textarea name="descricao" class="form-control" style="height:150px;"><?= $contrato['descricao']; ?></textarea>
 
                                 <label class="form-label">&nbsp;Ações com os Documentos:</label>
                                 <div>
@@ -371,8 +369,8 @@ if (isset($_GET['id'])) {
     </script>
     -->
 
-     <!-- Modal -->
-     <div class="modal fade" id="aditivoModal" tabindex="-1" aria-labelledby="aditivoModalLabel" aria-hidden="true">
+    <!-- Modal -->
+    <div class="modal fade" id="aditivoModal" tabindex="-1" aria-labelledby="aditivoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -398,81 +396,81 @@ if (isset($_GET['id'])) {
                     </form>
 
                     <script>
-        $(document).ready(function() {
-            $('#aditivoForm').on('submit', function(event) {
-                event.preventDefault();
+                        $(document).ready(function() {
+                            $('#aditivoForm').on('submit', function(event) {
+                                event.preventDefault();
 
-                var formData = new FormData(this);
+                                var formData = new FormData(this);
 
-                $.ajax({
-                    url: 'salvar_aditivo.php',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        try {
-                            var data = JSON.parse(response);
-                            console.log(data); // Adicione esta linha para depuração
-                            if (data.success) {
-                                // Atualizar a tabela de aditivos
-                                var table = $('#aditivoTable');
-                                var newRow = $('<tr>');
-                                newRow.append('<td>' + data.aditivo.data_aditivo + '</td>');
-                                newRow.append('<td>' + data.aditivo.descricao + '</td>');
-                                newRow.append('<td>' + data.aditivo.responsavel + '</td>');
-                                table.append(newRow);
-                                // Fechar o modal
-                                $('#aditivoModal').modal('hide');
-                                // Adicionar um pequeno atraso antes de recarregar a página
-                                setTimeout(function() {
-                                    location.reload();
-                                }, 500); // 500 milissegundos de atraso
-                            } else {
-                                alert('Erro ao salvar Aditivo: ' + data.error);
-                            }
-                        } catch (e) {
-                            console.error('Erro ao processar resposta:', e);
-                            alert('Erro ao salvar Aditivo');
-                        }
-                    },
-                    error: function(error) {
-                        console.error('Erro:', error);
-                        alert('Erro ao salvar Aditivo');
-                    }
-                });
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.delete-aditivo').forEach(button => {
-                button.addEventListener('click', function() {
-                    var row = this.closest('tr');
-                    var id = row.getAttribute('data-id');
+                                $.ajax({
+                                    url: 'salvar_aditivo.php',
+                                    type: 'POST',
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function(response) {
+                                        try {
+                                            var data = JSON.parse(response);
+                                            console.log(data); // Adicione esta linha para depuração
+                                            if (data.success) {
+                                                // Atualizar a tabela de aditivos
+                                                var table = $('#aditivoTable');
+                                                var newRow = $('<tr>');
+                                                newRow.append('<td>' + data.aditivo.data_aditivo + '</td>');
+                                                newRow.append('<td>' + data.aditivo.descricao + '</td>');
+                                                newRow.append('<td>' + data.aditivo.responsavel + '</td>');
+                                                table.append(newRow);
+                                                // Fechar o modal
+                                                $('#aditivoModal').modal('hide');
+                                                // Adicionar um pequeno atraso antes de recarregar a página
+                                                setTimeout(function() {
+                                                    location.reload();
+                                                }, 500); // 500 milissegundos de atraso
+                                            } else {
+                                                alert('Erro ao salvar Aditivo: ' + data.error);
+                                            }
+                                        } catch (e) {
+                                            console.error('Erro ao processar resposta:', e);
+                                            alert('Erro ao salvar Aditivo');
+                                        }
+                                    },
+                                    error: function(error) {
+                                        console.error('Erro:', error);
+                                        alert('Erro ao salvar Aditivo');
+                                    }
+                                });
+                            });
+                        });
+                    </script>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            document.querySelectorAll('.delete-aditivo').forEach(button => {
+                                button.addEventListener('click', function() {
+                                    var row = this.closest('tr');
+                                    var id = row.getAttribute('data-id');
 
-                    if (confirm('Tem certeza que deseja excluir este Aditivo?')) {
-                        fetch('excluir_aditivo.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                },
-                                body: 'id=' + id
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    row.remove();
-                                } else {
-                                    alert('Erro ao excluir Aditivo');
-                                }
-                            })
-                            .catch(error => console.error('Erro:', error));
-                    }
-                });
-            });
-        });
-    </script>
+                                    if (confirm('Tem certeza que deseja excluir este Aditivo?')) {
+                                        fetch('excluir_aditivo.php', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                                },
+                                                body: 'id=' + id
+                                            })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    row.remove();
+                                                } else {
+                                                    alert('Erro ao excluir Aditivo');
+                                                }
+                                            })
+                                            .catch(error => console.error('Erro:', error));
+                                    }
+                                });
+                            });
+                        });
+                    </script>
 
 </body>
 

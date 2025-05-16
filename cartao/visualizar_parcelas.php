@@ -85,7 +85,7 @@ if (isset($_GET['id_compra'])) {
                     <div class="table-container">
                         <div class="card-header">
                             <h4>Parcelas da Compra - Cartão: <?php echo htmlspecialchars($nome_cartao); ?>
-                            <a href="lista_compras.php" class="btn btn-danger float-end"><span class="bi-arrow-left-square-fill"></span>&nbsp;Voltar</a>
+                                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
                             </h4>
                         </div>
                         <div class="card-body">

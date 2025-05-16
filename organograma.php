@@ -42,7 +42,7 @@ require 'db_connect.php';
           <div class="card-body center-content">
             <h1></h1>
             <div class="qrcode">
-              <img src="/organograma.png" alt="QR Code">
+              <img src="images/organograma.png" alt="QR Code">
             </div>
             <h1></h1>
           </div>

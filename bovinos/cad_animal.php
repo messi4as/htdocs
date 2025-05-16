@@ -90,7 +90,7 @@ require 'db_connect.php';
           <div class="table-container">
             <div class="card-header">
               <h4>CADASTRO DE NOVO ANIMAL
-                <a href="index.php" class="btn btn-danger float-end"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</a>
+                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
               </h4>
             </div>
             <div class="card-body">
@@ -111,7 +111,7 @@ require 'db_connect.php';
                         <option value="" disabled selected>Selecione o Sexo</option>
                         <option value="MACHO">MACHO</option>
                         <option value="FÊMEA">FÊMEA</option>
-                      </select> 
+                      </select>
 
                       <label for="data_nascimento" class="form-label">DATA DE NASCIMENTO:</label>
                       <input type="date" name="data_nascimento" class="form-control" required>

@@ -45,7 +45,8 @@ if (isset($_FILES['arquivo_excel'])) {
         }
 
         // Redirecionar para evitar reenvio do formulário e passar o número de linhas importadas
-        header("Location: index.php?import_success=true&linhas_importadas=$linhas_importadas");
+         $_SESSION['mensagem'] = "Financeiro Importado! Total = $linhas_atualizadas Linhas Importadas!";
+        header("Location: importar.php?import_success=true&linhas_importadas=$linhas_importadas");
         exit();
     } catch (Exception $e) {
         echo "Erro ao processar o arquivo: " . $e->getMessage();

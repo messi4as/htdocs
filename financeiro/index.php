@@ -144,7 +144,9 @@ if ($result instanceof mysqli_result) {
                         <div class="card-header">
                             <h4>FINANCEIRO M2
 
-                                <a href="grafico.php" class="btn btn-warning me-2 float-end"> <span class="bi bi-bar-chart"></span>&nbsp;Ver Gráfico </a>
+                             
+                            <a href="grafico.php" class="btn btn-warning me-2 float-end"> <span class="bi bi-bar-chart"></span>&nbsp;Ver Gráfico </a>
+                            <a href="importar.php" class="btn btn-success me-2 float-end"> <span class="bi bi-bar-chart"></span>&nbsp;Importar Planilha </a>   
                                 <!-- <a href="cad_pagamentos.php" class="btn btn-success me-2 float-end "> <span class="bi-plus-circle-fill"></span>&nbsp;Adicionar </a>-->
 
                                 <br>

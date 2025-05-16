@@ -30,7 +30,7 @@ $auditoria = mysqli_fetch_all($result_auditoria, MYSQLI_ASSOC);
                 <div class="card">
                     <div class="card-header">
                         <h4>HISTÓRICO DE ALTERAÇÕES
-                            <a href="login.php" class="btn btn-danger float-end"><span class="bi-arrow-left-square-fill"></span>&nbsp;Voltar</a>
+                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
                         </h4>
                     </div>
                     <div class="card-body">

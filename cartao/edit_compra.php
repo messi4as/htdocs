@@ -82,7 +82,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
     <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
- 
+
 
 
     <style>
@@ -203,7 +203,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     <div class="table-container">
                         <div class="card-header">
                             <h4>EDITAR COMPRA
-                                <a href="lista_compras.php" class="btn btn-danger float-end"><span class="bi-arrow-left-square-fill"></span>&nbsp;Voltar</a>
+                                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
                             </h4>
                         </div>
                         <div class="card-body">
@@ -287,7 +287,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         </div>
     </div>
 
-   
+
     <script>
         function exibirModalConfirmacao() {
             var formData = new FormData(document.getElementById('formCadastro'));
@@ -438,22 +438,22 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
                     <p><strong>Primeira Data de Vencimento:</strong> <span id="modal-primeira_vencimento"></span></p>
                     <p><strong>Descrição:</strong> <span id="modal-descricao"></span></p>
                     <p><strong>Anexos:</strong>
-                        <ul id="modal-anexos"></ul>
+                    <ul id="modal-anexos"></ul>
                     </p>
                     <h4>Parcelamentos:</h4>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
                                 <th style="text-align: center;">PARCELA</th>
                                 <th style="text-align: center;">VENCIMENTO</th>
                                 <th style="text-align: center;">MAIARA CARLA</th>
                                 <th style="text-align: center;">CARLA MARAISA</th>
-                                </tr>
-                            </thead>
-                            <tbody id="modal-parcelamentos">
-                                </tbody>
-                        </table>
-                    
+                            </tr>
+                        </thead>
+                        <tbody id="modal-parcelamentos">
+                        </tbody>
+                    </table>
+
                     <p>Deseja salvar as alterações?</p>
                 </div>
                 <div class="modal-footer">
