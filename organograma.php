@@ -24,10 +24,64 @@ require 'db_connect.php';
       text-align: center;
     }
 
-    .qrcode {
-      margin: 20px 0;
-    }
+   
   </style>
+  <style type="text/css" media="print">
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+        }
+
+        .card {
+            border: 1px solid #ccc !important;
+            margin-bottom: 1em;
+            page-break-inside: avoid; /* Tenta evitar quebras de página dentro do card */
+        }
+
+        .card-header {
+            background-color: #f0f0f0 !important;
+            color: #000 !important;
+            padding: 0.5em;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 1px solid #ccc !important;
+        }
+
+        .card-body {
+            padding: 1em;
+            text-align: center;
+        }
+
+        .center-content h1 {
+            font-size: 1.5em;
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .center-content img {
+            max-width: 100%; /* Garante que a imagem não ultrapasse a largura da página */
+            height: auto;
+        }
+
+       
+
+        .container {
+            width: 100% !important;
+            margin-top: 0 !important;
+            padding: 0 !important;
+        }
+
+        .row {
+            display: block !important; /* Força os elementos da linha a se comportarem como blocos */
+            width: 100% !important;
+        }
+
+        .col-md-14 {
+            width: 100% !important; /* Ocupa toda a largura disponível */
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -41,9 +95,7 @@ require 'db_connect.php';
           </div>
           <div class="card-body center-content">
             <h1></h1>
-            <div class="qrcode">
               <img src="images/organograma.png" alt="QR Code">
-            </div>
             <h1></h1>
           </div>
         </div>
