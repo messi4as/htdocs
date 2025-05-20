@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tipo = strtoupper(mysqli_real_escape_string($conn, $_POST['tipo']));
     $status = strtoupper(mysqli_real_escape_string($conn, $_POST['status']));
     $lote = strtoupper(mysqli_real_escape_string($conn, $_POST['lote']));
-    $pasto = strtoupper(mysqli_real_escape_string($conn, $_POST['pasto']));
+    $estratificacao = mysqli_real_escape_string($conn, $_POST['estratificacao']);
 
     // Substitui \r\n por <br> antes de salvar no banco de dados
     $observacao = str_replace("\r\n", "<br>", $observacao);
@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $imagem = '';
     }
 
-    $sql = "INSERT INTO bovinos (brinco, imagem, local, sexo, raca, data_nascimento, observacao, agrupamento, situacao_atual, tipo, status, lote, pasto) 
-            VALUES ('$brinco', '$imagem', '$local', '$sexo', '$raca', '$data_nascimento', '$observacao', '$agrupamento', '$situacao_atual', '$tipo', '$status', '$lote', '$pasto')";
+    $sql = "INSERT INTO bovinos (brinco, imagem, local, sexo, raca, data_nascimento, observacao, agrupamento, situacao_atual, tipo, status, lote, estratificacao) 
+            VALUES ('$brinco', '$imagem', '$local', '$sexo', '$raca', '$data_nascimento', '$observacao', '$agrupamento', '$situacao_atual', '$tipo', '$status', '$lote', '$estratificacao'. '$estratificacao')";
 
     mysqli_query($conn, $sql);
 

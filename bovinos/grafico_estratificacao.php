@@ -16,13 +16,13 @@ function getOptions($conn, $column)
 
 $localOptions = getOptions($conn, 'local');
 $loteOptions = getOptions($conn, 'lote');
-$agrupamentoOptions = getOptions($conn, 'agrupamento');
+$estratificacaoOptions = getOptions($conn, 'estratificacao');
 $situacaoAtualOptions = getOptions($conn, 'situacao_atual');
 
 // Função para obter dados dos bovinos com filtros
-function getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atual)
+function getBovinosData($conn, $local, $lote, $estratificacao, $situacao_atual)
 {
-    $sql = "SELECT local, lote, agrupamento, situacao_atual, COUNT(*) as quantidade 
+    $sql = "SELECT local, lote, estratificacao, situacao_atual, COUNT(*) as quantidade 
             FROM bovinos 
             WHERE status = 'ATIVO'";
     $conditions = [];
@@ -32,8 +32,8 @@ function getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atual)
     if ($lote != '') {
         $conditions[] = "lote LIKE '%$lote%'";
     }
-    if ($agrupamento != '') {
-        $conditions[] = "agrupamento LIKE '%$agrupamento%'";
+    if ($estratificacao != '') {
+        $conditions[] = "estratificacao LIKE '%$estratificacao%'";
     }
     if ($situacao_atual != '') {
         $conditions[] = "situacao_atual LIKE '%$situacao_atual%'";
@@ -41,7 +41,7 @@ function getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atual)
     if (count($conditions) > 0) {
         $sql .= " AND " . implode(' AND ', $conditions);
     }
-    $sql .= " GROUP BY agrupamento";
+    $sql .= " GROUP BY estratificacao";
     $result = mysqli_query($conn, $sql);
     $data = [];
     while ($row = mysqli_fetch_assoc($result)) {
@@ -52,10 +52,10 @@ function getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atual)
 
 $local = isset($_GET['local']) ? $_GET['local'] : '';
 $lote = isset($_GET['lote']) ? $_GET['lote'] : '';
-$agrupamento = isset($_GET['agrupamento']) ? $_GET['agrupamento'] : '';
+$estratificacao = isset($_GET['estratificacao']) ? $_GET['estratificacao'] : '';
 $situacao_atual = isset($_GET['situacao_atual']) ? $_GET['situacao_atual'] : '';
 
-$bovinosData = getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atual);
+$bovinosData = getBovinosData($conn, $local, $lote, $estratificacao, $situacao_atual);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -98,10 +98,8 @@ $bovinosData = getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atua
                 <div class="card">
                     <div class="table-container">
                         <div class="card-header">
-                            <h4>VISUALIZAÇÃO DE BOVINOS - GRÁFICOS <div class="float-end">
+                            <h4>VISUALIZAÇÃO DE BOVINOS - GRÁFICO ESTRATIFICAÇÃO <div class="float-end">
                                     <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
-                                    <a href="grafico_estratificacao.php" class="btn btn-warning me-2 float-end"> <span class="bi bi-bar-chart"></span>&nbsp;Ver Gráfico Estratificação </a>
-
 
                             </h4>
                         </div>
@@ -123,10 +121,10 @@ $bovinosData = getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atua
                                     </select>
                                 </div>
                                 <div class="input-group mb-3">
-                                    <select name="agrupamento" class="form-control">
-                                        <option value="">Grupo</option>
-                                        <?php foreach ($agrupamentoOptions as $option) : ?>
-                                            <option value="<?= $option ?>" <?= $agrupamento == $option ? 'selected' : '' ?>><?= $option ?></option>
+                                    <select name="estratificacao" class="form-control">
+                                        <option value="">Estratificação</option>
+                                        <?php foreach ($estratificacaoOptions as $option) : ?>
+                                            <option value="<?= $option ?>" <?= $estratificacao == $option ? 'selected' : '' ?>><?= $option ?></option>
                                         <?php endforeach; ?>
                                     </select> &nbsp; &nbsp;
                                     <select name="situacao_atual" class="form-control">
@@ -147,12 +145,12 @@ $bovinosData = getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atua
                         <?php
                         $local = isset($_GET['local']) ? $_GET['local'] : '';
                         $lote = isset($_GET['lote']) ? $_GET['lote'] : '';
-                        $agrupamento = isset($_GET['agrupamento']) ? $_GET['agrupamento'] : '';
+                        $estratificacao = isset($_GET['estratificacao']) ? $_GET['estratificacao'] : '';
                         $situacao_atual = isset($_GET['situacao_atual']) ? $_GET['situacao_atual'] : '';
 
                         $sql = "SELECT brinco, 
                        TIMESTAMPDIFF(MONTH, data_nascimento, CURDATE()) AS idade, 
-                       agrupamento, 
+                       estratificacao, 
                        situacao_atual, 
                        local, 
                        lote 
@@ -165,8 +163,8 @@ $bovinosData = getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atua
                         if ($lote != '') {
                             $conditions[] = "lote LIKE '%$lote%'";
                         }
-                        if ($agrupamento != '') {
-                            $conditions[] = "agrupamento LIKE '%$agrupamento%'";
+                        if ($estratificacao != '') {
+                            $conditions[] = "estratificacao LIKE '%$estratificacao%'";
                         }
                         if ($situacao_atual != '') {
                             $conditions[] = "situacao_atual LIKE '%$situacao_atual%'";
@@ -198,7 +196,7 @@ $bovinosData = getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atua
             console.log(bovinosData); // Verifique os dados no console
 
             var labels = bovinosData.map(function(item) {
-                return item.agrupamento;
+                return item.estratificacao;
             });
             var data = bovinosData.map(function(item) {
                 return item.quantidade;

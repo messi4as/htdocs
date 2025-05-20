@@ -14,7 +14,7 @@ if (isset($_GET['id'])) {
 }
 
 // Buscar brincos de fêmeas e agrupamento "vaca"
-$query_maes = "SELECT brinco FROM bovinos WHERE sexo = 'FÊMEA' AND agrupamento = 'VACA'";
+$query_maes = "SELECT brinco FROM bovinos WHERE sexo = 'FÊMEA' AND agrupamento like 'VACA%'";
 $result_maes = mysqli_query($conn, $query_maes);
 $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
 ?>

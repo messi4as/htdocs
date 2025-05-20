@@ -177,8 +177,17 @@ require 'db_connect.php';
                           <label for="lote" class="form-label">LOTE:</label>
                           <input type="text" name="lote" class="form-control">
 
-                          <label for="pasto" class="form-label">PASTO:</label>
-                          <input type="text" name="pasto" class="form-control">
+                          <label for="estratificacao" class="form-label">ESTRATIFICAÇÃO:</label>
+                          <select name="estratificacao" class="form-control" required>
+                            <option value="Macho, 0 a 12 meses" >Macho, 0 a 12 meses</option>
+                            <option value="Fêmea, 0 a 12 meses" >Fêmea, 0 a 12 meses</option>
+                            <option value="Macho, 13 a 24 meses" >Macho, 13 a 24 meses</option>
+                            <option value="Fêmea, 13 a 24 meses" >Fêmea, 13 a 24 meses</option>
+                            <option value="Macho, 25 a 36 meses">Macho, 25 a 36 meses</option>
+                            <option value="Fêmea, 25 a 36 meses" >Fêmea, 25 a 36 meses</option>
+                            <option value="Macho, Acima de 36 meses" >Macho, Acima de 36 meses</option>
+                            <option value="Fêmea, Acima de 36 meses">Fêmea, Acima de 36 meses</option>
+                          </select>
                         </div>
 
                       </div>

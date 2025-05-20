@@ -6,6 +6,7 @@ require 'db_connect.php';
 $query_maes = "SELECT brinco FROM bovinos WHERE sexo = 'FÊMEA' AND agrupamento like 'VACA%'";
 $result_maes = mysqli_query($conn, $query_maes);
 $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
+
 ?>
 <!doctype html>
 <html lang="pt-br">
@@ -130,6 +131,20 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
                                     <div class="form-group">
                                         <label for="situacao_atual" class="form-label">SITUAÇÃO ATUAL:</label>
                                         <input type="text" name="situacao_atual" class="form-control" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="estratificacao" class="form-label">ESTRATIFICAÇÃO:</label>
+                                        <select name="estratificacao" class="form-control" required>
+                                            <option value="Macho, 0 a 12 meses">Macho, 0 a 12 meses</option>
+                                            <option value="Fêmea, 0 a 12 meses">Fêmea, 0 a 12 meses</option>
+                                            <option value="Macho, 13 a 24 meses">Macho, 13 a 24 meses</option>
+                                            <option value="Fêmea, 13 a 24 meses">Fêmea, 13 a 24 meses</option>
+                                            <option value="Macho, 25 a 36 meses">Macho, 25 a 36 meses</option>
+                                            <option value="Fêmea, 25 a 36 meses">Fêmea, 25 a 36 meses</option>
+                                            <option value="Macho, Acima de 36 meses">Macho, Acima de 36 meses</option>
+                                            <option value="Fêmea, Acima de 36 meses">Fêmea, Acima de 36 meses</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-success"><span class="bi-save"></span>&nbsp;Registrar Nascimento</button>

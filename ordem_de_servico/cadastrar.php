@@ -41,14 +41,12 @@ if (isset($_POST['edit_os'])) {
     $celular = strtoupper(mysqli_real_escape_string($conn, trim($_POST['celular'])));
     $cep = strtoupper(mysqli_real_escape_string($conn, trim($_POST['cep'])));
     $data = strtoupper(mysqli_real_escape_string($conn, trim($_POST['data'])));
-    $descricao = mysqli_real_escape_string($conn, $_POST['descricao']);
+    $descricao = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['descricao']));
     $valor = strtoupper(mysqli_real_escape_string($conn, trim($_POST['valor'])));
-    $forma_pagamento = mysqli_real_escape_string($conn, $_POST['forma_pagamento']);
+    $forma_pagamento = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['forma_pagamento']));
     $telefone_fixo = strtoupper(mysqli_real_escape_string($conn, trim($_POST['telefone_fixo'])));
 
-    // Substitui \r\n por <br> antes de salvar no banco de dados
-    $descricao = str_replace("\r\n", "<br>", $descricao);
-    $forma_pagamento = str_replace("\r\n", "<br>", $forma_pagamento);
+   
 
     $sql = "UPDATE ordem_servico SET nome='$nome', cpf='$cpf', cnpj='$cnpj', endereco='$endereco', cidade='$cidade', celular='$celular', cep='$cep', data='$data', descricao='$descricao', valor='$valor', forma_pagamento='$forma_pagamento', telefone_fixo='$telefone_fixo' WHERE codigo = '$os_id'";
 

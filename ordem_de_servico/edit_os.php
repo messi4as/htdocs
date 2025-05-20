@@ -31,7 +31,7 @@ require 'db_connect.php';
                     <div class="table-container">
                         <div class="card-header">
                             <h4>EDITAR ORDEM DE SERVIÇO
-                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
+                                <a href="index.php" class="btn btn-danger float-end"><span class="bi-arrow-left-square-fill"></span>&nbsp;Voltar</a>
                             </h4>
                         </div>
                         <div class="card-body">
@@ -51,9 +51,7 @@ require 'db_connect.php';
                                     $codigo = str_pad($os_codigo['codigo'], 4, '0', STR_PAD_LEFT);
                                     $cod_formatado = substr($codigo, 0, 1) . '.' . substr($codigo, 1);
 
-                                    // Converte as quebras de linha para exibição
-                                    $descricao_exibir = nl2br(htmlspecialchars($descricao));
-                                    $forma_pagamento_exibir = nl2br(htmlspecialchars($forma_pagamento));
+                                 
 
                             ?>
                                     <form action="cadastrar.php" method="post" onsubmit="addCurrencyPrefix();">
@@ -165,9 +163,9 @@ require 'db_connect.php';
                                         <br>
                                         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                                             <label><strong>DESCRIÇÃO:&emsp;</label></strong>
-                                            <textarea name="descricao" class="form-control" style="height:150px;" id="descricao"><?= $descricao_exibir ?></textarea>
+                                            <textarea name="descricao" class="form-control" style="height:150px;" id="descricao"><?= htmlspecialchars($descricao) ?></textarea>
                                             <label><strong>FORMA DE PAGAMENTO:&emsp;</label></strong>
-                                            <textarea name="forma_pagamento" class="form-control" style="height:150px;" id="forma_pagamento"><?= $forma_pagamento_exibir ?></textarea>
+                                            <textarea name="forma_pagamento" class="form-control" style="height:150px;" id="forma_pagamento"><?= htmlspecialchars($forma_pagamento) ?></textarea>
                                         </div>
                                         <p>
                                         <div>

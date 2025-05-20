@@ -87,9 +87,17 @@ require 'db_connect.php';
                                 <span class="bi-search"></span>&nbsp;DADOS M2 SHOWS
                             </a>
 
+                            <form action="/imoveis/lista_imoveis.php" target="_self">
+                                <button type="submit" class="btn btn-index" style="width:300px;height:50px;">
+                                    <span class="bi-search"></span>&nbsp;IMÓVEIS
+                                </button>
+                            </form>
+
+
+                            <!-- 
                             <a href="#" class="btn btn-index d-flex align-items-center justify-content-center" style="width:300px;height:50px;" data-bs-toggle="modal" data-bs-target="#loginModal" data-redirect="/imoveis/lista_imoveis.php">
                                 <span class="bi-search"></span>&nbsp;IMÓVEIS
-                            </a>
+                            </a> -->
 
                             <form action="/ordem_de_servico/index.php" target="_self">
                                 <button type="submit" class="btn btn-index" style="width:300px;height:50px;">
@@ -99,19 +107,30 @@ require 'db_connect.php';
 
 
 
+
                             <a href="#" class="btn btn-index d-flex align-items-center justify-content-center" style="width:300px;height:50px;" data-bs-toggle="modal" data-bs-target="#loginModal" data-redirect="organograma.php">
                                 <span class="bi-search me-2"></span> ORGANOGRAMA
                             </a>
 
+
+
+                            <!-- 
                             <a href="#" class="btn btn-index d-flex align-items-center justify-content-center" style="width:300px;height:50px;" data-bs-toggle="modal" data-bs-target="#loginModal" data-redirect="/veiculos/lista_veiculos.php">
                                 <span class="bi-search"></span>&nbsp;VEÍCULOS
-                            </a>
+                            </a> -->
 
-                                <form action="/recibo/index.php" target="_self">
-                                    <button type="submit" class="btn btn-index" style="width:300px;height:50px;">
-                                        <span class="bi-search"></span>&nbsp;RECIBOS
-                                    </button>
-                                </form>
+                            <form action="/veiculos/lista_veiculos.php" target="_self">
+                                <button type="submit" class="btn btn-index" style="width:300px;height:50px;">
+                                    <span class="bi-search"></span>&nbsp;VEÍCULOS
+                                </button>
+                            </form>
+
+
+                            <form action="/recibo/index.php" target="_self">
+                                <button type="submit" class="btn btn-index" style="width:300px;height:50px;">
+                                    <span class="bi-search"></span>&nbsp;RECIBOS
+                                </button>
+                            </form>
 
 
 

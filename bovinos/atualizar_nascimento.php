@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Atualizar a tabela nascimentos
     $query_nascimentos = "UPDATE nascimentos
-                          SET brinco_mae = '$brinco_mae', cod_mae = '$cod_mae'
+                          SET brinco_mae = '$brinco_mae', cod_mae = '$cod_mae', brinco_bezerro = '$brinco_bezerro', data_nascimento = '$data_nascimento'
                           WHERE id = $id";
     mysqli_query($conn, $query_nascimentos);
 
