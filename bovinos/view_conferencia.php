@@ -119,6 +119,8 @@ $bovinosData = getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atua
                                         </select>
                                     </div>
                                     <button class="btn btn-primary me-2 float-end" type="submit">Filtrar</button>
+                                    <!-- Novo botão para atualizar Peso após ocorrências -->
+                                    <a href="importar.php" class="btn btn-warning me-2 float-end"> <span class="bi bi-bar-chart"></span>&nbsp;Atualizar Pesos </a>
                                     <button type="button" class="btn btn-success me-2 float-end" data-bs-toggle="modal" data-bs-target="#ocorrenciaModal">Adicionar Ocorrência</button>
                                     <!-- Novo botão para atualizar local e lote -->
                                     <button type="button" class="btn btn-secondary me-2 float-end" data-bs-toggle="modal" data-bs-target="#atualizarModal">Atualizar Local e Lote</button>
@@ -159,6 +161,8 @@ $bovinosData = getBovinosData($conn, $local, $lote, $agrupamento, $situacao_atua
                                 }
                                 $result = mysqli_query($conn, $sql);
                                 $quantidade = mysqli_num_rows($result);
+                                    $sql .= " order by cod_animal desc";
+
                                 ?>
 
                                 <!-- Exibir Quantidade -->

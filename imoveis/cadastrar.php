@@ -8,14 +8,30 @@ if (isset($_POST['cad_imoveis'])) {
     $bairro  = htmlspecialchars($_POST['bairro_imovel']);
     $cep  = htmlspecialchars($_POST['cep_imovel']);
     $localizacao  = htmlspecialchars($_POST['localizacao_imovel']);
-    $proprietario = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['proprietario_imovel']));
-    $inscricao = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['inscricao_imovel']));
-    $condominio = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['condominio_imovel']));
-    $tv = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['tv_imovel']));
-    $energia = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['energia_imovel']));
-    $agua = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['agua_imovel']));
-    $gas = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['gas_imovel']));
-    $internet = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['internet_imovel']));
+$proprietario_raw = $_POST['proprietario_imovel'];
+$proprietario_limpo = str_replace(["\r\n", "\n"], "", $proprietario_raw); // Remove \r\n e \n
+$proprietario = mysqli_real_escape_string($conn, $proprietario_limpo);    
+$inscricao_raw = $_POST['inscricao_imovel'];
+$inscricao_limpo = str_replace(["\r\n", "\n"], "", $inscricao_raw); // Remove \r\n e \n
+$inscricao = mysqli_real_escape_string($conn, $inscricao_limpo);     
+$condominio_raw = $_POST['condominio_imovel'];
+$condominio_limpo = str_replace(["\r\n", "\n"], "", $condominio_raw); // Remove \r\n e \n
+$condominio = mysqli_real_escape_string($conn, $condominio_limpo);       
+$tv_raw = $_POST['tv_imovel'];
+$tv_limpo = str_replace(["\r\n", "\n"], "", $tv_raw); // Remove \r\n e \n
+$tv = mysqli_real_escape_string($conn, $tv_limpo);      
+$energia_raw = $_POST['energia_imovel'];
+$energia_limpo = str_replace(["\r\n", "\n"], "", $energia_raw); // Remove \r\n e \n
+$energia = mysqli_real_escape_string($conn, $energia_limpo);       
+$agua_raw = $_POST['agua_imovel'];
+$agua_limpo = str_replace(["\r\n", "\n"], "", $agua_raw); // Remove \r\n e \n
+$agua = mysqli_real_escape_string($conn, $agua_limpo);     
+$gas_raw = $_POST['gas_imovel'];
+$gas_limpo = str_replace(["\r\n", "\n"], "", $gas_raw); // Remove \r\n e \n
+$gas = mysqli_real_escape_string($conn, $gas_limpo);       
+$internet_raw = $_POST['internet_imovel'];
+$internet_limpo = str_replace(["\r\n", "\n"], "", $internet_raw); // Remove \r\n e \n
+$internet = mysqli_real_escape_string($conn, $internet_limpo);  
 
 
 
@@ -56,15 +72,30 @@ if (isset($_POST['edit_imoveis'])) {
     $bairro  = htmlspecialchars($_POST['bairro_imovel']);
     $cep  = htmlspecialchars($_POST['cep_imovel']);
     $localizacao  = htmlspecialchars($_POST['localizacao_imovel']);
-    $proprietario = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['proprietario_imovel']));
-    $inscricao = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['inscricao_imovel']));
-    $condominio = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['condominio_imovel']));
-    $tv = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['tv_imovel']));
-    $energia = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['energia_imovel']));
-    $agua = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['agua_imovel']));
-    $gas = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['gas_imovel']));
-    $internet = str_replace("\r\n", "<br>", mysqli_real_escape_string($conn, $_POST['internet_imovel']));
-
+$proprietario_raw = $_POST['proprietario_imovel'];
+$proprietario_limpo = str_replace(["\r\n", "\n"], "", $proprietario_raw); // Remove \r\n e \n
+$proprietario = mysqli_real_escape_string($conn, $proprietario_limpo);    
+$inscricao_raw = $_POST['inscricao_imovel'];
+$inscricao_limpo = str_replace(["\r\n", "\n"], "", $inscricao_raw); // Remove \r\n e \n
+$inscricao = mysqli_real_escape_string($conn, $inscricao_limpo);     
+$condominio_raw = $_POST['condominio_imovel'];
+$condominio_limpo = str_replace(["\r\n", "\n"], "", $condominio_raw); // Remove \r\n e \n
+$condominio = mysqli_real_escape_string($conn, $condominio_limpo);       
+$tv_raw = $_POST['tv_imovel'];
+$tv_limpo = str_replace(["\r\n", "\n"], "", $tv_raw); // Remove \r\n e \n
+$tv = mysqli_real_escape_string($conn, $tv_limpo);      
+$energia_raw = $_POST['energia_imovel'];
+$energia_limpo = str_replace(["\r\n", "\n"], "", $energia_raw); // Remove \r\n e \n
+$energia = mysqli_real_escape_string($conn, $energia_limpo);       
+$agua_raw = $_POST['agua_imovel'];
+$agua_limpo = str_replace(["\r\n", "\n"], "", $agua_raw); // Remove \r\n e \n
+$agua = mysqli_real_escape_string($conn, $agua_limpo);     
+$gas_raw = $_POST['gas_imovel'];
+$gas_limpo = str_replace(["\r\n", "\n"], "", $gas_raw); // Remove \r\n e \n
+$gas = mysqli_real_escape_string($conn, $gas_limpo);       
+$internet_raw = $_POST['internet_imovel'];
+$internet_limpo = str_replace(["\r\n", "\n"], "", $internet_raw); // Remove \r\n e \n
+$internet = mysqli_real_escape_string($conn, $internet_limpo);  
     // Processar os documentos
     $documentos = [];
     if (isset($_POST['acao_documentos']) && $_POST['acao_documentos'] == 'substituir') {

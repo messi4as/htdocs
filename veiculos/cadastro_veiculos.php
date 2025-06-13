@@ -13,6 +13,8 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+            <script src="https://cdn.tiny.cloud/1/5khl9msfp5lnzyr9fgf9p2hudfyuphlb0mtifkp4dz9oh2we/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+
     <style>
         .form-container {
             display: flex;
@@ -146,7 +148,7 @@
                                 </div>
 
                                 <label class="form-label">&nbsp;PROPRIETÁRIO:</label>
-                                <textarea name="propietario_veiculo" class="form-control" style="height:150px;"></textarea>
+                                <textarea name="propietario_veiculo" class="form-control" style="height:150px;" id="proprietario"></textarea>
 
 
                                 <label class="form-label">&nbsp;DOCUMENTOS:</label>
@@ -165,7 +167,6 @@
         </div>
     </div>
     <script src="js/jquery.mask.min.js"></script>
-    <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script>
     <script>
         $(document).ready(function() {
 
@@ -209,19 +210,15 @@
         }
     </script>
 
-    <script type="text/javascript">
-        bkLib.onDomLoaded(function() {
-            nicEditors.allTextAreas()
-        }); // convert all text areas to rich text editor on that page
-        bkLib.onDomLoaded(function() {
-            new nicEditor().panelInstance('area1');
-        }); // convert text area with id area1 to rich text editor.
-        bkLib.onDomLoaded(function() {
-            new nicEditor({
-                fullPanel: true
-            }).panelInstance('area2');
-        }); // convert text area with id area2 to rich text editor with full panel.
-    </script>
+   <script type="text/javascript">
+    tinymce.init({
+        selector: '#proprietario',
+        plugins: 'lists forecolor advlist fontselect fontsize', // Certifique-se que estão todos aqui
+        toolbar: 'bold italic forecolor | fontselect fontsize | alignleft aligncenter alignright alignjustify | bullist numlist | removeformat', // E aqui na toolbar
+        menubar: false,
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+    });
+</script>
 </body>
 
 </html>

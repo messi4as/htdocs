@@ -1,6 +1,7 @@
 <?php
 session_start();
 require 'db_connect.php';
+const HORIZONTE_DIAS_VENCIMENTO = 365;
 
 // Obter todos os contratos do banco de dados
 $nome = '';
@@ -195,50 +196,66 @@ $tipoOptions = getOptions($conn, 'tipo_contrato');
                                             $dataInicial = new DateTime($row['data_inicial']);
                                             $dataFinal = new DateTime($row['data_final']);
                                             $dataAtual = new DateTime();
-                                            $intervaloTotal = $dataInicial->diff($dataFinal);
-                                            $intervaloRestante = $dataAtual->diff($dataFinal);
 
-                                            $diasTotal = $intervaloTotal->days;
-                                            $diasRestantes = $intervaloRestante->days;
+                                            $diasRestantesAteVencimento = 0; // Inicializa os dias restantes até o vencimento
+
+                                            // Calcula os dias restantes apenas se a data final for maior ou igual à data atual
+                                            if ($dataFinal >= $dataAtual) {
+                                                $intervaloRestante = $dataAtual->diff($dataFinal);
+                                                $diasRestantesAteVencimento = $intervaloRestante->days;
+                                            }
 
                                             $tempoRestante = '';
                                             $classeVencimento = '';
-                                            $porcentagemRestante = 0; // Inicializa com 0
+                                            $porcentagemBarra = 0; // Esta será a nova variável para a largura da barra
 
-                                            if ($dataFinal >= $dataAtual) {
-                                                if ($diasTotal > 0) {
-                                                    $porcentagemRestante = ($diasRestantes / $diasTotal) * 100;
-                                                    $porcentagemRestante = max(0, min(100, $porcentagemRestante));
+                                            if ($dataFinal < $dataAtual) { // Contrato VENCIDO
+                                                $tempoRestante = 'Vencido';
+                                                $classeVencimento = 'vencido';
+                                                $porcentagemBarra = 0; // Contrato vencido: barra 0% cheia (vazia), indicando que o tempo esgotou
+                                            } else { // Contrato NÃO VENCIDO (ainda vigente)
+                                                // Se o contrato vence dentro do horizonte definido
+                                                if ($diasRestantesAteVencimento <= HORIZONTE_DIAS_VENCIMENTO) {
+                                                    // A porcentagem será MENOR quanto menos dias restarem.
+                                                    // Se faltam 0 dias, barra = 0%. Se faltam HORIZONTE_DIAS_VENCIMENTO dias, barra = 100%.
+                                                    $porcentagemBarra = ($diasRestantesAteVencimento / HORIZONTE_DIAS_VENCIMENTO) * 100;
+                                                    // Garante que a porcentagem fique entre 0 e 100
+                                                    $porcentagemBarra = max(0, min(100, $porcentagemBarra));
                                                 } else {
-                                                    $porcentagemRestante = 100; // Se data inicial e final são iguais, considera 100%
+                                                    // Se faltam mais dias do que o horizonte, a barra fica 100% cheia
+                                                    $porcentagemBarra = 100;
                                                 }
 
-                                                if ($intervaloRestante->y > 0) {
-                                                    $tempoRestante .= $intervaloRestante->y . ' ano(s) ';
-                                                }
-                                                if ($intervaloRestante->m > 0) {
-                                                    $tempoRestante .= $intervaloRestante->m . ' mês(es) ';
-                                                }
-                                                if ($intervaloRestante->d > 0) {
-                                                    $tempoRestante .= $intervaloRestante->d . ' dia(s)';
-                                                }
-                                                if (empty($tempoRestante)) {
+                                                // Define o texto de tempo restante (mantido o original)
+                                                if ($diasRestantesAteVencimento === 0) {
                                                     $tempoRestante = 'Hoje';
-                                                } else if ($intervaloRestante->days <= 30) {
+                                                } else {
+                                                    if ($intervaloRestante->y > 0) {
+                                                        $tempoRestante .= $intervaloRestante->y . ' ano(s) ';
+                                                    }
+                                                    if ($intervaloRestante->m > 0) {
+                                                        $tempoRestante .= $intervaloRestante->m . ' mês(es) ';
+                                                    }
+                                                    if ($intervaloRestante->d > 0) {
+                                                        $tempoRestante .= $intervaloRestante->d . ' dia(s)';
+                                                    }
+                                                    if (empty($tempoRestante)) { // Caso seja menos de 1 dia ou erro
+                                                        $tempoRestante = 'Hoje';
+                                                    }
+                                                }
+
+                                                // Define a classe de vencimento (mantida sua lógica original)
+                                                if ($diasRestantesAteVencimento <= 30) {
                                                     $classeVencimento = 'vencimento-proximo';
                                                 } else {
                                                     $classeVencimento = 'vigente';
                                                 }
-                                            } else {
-                                                $tempoRestante = 'Vencido';
-                                                $classeVencimento = 'vencido';
-                                                $porcentagemRestante = 0;
                                             }
                                     ?>
                                             <tr>
                                                 <td style="text-align: center; vertical-align: middle;" class="<?= $classeVencimento ?>">
                                                     <div class="progress-bar-container">
-                                                        <div class="progress-bar" style="width: <?= $porcentagemRestante ?>%;"></div>
+                                                        <div class="progress-bar" style="width: <?= $porcentagemBarra ?>%;"></div>
                                                     </div>
                                                     <small><?= $tempoRestante; ?></small>
                                                 </td>

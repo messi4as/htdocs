@@ -23,7 +23,8 @@ $options = [
     'params' => ['id_recibo' => $os_codigo], // Passa o cod_os como parâmetro
     'db_connection' => [
         'driver' => 'mysql',
-        'username' => 'root',
+        'username' => 'm2',
+        'password' => 'mm311287',
         'host' => 'localhost',
         'database' => 'escritorio_m2',
         'port' => '3306'

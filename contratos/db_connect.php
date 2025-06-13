@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
-$username = "root";
-$password = "";
+$username = "m2";
+$password = "mm311287";
 $dbname = "escritorio_m2";
 
 // Criar conexão

@@ -20,17 +20,74 @@ $brincos = mysqli_fetch_all($brincos_result, MYSQLI_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="images/ico_fazenda.png" type="image/x-icon">
+    <link rel="icon" href="images/ico_fazenda.png" type="image/x-icon">
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>    
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <title>OCORRÊNCIAS</title>
+
+    <style>
+
+  
+
+        /* Ajusta a altura da caixa de seleção do Select2 quando fechada */
+        .select2-container--default .select2-selection--single {
+            height: 38px;
+            /* Ajuste este valor para a altura desejada */
+            border: 1px solid #ced4da;
+            /* Mantém a borda padrão do Bootstrap */
+            border-radius: .25rem;
+            /* Mantém o arredondamento padrão do Bootstrap */
+        }
+
+        /* Garante que o texto e a seta dentro da caixa fiquem alinhados verticalmente */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px;
+            /* Geralmente 2px menor que a altura para alinhamento */
+            padding-left: .75rem;
+            /* Mantém o padding esquerdo do Bootstrap */
+            padding-right: 20px;
+            /* Adicione um pouco de padding para o texto não ficar muito perto da seta */
+        }
+
+        /* Ajusta a altura do ícone de seta para baixo */
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+            /* Mesma altura que a `line-height` do `rendered` para alinhar a seta */
+        }
+
+        /* CSS para a caixa de pesquisa dentro da lista suspensa (se necessário) */
+        /* Geralmente, não precisa mexer aqui, pois o Select2 já gerencia bem */
+        .select2-search--dropdown .select2-search__field {
+            /* Exemplo: Ajustar padding ou margem se a caixa de pesquisa estiver estranha */
+            /* padding: 5px; */
+            /* margin: 5px; */
+        }
+    </style>
+    
+
 </head>
 
 <body>
+
+    <script>
+        $(document).ready(function() {
+            $('#brincoo').select2({
+                placeholder: 'Selecione um brinco',
+                allowClear: true
+            });
+        });
+    </script>
+
+
+
     <?php include('navbar.php'); ?>
     <div class="container mt-4">
         <?php include('mensagem.php'); ?>
@@ -44,7 +101,7 @@ $brincos = mysqli_fetch_all($brincos_result, MYSQLI_ASSOC);
                         </div>
                         <div class="card-body">
 
-                            <form method="GET" action="">
+                            <form method="GET" action="" enctype="multipart/form-data">
                                 <div class="input-group mb-3">
                                     <label for="data_inicial" style="text-align: left; vertical-align: middle;"><strong>FILTRO POR DATA: &nbsp;</strong></label>
                                     <input type="date" id="data_inicial" name="data_inicial" class="form-control" placeholder="Data Inicial" style="max-width: 200px;" value="<?= isset($_GET['data_inicial']) ? htmlspecialchars($_GET['data_inicial']) : '' ?>"> &nbsp; &nbsp;
@@ -64,8 +121,8 @@ $brincos = mysqli_fetch_all($brincos_result, MYSQLI_ASSOC);
                                         <?php endforeach; ?>
                                     </select> &nbsp; &nbsp;
 
-                                    <select name="brinco" class="form-control" style="max-width: 200px;">
-                                        <option value="">Selecione o Brinco</option>
+                                    <select id="brincoo" name="brinco" class="form-control" style="max-width: 200px;">
+
                                         <?php foreach ($brincos as $brinco): ?>
                                             <option value="<?= htmlspecialchars($brinco['brinco']) ?>" <?= isset($_GET['brinco']) && $_GET['brinco'] == $brinco['brinco'] ? 'selected' : '' ?>><?= htmlspecialchars($brinco['brinco']) ?></option>
                                         <?php endforeach; ?>
@@ -75,14 +132,14 @@ $brincos = mysqli_fetch_all($brincos_result, MYSQLI_ASSOC);
                                 </div>
                             </form>
                             <?php
-$data_inicial = isset($_GET['data_inicial']) ? $_GET['data_inicial'] : '';
-$data_final = isset($_GET['data_final']) ? $_GET['data_final'] : '';
-$local = isset($_GET['local']) ? $_GET['local'] : '';
-$tipo = isset($_GET['tipo']) ? $_GET['tipo'] : '';
-$brinco = isset($_GET['brinco']) ? $_GET['brinco'] : '';
+                            $data_inicial = isset($_GET['data_inicial']) ? $_GET['data_inicial'] : '';
+                            $data_final = isset($_GET['data_final']) ? $_GET['data_final'] : '';
+                            $local = isset($_GET['local']) ? $_GET['local'] : '';
+                            $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : '';
+                            $brinco = isset($_GET['brinco']) ? $_GET['brinco'] : '';
 
-// Use declarações preparadas para prevenir injeção de SQL
-$sql = "SELECT
+                            // Use declarações preparadas para prevenir injeção de SQL
+                            $sql = "SELECT
             o.id,
             o.data,  -- Coluna 'data' corrigida
             o.descricao,
@@ -97,60 +154,62 @@ $sql = "SELECT
             bovinos b ON o.cod_animal = b.cod_animal
         WHERE 1=1 "; // Comece com uma condição que é sempre verdadeira
 
-$conditions = [];
-if ($data_inicial != '' && $data_final != '') {
-    $conditions[] = "o.data BETWEEN ? AND ?"; // Use marcadores de posição
-}
-if ($local != '') {
-    $conditions[] = "b.local = ?"; // Use marcadores de posição
-}
-if ($tipo != '') {
-    $conditions[] = "o.tipo = ?"; // Use marcadores de posição
-}
-if ($brinco != '') {
-    $conditions[] = "b.brinco = ?"; // Use marcadores de posição
-}
+                            $conditions = [];
+                            if ($data_inicial != '' && $data_final != '') {
+                                $conditions[] = "o.data BETWEEN ? AND ?"; // Use marcadores de posição
+                            }
+                            if ($local != '') {
+                                $conditions[] = "b.local = ?"; // Use marcadores de posição
+                            }
+                            if ($tipo != '') {
+                                $conditions[] = "o.tipo = ?"; // Use marcadores de posição
+                            }
+                            if ($brinco != '') {
+                                $conditions[] = "b.brinco = ?"; // Use marcadores de posição
+                            }
 
 
-if (count($conditions) > 0) {
-    $sql .= " AND " . implode(' AND ', $conditions);
-}
+                            if (count($conditions) > 0) {
+                                $sql .= " AND " . implode(' AND ', $conditions);
+                            }
 
-$sql .= " ORDER BY o.data asc"; // Ordenar por data ascendente
+                            $sql .= " ORDER BY o.data asc"; // Ordenar por data ascendente
 
-$stmt = mysqli_prepare($conn, $sql); // Prepare a declaração
+                            $stmt = mysqli_prepare($conn, $sql); // Prepare a declaração
 
-if ($stmt) 
-    // Vincule os parâmetros
-    $types = '';
-    $params = [];
-    if ($data_inicial != '' && $data_final != '') {
-        $types .= 'ss'; // String, String
-        $params[] =  $data_inicial;
-        $params[] =  $data_final;
-    }
-    if ($local != '') {
-        $types .= 's'; // String
-        $params[] =  $local;
-    }
-    if ($tipo != '') {
-        $types .= 's'; // String
-        $params[] =  $tipo;
-    }
-    if ($brinco != '') {
-        $types .= 's'; // String
-        $params[] =  $brinco;
-    }
-    if (!empty($params)) {
-        mysqli_stmt_bind_param($stmt, $types, ...$params);
-    }
+                            if ($stmt)
+                                // Vincule os parâmetros
+                                $types = '';
+                            $params = [];
+                            if ($data_inicial != '' && $data_final != '') {
+                                $types .= 'ss'; // String, String
+                                $params[] =  $data_inicial;
+                                $params[] =  $data_final;
+                            }
+                            if ($local != '') {
+                                $types .= 's'; // String
+                                $params[] =  $local;
+                            }
+                            if ($tipo != '') {
+                                $types .= 's'; // String
+                                $params[] =  $tipo;
+                            }
+                            if ($brinco != '') {
+                                $types .= 's'; // String
+                                $params[] =  $brinco;
+                            }
+                            if (!empty($params)) {
+                                mysqli_stmt_bind_param($stmt, $types, ...$params);
+                            }
 
-    // Execute a declaração
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $quantidade = mysqli_num_rows($result);
+                            // Execute a declaração
+                            mysqli_stmt_execute($stmt);
+                            $result = mysqli_stmt_get_result($stmt);
+                            $quantidade = mysqli_num_rows($result);
 
-?>
+                            ?>
+
+
 
 
                             <div class="alert alert-info" role="alert">

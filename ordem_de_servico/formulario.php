@@ -17,7 +17,12 @@ require 'db_connect.php';
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+
 </head>
+
 
 <body>
     <?php include('navbar.php'); ?>
@@ -32,7 +37,7 @@ require 'db_connect.php';
                             </h4>
                         </div>
                         <div class="card-body">
-                            <form action="cadastrar.php" method="post" onsubmit="convertToUppercase(); addCurrencyPrefix();">
+                            <form action="cadastrar.php" method="post" id="osForm" onsubmit="convertToUppercase(); addCurrencyPrefix();">
                                 <style>
                                     .form-container {
                                         display: flex;
@@ -138,14 +143,19 @@ require 'db_connect.php';
                                         </div>
                                     </div>
                                     <br>
-                                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                                        <label class="form-label">DESCRIÇÃO:</label>
-                                        <textarea name="descricao" class="form-control" style="height:150px;"></textarea>
-                                        <label class="form-label">FORMA DE PAGAMENTO:</label>
-                                        <textarea name="forma_pagamento" class="form-control" style="height:150px;"></textarea>
-                                    </div>
-                                    <p>
-                                    <div>
+                                     <div>
+                                            <label><strong>DESCRIÇÃO:</strong></label>
+                                            <div id="editor_descricao" class="quill-editor-container"></div>
+                                            <textarea name="descricao" id="descricao" style="display:none;"></textarea>
+                                        </div>
+                                        <br>
+
+                                        <div>
+                                            <label><strong>FORMA DE PAGAMENTO:</strong></label>
+                                            <div id="editor_forma_pagamento" class="quill-editor-container"></div>
+                                            <textarea name="forma_pagamento" id="forma_pagamento" style="display:none;"></textarea>
+                                        </div>
+                                        <p>
                                         <p>
                                             <button type="submit" name="create_os" class="btn btn-success" style="width:200px;height:50px;"><span class="bi-file-earmark-plus-fill"></span>&nbsp;Cadastrar</button>
                                     </div>
@@ -154,7 +164,6 @@ require 'db_connect.php';
                     </div>
 
                     <script src="js/jquery.mask.min.js"></script>
-                    <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script>
                     <script>
                         $(document).ready(function() {
                             $('#cpf').mask('000.000.000-00', {
@@ -190,19 +199,113 @@ require 'db_connect.php';
                                 input.value = input.value.toUpperCase();
                             });
                         }
-                    </script>
-                    <script type="text/javascript">
-                        bkLib.onDomLoaded(function() {
-                            nicEditors.allTextAreas()
-                        }); // convert all text areas to rich text editor on that page
-                        bkLib.onDomLoaded(function() {
-                            new nicEditor().panelInstance('area1');
-                        }); // convert text area with id area1 to rich text editor.
-                        bkLib.onDomLoaded(function() {
-                            new nicEditor({
-                                fullPanel: true
-                            }).panelInstance('area2');
-                        }); // convert text area with id area2 to rich text editor with full panel.
+                    // --- Configuração e Inicialização do Quill.js ---
+
+        // Inicializa o editor para a descrição
+        var quillDescricao = new Quill('#editor_descricao', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{
+                        'header': [1, 2, 3, false]
+                    }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    [{
+                        'script': 'sub'
+                    }, {
+                        'script': 'super'
+                    }],
+                    [{
+                        'indent': '-1'
+                    }, {
+                        'indent': '+1'
+                    }],
+                    [{
+                        'color': []
+                    }, {
+                        'background': []
+                    }],
+                    [{
+                        'align': []
+                    }],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Inicializa o editor para a forma de pagamento
+        var quillFormaPagamento = new Quill('#editor_forma_pagamento', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{
+                        'header': [1, 2, 3, false]
+                    }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    [{
+                        'script': 'sub'
+                    }, {
+                        'script': 'super'
+                    }],
+                    [{
+                        'indent': '-1'
+                    }, {
+                        'indent': '+1'
+                    }],
+                    [{
+                        'color': []
+                    }, {
+                        'background': []
+                    }],
+                    [{
+                        'align': []
+                    }],
+                    ['clean']
+                ]
+            }
+        });
+
+        // --- Carregar o conteúdo existente do textarea para o editor Quill ---
+        // Garante que o DOM esteja totalmente carregado antes de tentar carregar o conteúdo
+        document.addEventListener('DOMContentLoaded', function() {
+            var descricaoTextarea = document.getElementById('descricao');
+            var formaPagamentoTextarea = document.getElementById('forma_pagamento');
+
+            if (descricaoTextarea && descricaoTextarea.value) {
+                // Use `dangerouslyPasteHTML` para carregar HTML no Quill
+                quillDescricao.clipboard.dangerouslyPasteHTML(descricaoTextarea.value);
+            }
+            if (formaPagamentoTextarea && formaPagamentoTextarea.value) {
+                quillFormaPagamento.clipboard.dangerouslyPasteHTML(formaPagamentoTextarea.value);
+            }
+        });
+
+        // --- Atualizar o textarea oculto com o conteúdo do Quill antes do envio do formulário ---
+        var meuFormulario = document.getElementById('osForm'); // Use o ID do seu formulário
+
+        if (meuFormulario) {
+            meuFormulario.addEventListener('submit', function() {
+                // Pega o HTML do editor de descrição e coloca no textarea oculto
+                // Você pode adicionar .toUpperCase() aqui se quiser que o HTML seja salvo em maiúsculas
+                document.getElementById('descricao').value = quillDescricao.root.innerHTML;
+
+                // Pega o HTML do editor de forma de pagamento e coloca no textarea oculto
+                // Você pode adicionar .toUpperCase() aqui se quiser que o HTML seja salvo em maiúsculas
+                document.getElementById('forma_pagamento').value = quillFormaPagamento.root.innerHTML;
+            });
+        } else {
+            console.warn("Formulário com ID 'osForm' não encontrado. Certifique-se de que o Quill está sendo atualizado antes do envio.");
+        }
                     </script>
 </body>
 

@@ -59,6 +59,36 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
         th {
             background-color: #f2f2f2;
         }
+
+         
+        /* Ajusta a altura da caixa de seleção do Select2 quando fechada */
+        .select2-container--default .select2-selection--single {
+            height: 38px;
+            /* Ajuste este valor para a altura desejada */
+            border: 1px solid #ced4da;
+            /* Mantém a borda padrão do Bootstrap */
+            border-radius: .25rem;
+            /* Mantém o arredondamento padrão do Bootstrap */
+        }
+
+        /* Garante que o texto e a seta dentro da caixa fiquem alinhados verticalmente */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px;
+            /* Geralmente 2px menor que a altura para alinhamento */
+            padding-left: .75rem;
+            /* Mantém o padding esquerdo do Bootstrap */
+            padding-right: 20px;
+            /* Adicione um pouco de padding para o texto não ficar muito perto da seta */
+        }
+
+        /* Ajusta a altura do ícone de seta para baixo */
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+            /* Mesma altura que a `line-height` do `rendered` para alinhar a seta */
+        }
+
+        
+    
     </style>
 
 </head>

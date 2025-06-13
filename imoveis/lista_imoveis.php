@@ -52,6 +52,22 @@ $quantidade = mysqli_num_rows($imovel);
         th {
             background-color: #f2f2f2;
         }
+
+        /* Novo estilo para a célula do proprietário */
+      .proprietario-cell {
+            white-space: normal; /* Garante que o texto quebre linhas */
+            line-height: 1.2;    /* Controla o espaçamento entre as linhas */
+            /* Removidas as propriedades de limite de linhas:
+               max-height, overflow, text-overflow, display, -webkit-line-clamp, line-clamp, -webkit-box-orient
+            */
+        }
+
+        /* Isso é importante para remover margens e paddings de tags que o Quill.js pode inserir */
+        .proprietario-cell p,
+        .proprietario-cell div {
+            margin-bottom: 0;
+            padding: 0;
+        }
     </style>
 
 </head>
@@ -88,7 +104,6 @@ $quantidade = mysqli_num_rows($imovel);
                                         <th style="text-align: center;">NOME</th>
                                         <th style="text-align: center;">BAIRRO</th>
                                         <th style="text-align: center; width:400px;">PROPRIETÁRIO</th>
-
                                         <th style="text-align: center;">AÇÕES</th>
                                     </tr>
                                 </thead>
@@ -98,18 +113,12 @@ $quantidade = mysqli_num_rows($imovel);
                                         while ($row = $result->fetch_assoc()) {
                                     ?>
                                             <tr>
-
                                                 <td style="text-align: center; vertical-align: middle;">
-
                                                     <a href="<?= $row['localizacao_imovel']; ?>" target="_blank"><span class="bi-eye-fill"></span>&nbsp;Localizar</a>
                                                 </td>
-
-
-
                                                 <td style="text-align: center; vertical-align: middle;"><?= $row['nome_imovel']; ?></td>
                                                 <td style="text-align: left; vertical-align: middle;"><?= $row['bairro_imovel']; ?></td>
-                                                <td style="text-align: left; vertical-align: middle;"><?= $row['proprietario_imovel']; ?></td>
-
+                                                <td class="proprietario-cell" style="text-align: left; vertical-align: middle;"><?= stripslashes($row['proprietario_imovel']); ?></td>
                                                 <td style="text-align: center; vertical-align: middle;">
                                                     <a href="edit_imoveis.php?id=<?= $row['cod_imovel'] ?>" class="btn btn-secondary btn-sm"><span class="bi-eye-fill"></span>&nbsp;Visualizar</a>
                                                 </td>

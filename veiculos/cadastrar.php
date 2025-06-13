@@ -51,17 +51,16 @@ if (isset($_POST['cad_veiculos'])) {
 }
 
 if (isset($_POST['edit_veiculos'])) {
-    $id = $_POST['id'];
+    $id = mysqli_real_escape_string($conn, $_POST['id']);
     $nome = htmlspecialchars($_POST['nome_veiculo']);
     $placa = htmlspecialchars($_POST['placa_veiculo']);
     $renavan = htmlspecialchars($_POST['renavan_veiculo']);
     $uf = htmlspecialchars($_POST['uf_veiculo']);
     $chassi = htmlspecialchars($_POST['chassi_veiculo']);
     $marca_modelo = htmlspecialchars($_POST['marca_modelo_veiculo']);
-    $proprietario = str_replace("\r\n", "<br>", (mysqli_real_escape_string($conn, $_POST['proprietario_veiculo'])));
-
-  
-
+$proprietario_raw = $_POST['proprietario_veiculo'];
+$proprietario_limpo = str_replace(["\r\n", "\n"], "", $proprietario_raw); // Remove \r\n e \n
+$proprietario = mysqli_real_escape_string($conn, $proprietario_limpo);
     // Processar a foto
     if (isset($_FILES['foto_veiculo']) && $_FILES['foto_veiculo']['error'] == 0) {
         // Excluir a foto antiga

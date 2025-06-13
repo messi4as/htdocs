@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $sql = "INSERT INTO bovinos (brinco, imagem, local, sexo, raca, data_nascimento, observacao, agrupamento, situacao_atual, tipo, status, lote, estratificacao) 
-            VALUES ('$brinco', '$imagem', '$local', '$sexo', '$raca', '$data_nascimento', '$observacao', '$agrupamento', '$situacao_atual', '$tipo', '$status', '$lote', '$estratificacao'. '$estratificacao')";
+            VALUES ('$brinco', '$imagem', '$local', '$sexo', '$raca', '$data_nascimento', '$observacao', '$agrupamento', '$situacao_atual', '$tipo', '$status', '$lote', '$estratificacao')";
 
     mysqli_query($conn, $sql);
 

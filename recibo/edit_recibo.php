@@ -39,7 +39,6 @@ if (isset($_GET['id'])) {
     <link href="css/bootstrap.min.css" rel="stylesheet">    
     <link rel="icon" href="images/ico_m2.png" type="image/x-icon">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script>
     <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -47,6 +46,9 @@ if (isset($_GET['id'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
     <script>
         function abrirPopup(url) {
             window.open(url, 'popup', 'width=600,height=600,scrollbars=yes,resizable=yes');
@@ -104,7 +106,7 @@ if (isset($_GET['id'])) {
                                     $cod_formatado = substr($codigo, 0, 1) . '.' . substr($codigo, 1);
 
                             ?>
-                                    <form action="cadastrar.php" method="post" onsubmit="addCurrencyPrefix();">
+                                    <form action="cadastrar.php" method="post" id="reForm" onsubmit="addCurrencyPrefix();">
                                         <input type="hidden" name="id_recibo" value="<?= $codigo_recibo['cod_recibo'] ?>">
                                         <style>
                                             .form-container {
@@ -234,21 +236,16 @@ if (isset($_GET['id'])) {
                                         </div>
                                         <br>
                                         <div class="form-group">
-                                            <label class="form-label">VALOR_POR_EXTENSO:</label>
-                                            <input type="text" id="valor_por_extenso" name="valor_ext_recibo" value="<?= $codigo_recibo['valor_ext_recibo'] ?>" class="form-control" readonly style="width:800px">
-                                        </div>
-                                        <br>
-                                        <div class="form-group">
                                             <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                                                 <label class="form-label">DESCRIÇÃO:</label>
 
                                             </div>
 
                                         </div>
-                                        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                        <div id="editor_descricao" class="quill-editor-container"> </div>
+                                            <textarea name="descricao_recibo" id="descricao_recibo" style="display:none;"><?= htmlspecialchars($descricao) ?></textarea>
+                                       
 
-                                            <textarea name="descricao_recibo" class="form-control" style="height:150px ;width:990px" id="descricao"><?= htmlspecialchars($descricao) ?></textarea>
-                                        </div>
                                         <p>
                                         <div>
                                             <p>
@@ -336,19 +333,51 @@ if (isset($_GET['id'])) {
                 }
             }
         </script>
-        <script type="text/javascript">
-            bkLib.onDomLoaded(function() {
-                nicEditors.allTextAreas()
-            }); // convert all text areas to rich text editor on that page
-            bkLib.onDomLoaded(function() {
-                new nicEditor().panelInstance('area1');
-            }); // convert text area with id area1 to rich text editor.
-            bkLib.onDomLoaded(function() {
-                new nicEditor({
-                    fullPanel: true
-                }).panelInstance('area2');
-            }); // convert text area with id area2 to rich text editor with full panel.
-        </script>
+       <script>
+    // ... (suas funções JavaScript existentes) ...
+
+    var quillDescricao = new Quill('#editor_descricao', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'header': [1, 2, 3, false] }],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'script': 'sub' }, { 'script': 'super' }],
+                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'align': [] }],
+                ['clean']
+            ]
+        }
+    });
+
+   // --- Carregar o conteúdo existente do textarea para o editor Quill ---
+        // Garante que o DOM esteja totalmente carregado antes de tentar carregar o conteúdo
+        document.addEventListener('DOMContentLoaded', function() {
+            var descricaoTextarea = document.getElementById('descricao_recibo');
+
+            if (descricaoTextarea && descricaoTextarea.value) {
+                // Use `dangerouslyPasteHTML` para carregar HTML no Quill
+                quillDescricao.clipboard.dangerouslyPasteHTML(descricaoTextarea.value);
+            }
+            });
+
+        // --- Atualizar o textarea oculto com o conteúdo do Quill antes do envio do formulário ---
+        var meuFormulario = document.getElementById('reForm'); // Use o ID do seu formulário
+
+        if (meuFormulario) {
+            meuFormulario.addEventListener('submit', function() {
+                // Pega o HTML do editor de descrição e coloca no textarea oculto
+                // Você pode adicionar .toUpperCase() aqui se quiser que o HTML seja salvo em maiúsculas
+                document.getElementById('descricao_recibo').value = quillDescricao.root.innerHTML;
+
+            });
+        } else {
+            console.warn("Formulário com ID 'osForm' não encontrado. Certifique-se de que o Quill está sendo atualizado antes do envio.");
+        }
+
+</script>
 </body>
 
 </html>

@@ -350,7 +350,6 @@ require 'db_connect.php';
         </div>
     </div>
     <script src="js/jquery.mask.min.js"></script>
-    <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script>
     <script>
         $(document).ready(function() {
 

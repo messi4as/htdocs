@@ -13,6 +13,9 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+        <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
     <style>
         .form-container {
             display: flex;
@@ -82,7 +85,7 @@
                         </h4>
                     </div>
                     <div class="card-body">
-                        <form action="cadastrar.php" method="post" enctype="multipart/form-data">
+                        <form action="cadastrar.php" method="post" id="imForm" enctype="multipart/form-data">
 
 
                             <div class="form-container">
@@ -115,43 +118,59 @@
 
                             </div>
 
-                            <div class="form-container">
-                                <div class="form-group">
+                            <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">&nbsp;PROPRIETÁRIO:</label>
+                                                    <div id="editor_proprietario" class="quill-editor-container"></div>
+                                                    <textarea name="proprietario_imovel" class="form-control" style="display:none;" id="proprietario_imovel"></textarea>
+                                                </div>
 
-                                    <label class="form-label">&nbsp;PROPRIETÁRIO:</label>
-                                    <textarea name="proprietario_imovel" class="form-control" style="width:500px; height:150px;"></textarea>
+                                                <div class="form-group">
+                                                    <label class="form-label">&nbsp;ENERGIA:</label>
+                                                    <div id="editor_energia" class="quill-editor-container"></div>
+                                                    <textarea name="energia_imovel" class="form-control" style="display:none;" id="energia_imovel"></textarea>
+                                                </div>
 
-                                    <label class="form-label">&nbsp;INSCRIÇÃO:</label>
-                                    <textarea name="incricao_imovel" class="form-control" style="width:500px; height:150px;"></textarea>
+                                                <div class="form-group">
+                                                    <label class="form-label">&nbsp;CONDOMÍNIO:</label>
+                                                    <div id="editor_condominio" class="quill-editor-container"></div>
+                                                    <textarea name="condominio_imovel" class="form-control" style="display:none;" id="condominio_imovel"></textarea>
+                                                </div>
 
+                                                <div class="form-group">
+                                                    <label class="form-label">&nbsp;GÁS:</label>
+                                                    <div id="editor_gas" class="quill-editor-container"></div>
+                                                    <textarea name="gas_imovel" class="form-control" style="display:none;" id="gas_imovel"></textarea>
+                                                </div>
+                                            </div>
 
-                                    <label class="form-label">&nbsp;CONDOMÍNIO:</label>
-                                    <textarea name="condominio_imovel" class="form-control" style="width:500px; height:150px;"></textarea>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label">&nbsp;INSCRIÇÃO:</label>
+                                                    <div id="editor_inscricao" class="quill-editor-container"></div>
+                                                    <textarea name="inscricao_imovel" class="form-control" style="display:none;" id="inscricao_imovel"></textarea>
+                                                </div>
 
-                                    <label class="form-label">&nbsp;TV POR ASSINATURA:</label>
-                                    <textarea name="tv_imovel" class="form-control" style="width:500px; height:150px;"></textarea>
+                                                <div class="form-group">
+                                                    <label class="form-label">&nbsp;ÁGUA:</label>
+                                                    <div id="editor_agua" class="quill-editor-container"></div>
+                                                    <textarea name="agua_imovel" class="form-control" style="display:none;" id="agua_imovel"></textarea>
+                                                </div>
 
-                                </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">&nbsp;TV POR ASSINATURA:</label>
+                                                    <div id="editor_tv" class="quill-editor-container"></div>
+                                                    <textarea name="tv_imovel" class="form-control" style="display:none;" id="tv_imovel"></textarea>
+                                                </div>
 
-                                <div class="form-container">
-                                    <div class="form-group">
-
-                                        <label class="form-label">&nbsp;ENERGIA:</label>
-                                        <textarea name="energia_imovel" class="form-control" style="width:500px; height:150px;"></textarea>
-
-                                        <label class="form-label">&nbsp;ÁGUA:</label>
-                                        <textarea name="agua_imovel" class="form-control" style="width:500px; height:150px;"></textarea>
-
-
-                                        <label class="form-label">&nbsp;GÁS:</label>
-                                        <textarea name="gas_imovel" class="form-control" style="width:500px; height:150px;"></textarea>
-
-                                        <label class="form-label">&nbsp;INTERNET:</label>
-                                        <textarea name="internet_imovel" class="form-control" style="width:500px; height:150px;"></textarea>
-
-                                    </div>
-                                </div>
-                            </div>
+                                                <div class="form-group">
+                                                    <label class="form-label">&nbsp;INTERNET:</label>
+                                                    <div id="editor_internet" class="quill-editor-container"></div>
+                                                    <textarea name="internet_imovel" class="form-control" style="display:none;" id="internet_imovel"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
                             <label class="form-label">&nbsp;DOCUMENTOS:</label>
                             <input id="documentos" type="file" name="documentos_imoveis[]" class="form-control" accept=".pdf,.doc,.docx" multiple onchange="previewDocuments(event)">
                             <br>
@@ -167,7 +186,6 @@
         </div>
     </div>
     <script src="js/jquery.mask.min.js"></script>
-    <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script>
     <script>
         $(document).ready(function() {
 
@@ -210,20 +228,364 @@
                 container.appendChild(iframe);
             }
         }
-    </script>
+      // --- Configuração e Inicialização do Quill.js ---
 
-    <script type="text/javascript">
-        bkLib.onDomLoaded(function() {
-            nicEditors.allTextAreas()
-        }); // convert all text areas to rich text editor on that page
-        bkLib.onDomLoaded(function() {
-            new nicEditor().panelInstance('area1');
-        }); // convert text area with id area1 to rich text editor.
-        bkLib.onDomLoaded(function() {
-            new nicEditor({
-                fullPanel: true
-            }).panelInstance('area2');
-        }); // convert text area with id area2 to rich text editor with full panel.
+        // Inicializa o editor para a proprietario
+        var quillProprietario = new Quill('#editor_proprietario', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{
+                        'header': [1, 2, 3, false]
+                    }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    [{
+                        'script': 'sub'
+                    }, {
+                        'script': 'super'
+                    }],
+                    [{
+                        'indent': '-1'
+                    }, {
+                        'indent': '+1'
+                    }],
+                    [{
+                        'color': []
+                    }, {
+                        'background': []
+                    }],
+                    [{
+                        'align': []
+                    }],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Inicializa o editor para a energia
+        var quillEnergia = new Quill('#editor_energia', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{
+                        'header': [1, 2, 3, false]
+                    }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    [{
+                        'script': 'sub'
+                    }, {
+                        'script': 'super'
+                    }],
+                    [{
+                        'indent': '-1'
+                    }, {
+                        'indent': '+1'
+                    }],
+                    [{
+                        'color': []
+                    }, {
+                        'background': []
+                    }],
+                    [{
+                        'align': []
+                    }],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Inicializa o editor para a inscricao
+        var quillInscricao = new Quill('#editor_inscricao', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{
+                        'header': [1, 2, 3, false]
+                    }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    [{
+                        'script': 'sub'
+                    }, {
+                        'script': 'super'
+                    }],
+                    [{
+                        'indent': '-1'
+                    }, {
+                        'indent': '+1'
+                    }],
+                    [{
+                        'color': []
+                    }, {
+                        'background': []
+                    }],
+                    [{
+                        'align': []
+                    }],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Inicializa o editor para a agua
+        var quillAgua = new Quill('#editor_agua', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{
+                        'header': [1, 2, 3, false]
+                    }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    [{
+                        'script': 'sub'
+                    }, {
+                        'script': 'super'
+                    }],
+                    [{
+                        'indent': '-1'
+                    }, {
+                        'indent': '+1'
+                    }],
+                    [{
+                        'color': []
+                    }, {
+                        'background': []
+                    }],
+                    [{
+                        'align': []
+                    }],
+                    ['clean']
+                ]
+            }
+        });
+
+
+        // Inicializa o editor para a condominio
+        var quillCondominio = new Quill('#editor_condominio', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{
+                        'header': [1, 2, 3, false]
+                    }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    [{
+                        'script': 'sub'
+                    }, {
+                        'script': 'super'
+                    }],
+                    [{
+                        'indent': '-1'
+                    }, {
+                        'indent': '+1'
+                    }],
+                    [{
+                        'color': []
+                    }, {
+                        'background': []
+                    }],
+                    [{
+                        'align': []
+                    }],
+                    ['clean']
+                ]
+            }
+
+        });
+        // Inicializa o editor para a TV por assinatura
+        var quillTv = new Quill('#editor_tv', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{
+                        'header': [1, 2, 3, false]
+                    }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    [{
+                        'script': 'sub'
+                    }, {
+                        'script': 'super'
+                    }],
+                    [{
+                        'indent': '-1'
+                    }, {
+                        'indent': '+1'
+                    }],
+                    [{
+                        'color': []
+                    }, {
+                        'background': []
+                    }],
+                    [{
+                        'align': []
+                    }],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Inicializa o editor para a gas
+        var quillGas = new Quill('#editor_gas', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{
+                        'header': [1, 2, 3, false]
+                    }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    [{
+                        'script': 'sub'
+                    }, {
+                        'script': 'super'
+                    }],
+                    [{
+                        'indent': '-1'
+                    }, {
+                        'indent': '+1'
+                    }],
+                    [{
+                        'color': []
+                    }, {
+                        'background': []
+                    }],
+                    [{
+                        'align': []
+                    }],
+                    ['clean']
+                ]
+            }
+
+        });
+        // Inicializa o editor para a Internet
+        var quillInternet = new Quill('#editor_internet', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{
+                        'header': [1, 2, 3, false]
+                    }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
+                    [{
+                        'script': 'sub'
+                    }, {
+                        'script': 'super'
+                    }],
+                    [{
+                        'indent': '-1'
+                    }, {
+                        'indent': '+1'
+                    }],
+                    [{
+                        'color': []
+                    }, {
+                        'background': []
+                    }],
+                    [{
+                        'align': []
+                    }],
+                    ['clean']
+                ]
+            }
+        });
+        // --- Carregar o conteúdo existente do textarea para o editor Quill ---
+        // Garante que o DOM esteja totalmente carregado antes de tentar carregar o conteúdo
+        document.addEventListener('DOMContentLoaded', function() {
+            var proprietarioTextarea = document.getElementById('proprietario_imovel');
+            var energiaTextarea = document.getElementById('energia_imovel');
+            var inscricaoTextarea = document.getElementById('inscricao_imovel');
+            var aguaTextarea = document.getElementById('agua_imovel');
+            var condominioTextarea = document.getElementById('condominio_imovel');
+            var tvTextarea = document.getElementById('tv_imovel');
+            var gasTextarea = document.getElementById('gas_imovel');
+            var internetTextarea = document.getElementById('internet_imovel');
+
+
+            if (proprietarioTextarea && proprietarioTextarea.value) {
+                // Use `dangerouslyPasteHTML` para carregar HTML no Quill
+                quillProprietario.clipboard.dangerouslyPasteHTML(proprietarioTextarea.value);
+            }
+            if (energiaTextarea && energiaTextarea.value) {
+                quillEnergia.clipboard.dangerouslyPasteHTML(energiaTextarea.value);
+            }
+            if (inscricaoTextarea && inscricaoTextarea.value) {
+                // Use `dangerouslyPasteHTML` para carregar HTML no Quill
+                quillInscricao.clipboard.dangerouslyPasteHTML(inscricaoTextarea.value);
+            }
+            if (aguaTextarea && aguaTextarea.value) {
+                quillAgua.clipboard.dangerouslyPasteHTML(aguaTextarea.value);
+            }
+            if (condominioTextarea && condominioTextarea.value) {
+                // Use `dangerouslyPasteHTML` para carregar HTML no Quill
+                quillCondominio.clipboard.dangerouslyPasteHTML(condominioTextarea.value);
+            }
+            if (tvTextarea && tvTextarea.value) {
+                quillTv.clipboard.dangerouslyPasteHTML(tvTextarea.value);
+            }
+            if (gasTextarea && gasTextarea.value) {
+                // Use `dangerouslyPasteHTML` para carregar HTML no Quill
+                quillGas.clipboard.dangerouslyPasteHTML(gasTextarea.value);
+            }
+            if (internetTextarea && internetTextarea.value) {
+                quillInternet.clipboard.dangerouslyPasteHTML(internetTextarea.value);
+            }
+        });
+
+        // --- Atualizar o textarea oculto com o conteúdo do Quill antes do envio do formulário ---
+        var meuFormulario = document.getElementById('imForm'); // Use o ID do seu formulário
+
+        if (meuFormulario) {
+            meuFormulario.addEventListener('submit', function() {
+                document.getElementById('proprietario_imovel').value = quillProprietario.root.innerHTML;
+                document.getElementById('energia_imovel').value = quillEnergia.root.innerHTML;
+                document.getElementById('inscricao_imovel').value = quillInscricao.root.innerHTML;
+                document.getElementById('agua_imovel').value = quillAgua.root.innerHTML;
+                document.getElementById('condominio_imovel').value = quillCondominio.root.innerHTML;
+                document.getElementById('tv_imovel').value = quillTv.root.innerHTML;
+                document.getElementById('gas_imovel').value = quillGas.root.innerHTML;
+                document.getElementById('internet_imovel').value = quillInternet.root.innerHTML;
+            });
+        } else {
+            console.warn("Formulário com ID 'imForm' não encontrado. Certifique-se de que o Quill está sendo atualizado antes do envio.");
+        }
     </script>
 </body>
 

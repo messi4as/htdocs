@@ -45,6 +45,24 @@ $quantidade = mysqli_num_rows($veiculo);
     th {
         background-color: #f2f2f2;
     }
+
+    /* Novo estilo para a célula do proprietário */
+    .proprietario-cell {
+        white-space: normal;
+        /* Garante que o texto quebre linhas */
+        line-height: 1.2;
+        /* Controla o espaçamento entre as linhas */
+        /* Removidas as propriedades de limite de linhas:
+               max-height, overflow, text-overflow, display, -webkit-line-clamp, line-clamp, -webkit-box-orient
+            */
+    }
+
+    /* Isso é importante para remover margens e paddings de tags que o Quill.js pode inserir */
+    .proprietario-cell p,
+    .proprietario-cell div {
+        margin-bottom: 0;
+        padding: 0;
+    }
 </style>
 
 <head>
@@ -106,9 +124,9 @@ $quantidade = mysqli_num_rows($veiculo);
                                         while ($row = $result->fetch_assoc()) {
                                     ?>
                                             <tr>
-                                                <td>
+                                                <td style="text-align: center; vertical-align: middle;">
                                                     <?php if ($row['foto_veiculo']): ?>
-                                                        <img src="<?= $row['foto_veiculo']; ?>" alt="Foto do Veículo" style="width: 100px; height: auto;">
+                                                        <img src="<?= $row['foto_veiculo']; ?>" alt="Foto do Veículo" style="width: 120px; height: auto;">
                                                     <?php endif; ?>
                                                 </td>
                                                 <td style="text-align: center; vertical-align: middle;"><?= $row['nome_veiculo']; ?></td>
@@ -116,7 +134,7 @@ $quantidade = mysqli_num_rows($veiculo);
                                                 <td style="text-align: center; vertical-align: middle;"><?= $row['renavan_veiculo']; ?></td>
                                                 <td style="text-align: center; vertical-align: middle;"><?= $row['uf_veiculo']; ?></td>
                                                 <td style="text-align: center; vertical-align: middle;"><?= $row['marca_modelo_veiculo']; ?></td>
-                                                <td style="text-align: left; vertical-align: middle;"><?= ($row['proprietario_veiculo']); ?></td>
+                                                <td class="proprietario-cell" style="text-align: left; vertical-align: middle;"><?= stripslashes($row['proprietario_veiculo']); ?></td>
                                                 <td style="text-align: center; vertical-align: middle;">
                                                     <?php
                                                     $documentos = json_decode($row['documentos_veiculo'], true);

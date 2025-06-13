@@ -70,7 +70,7 @@ E-MAIL: gestaomaiaraemaraisa@hotmail.com]]></text>
 			</staticText>
 			<image>
 				<reportElement x="7" y="-10" width="109" height="109" uuid="fe36f8da-75b0-4f98-bf29-bdc2e4c4467d"/>
-				<imageExpression><![CDATA["D:/OneDrive/Imagens/LOGO FAZENDA ROSADA.png"]]></imageExpression>
+				<imageExpression><![CDATA["C:/xampp/htdocs/images/logo_fazenda.png"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>

@@ -11,7 +11,6 @@ require 'db_connect.php';
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" href="/images/ico_m2.png" type="image/x-icon">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script>
     <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -19,6 +18,8 @@ require 'db_connect.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
     <style>
         .form-container {
@@ -36,6 +37,13 @@ require 'db_connect.php';
         .form-label {
             font-weight: bold;
             margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            text-transform: none;
+            width: 100%;
         }
 
         #preview-container {
@@ -142,7 +150,7 @@ require 'db_connect.php';
 
                             if (mysqli_num_rows($query) > 0)
                                 $veiculo = mysqli_fetch_array($query);
-                            $proprietario = str_replace('<br>', "\n", $veiculo['proprietario_veiculo']);
+                            $proprietario = stripslashes($veiculo['proprietario_veiculo']);
                             $foto_veiculo = $veiculo['foto_veiculo'];
 
                             if (isset($veiculo['documentos_veiculo'])) {
@@ -182,7 +190,7 @@ require 'db_connect.php';
                                 }
                             </script>
 
-                            <form action="cadastrar.php" method="post" enctype="multipart/form-data">
+                            <form action="cadastrar.php" method="post" id="veForm" enctype="multipart/form-data">
 
                                 <input type="hidden" name="id" value="<?= $veiculo['cod_veiculo'] ?>">
                                 <input type="hidden" name="foto_atual" value="<?= $foto_veiculo ?>">
@@ -227,36 +235,33 @@ require 'db_connect.php';
                                     </div>
                                 </div>
 
-                                <label class="form-label">&nbsp;PROPRIETÁRIO:</label>
-
-
-                                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                                    <textarea name="proprietario_veiculo" class="form-control" style="height:150px;"><?= htmlspecialchars($proprietario) ?></textarea>
-                                </div>
-                                <label class="form-label">&nbsp;DOCUMENTOS:</label>
-
-
-                                <input id="documentos" type="file" name="documentos_veiculo[]" class="form-control" accept=".pdf,.doc,.docx" multiple onchange="previewDocuments(event)">
-                                <br>
-
-                                <div id="document-preview-container">
-                                    <div class="form-group">
-                                        <?php
-                                        if (!empty($documentos_veiculos) && is_array($documentos_veiculos)) {
-                                            foreach ($documentos_veiculos as $documento_atual) {
-                                                echo '<div style="margin-bottom: 10px;">';
-                                                echo '<a class="documento-link" href="' . $documento_atual . '" target="_blank">' . basename($documento_atual) . '</a>';
-                                                echo '</div>';
-                                            }
-                                        }
-                                        ?>
-                                    </div>
-                                </div>
-                                <br>
-
                                 <div>
-                                    <button type="submit" name="edit_veiculos" class="btn btn-success" style="width:200px;height:50px;"><span class="bi-file-earmark-plus-fill"></span>&nbsp;Salvar</button>
+                                    <label class="form-label">&nbsp;PROPRIETÁRIO:</label>
+                                    <div id="editor_proprietario" class="quill-editor-container"></div>
+                                    <textarea name="proprietario_veiculo" style="display:none;" id="proprietario_veiculo"><?= $proprietario ?></textarea>
                                 </div>
+                                <br>
+                                    <input id="documentos" type="file" name="documentos_veiculo[]" class="form-control" accept=".pdf,.doc,.docx" multiple onchange="previewDocuments(event)">
+                                    <br>
+
+                                    <div id="document-preview-container">
+                                        <div class="form-group">
+                                            <?php
+                                            if (!empty($documentos_veiculos) && is_array($documentos_veiculos)) {
+                                                foreach ($documentos_veiculos as $documento_atual) {
+                                                    echo '<div style="margin-bottom: 10px;">';
+                                                    echo '<a class="documento-link" href="' . $documento_atual . '" target="_blank">' . basename($documento_atual) . '</a>';
+                                                    echo '</div>';
+                                                }
+                                            }
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <br>
+
+                                    <div>
+                                        <button type="submit" name="edit_veiculos" class="btn btn-success" style="width:200px;height:50px;"><span class="bi-file-earmark-plus-fill"></span>&nbsp;Salvar</button>
+                                    </div>
                             </form>
 
                             <script>
@@ -267,7 +272,7 @@ require 'db_connect.php';
                                 });
 
                                 function convertToUppercase() {
-                                    var inputs = document.querySelectorAll('input[type="text"], textarea');
+                                    var inputs = document.querySelectorAll('input[type="text"]'); // Apenas inputs de texto
                                     inputs.forEach(function(input) {
                                         input.value = input.value.toUpperCase();
                                     });
@@ -295,22 +300,63 @@ require 'db_connect.php';
                                         container.appendChild(iframe);
                                     }
                                 }
-                            </script>
 
-                            <script type="text/javascript">
-                                bkLib.onDomLoaded(function() {
-                                    nicEditors.allTextAreas()
-                                }); // convert all text areas to rich text editor on that page
-                                bkLib.onDomLoaded(function() {
-                                    new nicEditor().panelInstance('area1');
-                                }); // convert text area with id area1 to rich text editor.
-                                bkLib.onDomLoaded(function() {
-                                    new nicEditor({
-                                        fullPanel: true
-                                    }).panelInstance('area2');
-                                }); // convert text area with id area2 to rich text editor with full panel.
-                            </script>
+                                // Inicializa o editor para a proprietario
+                                var quillProprietario = new Quill('#editor_proprietario', {
+                                    theme: 'snow',
+                                    modules: {
+                                        toolbar: [
+                                            ['bold', 'italic', 'underline', 'strike'],
+                                            [{
+                                                'header': [1, 2, 3, false]
+                                            }],
+                                            [{
+                                                'list': 'ordered'
+                                            }, {
+                                                'list': 'bullet'
+                                            }],
+                                            [{
+                                                'script': 'sub'
+                                            }, {
+                                                'script': 'super'
+                                            }],
+                                            [{
+                                                'indent': '-1'
+                                            }, {
+                                                'indent': '+1'
+                                            }],
+                                            [{
+                                                'color': []
+                                            }, {
+                                                'background': []
+                                            }],
+                                            [{
+                                                'align': []
+                                            }],
+                                            ['clean']
+                                        ]
+                                    }
+                                });
 
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    var proprietarioTextarea = document.getElementById('proprietario_veiculo');
+
+                                    if (proprietarioTextarea && proprietarioTextarea.value) {
+                                        // Use `dangerouslyPasteHTML` para carregar HTML no Quill
+                                        quillProprietario.clipboard.dangerouslyPasteHTML(proprietarioTextarea.value);
+                                    }
+                                });
+
+                                var meuFormulario = document.getElementById('veForm');
+                                
+                                if (meuFormulario) {
+                                    meuFormulario.addEventListener('submit', function() {
+                                        document.getElementById('proprietario_veiculo').value = quillProprietario.root.innerHTML;
+                                    });
+                                } else {
+                                    console.warn("Formulário com ID 'veForm' não encontrado. Certifique-se de que o Quill está sendo atualizado antes do envio.");
+                                }
+                            </script>
 
 
 </body>
