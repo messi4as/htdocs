@@ -84,7 +84,13 @@ $status_result = $conn->query("SELECT DISTINCT status_atualizado FROM utilizacoe
                             <h2>HISTÓRICO DE UTILIZAÇÃO
                                 <div class="float-end">
 
+                                              <a href="listar_protocolos.php" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Protocolos
+                </a>
+
                             </h2>
+
+               
                         </div>
 
                         <div class="card-body">

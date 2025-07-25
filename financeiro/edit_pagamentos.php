@@ -361,7 +361,7 @@ require 'db_connect.php';
 
                                         <br>
                                         <div>
-                                          <!--   <button type="submit" name="edit_pagamentos" class="btn btn-success" style="width:200px;height:50px;"><span class="bi-file-earmark-plus-fill"></span>&nbsp;Salvar</button> -->
+                                          <!-- <button type="submit" name="edit_pagamentos" class="btn btn-success" style="width:200px;height:50px;"><span class="bi-file-earmark-plus-fill"></span>&nbsp;Salvar</button> -->
                                         </div>
                                 <?php
                                 } else {

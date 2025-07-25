@@ -118,6 +118,7 @@
                                                 <option value="" disabled selected>Selecione o Tipo de Contrato</option>
                                                 <option value="ALUGUEL">ALUGUEL</option>
                                                 <option value="CONTA GARANTIDA">CONTA GARANTIDA</option>
+                                                <option value="CONSÓRCIO">CONSÓRCIO</option>
                                                 <option value="CRÉDITO RURAL">CRÉDITO RURAL</option>
                                                 <option value="EMPRÉSTIMO PESSOAL">EMPRÉSTIMO PESSOAL</option>
                                                 <option value="PLANO DE SAÚDE">PLANO DE SAÚDE</option>

@@ -17,53 +17,10 @@ $result = $conn->query($sql);
 $veiculo = mysqli_query($conn, $sql);
 
 $quantidade = mysqli_num_rows($veiculo);
-
-
 ?>
 
 <!doctype html>
 <html lang="pt-br">
-
-
-<style>
-    .table-container {
-        width: 100%;
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    th,
-    td {
-        border: 1px solid #ddd;
-        padding: 8px;
-    }
-
-    th {
-        background-color: #f2f2f2;
-    }
-
-    /* Novo estilo para a célula do proprietário */
-    .proprietario-cell {
-        white-space: normal;
-        /* Garante que o texto quebre linhas */
-        line-height: 1.2;
-        /* Controla o espaçamento entre as linhas */
-        /* Removidas as propriedades de limite de linhas:
-               max-height, overflow, text-overflow, display, -webkit-line-clamp, line-clamp, -webkit-box-orient
-            */
-    }
-
-    /* Isso é importante para remover margens e paddings de tags que o Quill.js pode inserir */
-    .proprietario-cell p,
-    .proprietario-cell div {
-        margin-bottom: 0;
-        padding: 0;
-    }
-</style>
 
 <head>
     <meta charset="utf-8">
@@ -73,27 +30,115 @@ $quantidade = mysqli_num_rows($veiculo);
     <link rel="icon" href="/images/ico_m2.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .proprietario-cell {
+            white-space: normal;
+            line-height: 1.2;
+        }
+
+        .proprietario-cell p,
+        .proprietario-cell div {
+            margin-bottom: 0;
+            padding: 0;
+        }
+        
+        /* Estilos para Impressão */
+@media print {
+    /* Esconde elementos desnecessários */
+    body .navbar, 
+    .no-print,
+    .btn,
+    .card-header a,
+    form,
+    #mensagem-php,
+    .col-acoes {
+        display: none !important;
+    }
+
+    /* Ajusta o layout geral */
+    body {
+        font-size: 10pt;
+        background-color: #fff;
+    }
+
+    .container, .card, .card-body {
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+        border: none;
+    }
+
+    /* Garante que a tabela use toda a largura */
+    .table-container {
+        overflow-x: visible;
+    }
+
+    table {
+        width: 100%;
+        font-size: 9pt;
+    }
+    
+    th, td {
+        padding: 4px;
+        word-wrap: break-word;
+    }
+    
+    /* Estilo para garantir que a imagem não quebre o layout na impressão */
+    td img {
+        max-width: 100px; /* Ajuste conforme necessário */
+        height: auto;
+    }
+    
+    h4 {
+        font-size: 14pt;
+        text-align: center;
+        width: 100%;
+    }
+}
+    </style>
 </head>
 
 <body>
 
     <?php include('/xampp/htdocs/navbar.php'); ?>
     <div class="container mt-4">
-        <?php include('/xampp/htdocs/mensagem.php'); ?>
+        <div id="mensagem-php">
+            <?php include('/xampp/htdocs/mensagem.php'); ?>
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="table-container">
                         <div class="card-header">
-
                             <h4>LISTA DE VEÍCULOS
-                                <a href="cadastro_veiculos.php" class="btn btn-primary float-end"><span class="bi-plus-circle-fill"></span>&nbsp;Adicionar Veículo</a>
+                                <a href="cadastro_veiculos.php" class="btn btn-primary float-end no-print">
+                                    <span class="bi-plus-circle-fill"></span>&nbsp;Adicionar Veículo
+                                </a>
                             </h4>
                         </div>
 
                         <div class="card-body">
-                            <form method="GET" action="lista_veiculos.php">
+                            <form method="GET" action="lista_veiculos.php" class="no-print">
                                 <div class="input-group mb-3">
                                     <input type="text" name="nome_veiculo" class="form-control" placeholder="Buscar por Nome">
                                     <button class="btn btn-primary" type="submit"><span class="bi-search"></span>&nbsp;Buscar</button>
@@ -107,7 +152,7 @@ $quantidade = mysqli_num_rows($veiculo);
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th style="text-align: center;">FOTO</th>
+                                        <th style="text-align: center;" class="col-foto">FOTO</th>
                                         <th style="text-align: center;">NOME</th>
                                         <th style="text-align: center; width:100px;">PLACA</th>
                                         <th style="text-align: center;">RENAVAN</th>
@@ -115,7 +160,7 @@ $quantidade = mysqli_num_rows($veiculo);
                                         <th style="text-align: center;">MARCA/MODELO</th>
                                         <th style="text-align: center;">PROPRIETÁRIO</th>
                                         <th style="text-align: center;">DOCUMENTOS</th>
-                                        <th style="text-align: center;">AÇÕES</th>
+                                        <th style="text-align: center;" class="col-acoes">AÇÕES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -124,7 +169,7 @@ $quantidade = mysqli_num_rows($veiculo);
                                         while ($row = $result->fetch_assoc()) {
                                     ?>
                                             <tr>
-                                                <td style="text-align: center; vertical-align: middle;">
+                                                <td style="text-align: center; vertical-align: middle;" class="col-foto">
                                                     <?php if ($row['foto_veiculo']): ?>
                                                         <img src="<?= $row['foto_veiculo']; ?>" alt="Foto do Veículo" style="width: 120px; height: auto;">
                                                     <?php endif; ?>
@@ -151,14 +196,15 @@ $quantidade = mysqli_num_rows($veiculo);
                                                     endif;
                                                     ?>
                                                 </td>
-                                                <td style="text-align: center; vertical-align: middle;">
+                                                <td style="text-align: center; vertical-align: middle;" class="col-acoes">
                                                     <a href="edit_veiculos.php?id=<?= $row['cod_veiculo'] ?>" class="btn btn-secondary btn-sm"><span class="bi-eye-fill"></span>&nbsp;Visualizar</a>
                                                 </td>
                                             </tr>
-                                    <?php
+                                        <?php
                                         }
                                     } else {
-                                        echo '<tr><td colspan="9" style="text-align: center;">Nenhum veículo encontrado</td></tr>';
+                                        // Ajustado o colspan para 8, pois 2 colunas serão ocultadas
+                                        echo '<tr><td colspan="8" style="text-align: center;">Nenhum veículo encontrado</td></tr>';
                                     }
                                     ?>
                                 </tbody>
