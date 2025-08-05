@@ -1,3 +1,9 @@
+<?php
+// Define o fuso horário para a sua localização para garantir que a hora esteja correta
+date_default_timezone_set('America/Sao_Paulo');
+// Formata a data e hora atuais para o formato que o input 'datetime-local' aceita
+$data_hora_atual = date('Y-m-d\TH:i');
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -23,10 +29,19 @@
                 <?php endif; ?>
 
                 <form action="salvar_protocolo.php" method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="descricao" class="form-label">Descrição</label>
-                        <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Ex: Entrega de 10 cartões de alimentação referentes ao mês de Julho."></textarea>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="3" placeholder="Ex: Entrega de 10 cartões de alimentação referentes ao mês de Julho."></textarea>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="data_entrega" class="form-label">Data e Hora da Entrega</label>
+                            <input type="datetime-local" class="form-control" id="data_entrega" name="data_entrega" value="<?= $data_hora_atual ?>" required>
+                        </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="entregador" class="form-label">Nome do Entregador</label>
@@ -45,7 +60,6 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> Registrar Protocolo
                     </button>
-                    
                 </form>
             </div>
         </div>

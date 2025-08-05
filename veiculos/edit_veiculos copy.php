@@ -281,7 +281,7 @@ require 'db_connect.php';
                                                     foreach ($documentos_veiculos as $documento_atual) {
                                                         echo '<div style="margin-bottom: 10px;">';
                                                         echo '<a class="documento-link" href="' . $documento_atual . '" target="_blank">' . basename($documento_atual) . '</a>';
-                                                        //  echo ' <button class="btn btn-danger documento-botao" type="button" onclick="excluirDocumentoVeiculo(\'' . $documento_atual . '\')">Excluir</button>';
+                                                        //echo ' <button class="btn btn-danger documento-botao" type="button" onclick="excluirDocumentoVeiculo(\'' . $documento_atual . '\')">Excluir</button>';
                                                         echo '</div>';
                                                     }
                                                 }

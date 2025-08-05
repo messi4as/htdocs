@@ -193,8 +193,9 @@ if (isset($_GET['id'])) {
 
                                             <label class="form-label">&nbsp;TIPO DE CONTRATO:</label>
                                             <select name="tipo_contrato" class="form-control" required>
-                                                <option value="ALUGUEL" <?= $contrato['tipo_contrato'] == 'ALUGUEL' ? 'selected' : ''; ?>>ALUGUEL</option>
+                                                <option value="ALUGUEL" <?= $contrato['tipo_contrato'] == 'ALUGUEL' ? 'selected' : ''; ?>>ALUGUEL</option>                                                
                                                 <option value="CONTA GARANTIDA" <?= $contrato['tipo_contrato'] == 'CONTA GARANTIDA' ? 'selected' : ''; ?>>CONTA GARANTIDA</option>
+                                                <option value="CONSÓRCIO" <?= $contrato['tipo_contrato'] == 'CONSÓRCIO' ? 'selected' : ''; ?>>CONSÓRCIO</option>
                                                 <option value="CRÉDITO RURAL" <?= $contrato['tipo_contrato'] == 'CRÉDITO RURAL' ? 'selected' : ''; ?>>CRÉDITO RURAL</option>
                                                 <option value="EMPRÉSTIMO PESSOAL" <?= $contrato['tipo_contrato'] == 'EMPRÉSTIMO PESSOAL' ? 'selected' : ''; ?>>EMPRÉSTIMO PESSOAL</option>
                                                 <option value="PLANO DE SAÚDE" <?= $contrato['tipo_contrato'] == 'PLANO DE SAÚDE' ? 'selected' : ''; ?>>PLANO DE SAÚDE</option>

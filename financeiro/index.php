@@ -43,7 +43,8 @@ if ($codigo_string != '') {
         $parametros = array_merge($parametros, $codigos_filtrados);
     }
 }
-$sql .= " ORDER BY data";
+$sql .= " ORDER BY data LIMIT 20000"; // Limitar a 1000 resultados para evitar sobrecarga
+// Preparar a consulta
 
 $stmt = $conn->prepare($sql);
 
@@ -138,7 +139,7 @@ if ($result instanceof mysqli_result) {
             </div>
         <?php endif; ?>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12 offset-md-0">
                 <div class="card">
                     <div class="table-container">
                         <div class="card-header">
@@ -273,9 +274,9 @@ if ($result instanceof mysqli_result) {
                                 <thead>
                                     <tr>
                                         <th style="text-align: center;">DATA</th>
-                                        <th style="text-align: center; width:450px">DESCRIÇÃO</th>
-                                        <th style="text-align: center; width:150px">VALOR</th>
-                                        <th style="text-align: center; width:450px">FORMA DE PAGAMENTO</th>
+                                        <th style="text-align: center;">DESCRIÇÃO</th>
+                                        <th style="text-align: center;">VALOR</th>
+                                        <th style="text-align: center;">FORMA DE PAGAMENTO</th>
 
                                         <th style="text-align: center;">COMPROVANTE</th>
                                         <th style="text-align: center;">AÇÕES</th>
