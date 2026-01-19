@@ -24,15 +24,17 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" href="images/ico_m2.png" type="image/x-icon">
     <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="icon" href="images/ico_fazenda.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
     <title>EDITAR NASCIMENTO</title>
     <style>
@@ -67,6 +69,31 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
         th {
             background-color: #f2f2f2;
         }
+          /* Ajuste para alinhar o Select2 ao design do Bootstrap 5 */
+    .select2-container--default .select2-selection--single {
+        height: 38px !important; /* Altura padrão do form-control no BS5 */
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.375rem !important; /* Arredondamento padrão BS5 */
+        padding-top: 5px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 24px !important;
+        color: #212529 !important;
+        padding-left: 12px !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+    }
+
+    /* Efeito de foco azul idêntico aos outros campos */
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #86b7fe !important;
+        outline: 0 !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+        }
+        
     </style>
 </head>
 

@@ -70,7 +70,7 @@ E-MAIL: gestaomaiaraemaraisa@hotmail.com]]></text>
 			</staticText>
 			<image>
 				<reportElement x="7" y="-10" width="109" height="109" uuid="fe36f8da-75b0-4f98-bf29-bdc2e4c4467d"/>
-				<imageExpression><![CDATA["C:/xampp/htdocs/images/logo_fazenda.png"]]></imageExpression>
+				<imageExpression><![CDATA["C:/xampp/htdocs/ordem_de_servico/images/LOGO FAZENDA ROSADA.png"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -277,7 +277,9 @@ E-MAIL: gestaomaiaraemaraisa@hotmail.com]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="0" y="402" width="552" height="46" uuid="59a01db6-2546-4483-b229-696c1bb1ae93"/>
-				<textElement markup="html"/>
+				<textElement markup="html">
+					<font size="13"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{forma_pagamento}]]></textFieldExpression>
 			</textField>
 			<staticText>

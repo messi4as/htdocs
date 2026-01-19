@@ -30,6 +30,7 @@ require 'db_connect.php';
                         <div class="card-header">
                             <h4>DETALHE DA ORDEM DE SERVIÇO
                 <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
+            
                             </h4>
                         </div>
                         <div class="card-body">

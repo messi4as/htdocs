@@ -129,7 +129,7 @@ $usuarios = mysqli_fetch_all($result_usuarios, MYSQLI_ASSOC);
                                 <label for="funcao">Função:</label>
                                 <select name="funcao" id="funcao" class="form-control" required>
                                     <?php
-                                    $sql_permissoes = "SELECT DISTINCT funcao FROM permissoes";
+                                    $sql_permissoes = "SELECT DISTINCT funcao FROM permissoes order by funcao";
                                     $result_permissoes = mysqli_query($conn, $sql_permissoes);
                                     while ($row_permissao = mysqli_fetch_assoc($result_permissoes)) {
                                         echo "<option value='" . $row_permissao['funcao'] . "'>" . $row_permissao['funcao'] . "</option>";

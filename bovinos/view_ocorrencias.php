@@ -2,15 +2,24 @@
 session_start();
 require 'db_connect.php';
 
-// Recuperar locais
+// --- CONFIGURAÇÃO DA LOGO PARA O PDF ---
+$logoPath = 'images/logo_fazenda.png'; 
+$logoBase64 = '';
+if (file_exists($logoPath)) {
+    $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+    $data = file_get_contents($logoPath);
+    $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+}
+
+// Recuperar locais para o filtro
 $locais_result = mysqli_query($conn, "SELECT DISTINCT local FROM ocorrencias where cod_animal in (SELECT cod_animal FROM bovinos)");
 $locais = mysqli_fetch_all($locais_result, MYSQLI_ASSOC);
 
-// Recuperar Tipos
+// Recuperar Tipos para o filtro
 $tipos_result = mysqli_query($conn, "SELECT DISTINCT tipo FROM ocorrencias where cod_animal in (SELECT cod_animal FROM bovinos)");
 $tipos = mysqli_fetch_all($tipos_result, MYSQLI_ASSOC);
 
-// Recuperar Brincos
+// Recuperar Brincos para o filtro (Select2)
 $brincos_result = mysqli_query($conn, "SELECT DISTINCT brinco FROM bovinos where cod_animal in (SELECT cod_animal FROM ocorrencias)");
 $brincos = mysqli_fetch_all($brincos_result, MYSQLI_ASSOC);
 ?>
@@ -21,253 +30,241 @@ $brincos = mysqli_fetch_all($brincos_result, MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="images/ico_fazenda.png" type="image/x-icon">
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <title>OCORRÊNCIAS</title>
 
     <style>
-
-  
-
-        /* Ajusta a altura da caixa de seleção do Select2 quando fechada */
-        .select2-container--default .select2-selection--single {
-            height: 38px;
-            /* Ajuste este valor para a altura desejada */
-            border: 1px solid #ced4da;
-            /* Mantém a borda padrão do Bootstrap */
-            border-radius: .25rem;
-            /* Mantém o arredondamento padrão do Bootstrap */
-        }
-
-        /* Garante que o texto e a seta dentro da caixa fiquem alinhados verticalmente */
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 36px;
-            /* Geralmente 2px menor que a altura para alinhamento */
-            padding-left: .75rem;
-            /* Mantém o padding esquerdo do Bootstrap */
-            padding-right: 20px;
-            /* Adicione um pouco de padding para o texto não ficar muito perto da seta */
-        }
-
-        /* Ajusta a altura do ícone de seta para baixo */
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 36px;
-            /* Mesma altura que a `line-height` do `rendered` para alinhar a seta */
-        }
-
-        /* CSS para a caixa de pesquisa dentro da lista suspensa (se necessário) */
-        /* Geralmente, não precisa mexer aqui, pois o Select2 já gerencia bem */
-        .select2-search--dropdown .select2-search__field {
-            /* Exemplo: Ajustar padding ou margem se a caixa de pesquisa estiver estranha */
-            /* padding: 5px; */
-            /* margin: 5px; */
-        }
+        .select2-container--default .select2-selection--single { height: 38px; border: 1px solid #ced4da; border-radius: .25rem; }
+        .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 36px; padding-left: .75rem; }
+        .select2-container--default .select2-selection--single .select2-selection__arrow { height: 36px; }
+        
+        #tabelaOcorrencias th, #tabelaOcorrencias td { text-align: center; vertical-align: middle !important; }
+        .dt-buttons { margin-bottom: 15px; }
     </style>
-    
-
 </head>
 
 <body>
-
-    <script>
-        $(document).ready(function() {
-            $('#brincoo').select2({
-                placeholder: 'Selecione um brinco',
-                allowClear: true
-            });
-        });
-    </script>
-
-
-
     <?php include('navbar.php'); ?>
+
     <div class="container mt-4">
         <?php include('mensagem.php'); ?>
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="table-container">
-                        <div class="card-header">
-                            <h4>REGISTROS DE OCORRÊNCIAS <div class="float-end">
-                            </h4>
-                        </div>
-                        <div class="card-body">
-
-                            <form method="GET" action="" enctype="multipart/form-data">
-                                <div class="input-group mb-3">
-                                    <label for="data_inicial" style="text-align: left; vertical-align: middle;"><strong>FILTRO POR DATA: &nbsp;</strong></label>
-                                    <input type="date" id="data_inicial" name="data_inicial" class="form-control" placeholder="Data Inicial" style="max-width: 200px;" value="<?= isset($_GET['data_inicial']) ? htmlspecialchars($_GET['data_inicial']) : '' ?>"> &nbsp; &nbsp;
-                                    <input type="date" id="data_final" name="data_final" class="form-control" placeholder="Data Final" style="max-width: 200px;" value="<?= isset($_GET['data_final']) ? htmlspecialchars($_GET['data_final']) : '' ?>"> &nbsp; &nbsp;
-
-                                    <select name="local" class="form-control" style="max-width: 300px;">
-                                        <option value="">Selecione o Local</option>
-                                        <?php foreach ($locais as $local): ?>
-                                            <option value="<?= htmlspecialchars($local['local']) ?>" <?= isset($_GET['local']) && $_GET['local'] == $local['local'] ? 'selected' : '' ?>><?= htmlspecialchars($local['local']) ?></option>
-                                        <?php endforeach; ?>
-                                    </select> &nbsp; &nbsp;
-
-                                    <select name="tipo" class="form-control" style="max-width: 200px;">
-                                        <option value="">Selecione o Tipo</option>
-                                        <?php foreach ($tipos as $tipo): ?>
-                                            <option value="<?= htmlspecialchars($tipo['tipo']) ?>" <?= isset($_GET['tipo']) && $_GET['tipo'] == $tipo['tipo'] ? 'selected' : '' ?>><?= htmlspecialchars($tipo['tipo']) ?></option>
-                                        <?php endforeach; ?>
-                                    </select> &nbsp; &nbsp;
-
-                                    <select id="brincoo" name="brinco" class="form-control" style="max-width: 200px;">
-
-                                        <?php foreach ($brincos as $brinco): ?>
-                                            <option value="<?= htmlspecialchars($brinco['brinco']) ?>" <?= isset($_GET['brinco']) && $_GET['brinco'] == $brinco['brinco'] ? 'selected' : '' ?>><?= htmlspecialchars($brinco['brinco']) ?></option>
-                                        <?php endforeach; ?>
-                                    </select> &nbsp; &nbsp;
-
-                                    <button class="btn btn-primary" type="submit" style="max-width: 100px;">Filtrar</button>
+                  <div class="card shadow">
+                    <div class="card-header">
+                        <h4 class="mb-0">REGISTROS DE OCORRÊNCIAS</h4>
+                    </div>
+                    <div class="card-body">
+                        
+                        <form method="GET" action="" class="mb-4">
+                            <div class="row g-2">
+                                <div class="col-md-2">
+                                    <label class="small fw-bold">Data Inicial</label>
+                                    <input type="date" id="data_inicial" name="data_inicial" class="form-control" value="<?= $_GET['data_inicial'] ?? '' ?>">
                                 </div>
-                            </form>
-                            <?php
-                            $data_inicial = isset($_GET['data_inicial']) ? $_GET['data_inicial'] : '';
-                            $data_final = isset($_GET['data_final']) ? $_GET['data_final'] : '';
-                            $local = isset($_GET['local']) ? $_GET['local'] : '';
-                            $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : '';
-                            $brinco = isset($_GET['brinco']) ? $_GET['brinco'] : '';
-
-                            // Use declarações preparadas para prevenir injeção de SQL
-                            $sql = "SELECT
-            o.id,
-            o.data,  -- Coluna 'data' corrigida
-            o.descricao,
-            b.brinco AS brinco,
-            b.cod_animal,
-            TIMESTAMPDIFF(MONTH, b.data_nascimento, o.data) AS idade,
-            b.local,
-            o.peso
-        FROM
-            ocorrencias o
-        INNER JOIN
-            bovinos b ON o.cod_animal = b.cod_animal
-        WHERE 1=1 "; // Comece com uma condição que é sempre verdadeira
-
-                            $conditions = [];
-                            if ($data_inicial != '' && $data_final != '') {
-                                $conditions[] = "o.data BETWEEN ? AND ?"; // Use marcadores de posição
-                            }
-                            if ($local != '') {
-                                $conditions[] = "b.local = ?"; // Use marcadores de posição
-                            }
-                            if ($tipo != '') {
-                                $conditions[] = "o.tipo = ?"; // Use marcadores de posição
-                            }
-                            if ($brinco != '') {
-                                $conditions[] = "b.brinco = ?"; // Use marcadores de posição
-                            }
-
-
-                            if (count($conditions) > 0) {
-                                $sql .= " AND " . implode(' AND ', $conditions);
-                            }
-
-                            $sql .= " ORDER BY o.data asc"; // Ordenar por data ascendente
-
-                            $stmt = mysqli_prepare($conn, $sql); // Prepare a declaração
-
-                            if ($stmt)
-                                // Vincule os parâmetros
-                                $types = '';
-                            $params = [];
-                            if ($data_inicial != '' && $data_final != '') {
-                                $types .= 'ss'; // String, String
-                                $params[] =  $data_inicial;
-                                $params[] =  $data_final;
-                            }
-                            if ($local != '') {
-                                $types .= 's'; // String
-                                $params[] =  $local;
-                            }
-                            if ($tipo != '') {
-                                $types .= 's'; // String
-                                $params[] =  $tipo;
-                            }
-                            if ($brinco != '') {
-                                $types .= 's'; // String
-                                $params[] =  $brinco;
-                            }
-                            if (!empty($params)) {
-                                mysqli_stmt_bind_param($stmt, $types, ...$params);
-                            }
-
-                            // Execute a declaração
-                            mysqli_stmt_execute($stmt);
-                            $result = mysqli_stmt_get_result($stmt);
-                            $quantidade = mysqli_num_rows($result);
-
-                            ?>
-
-
-
-
-                            <div class="alert alert-info" role="alert">
-                                Quantidade de Ocorrências: <?php echo number_format($quantidade, 0, ',', '.'); ?>
+                                <div class="col-md-2">
+                                    <label class="small fw-bold">Data Final</label>
+                                    <input type="date" id="data_final" name="data_final" class="form-control" value="<?= $_GET['data_final'] ?? '' ?>">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small fw-bold">Local</label>
+                                    <select name="local" class="form-select">
+                                        <option value="">Todos</option>
+                                        <?php foreach ($locais as $l): ?>
+                                            <option value="<?= htmlspecialchars($l['local']) ?>" <?= (isset($_GET['local']) && $_GET['local'] == $l['local']) ? 'selected' : '' ?>><?= htmlspecialchars($l['local']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small fw-bold">Tipo</label>
+                                    <select id="filtro_tipo" name="tipo" class="form-select">
+                                        <option value="">Todos</option>
+                                        <?php foreach ($tipos as $t): ?>
+                                            <option value="<?= htmlspecialchars($t['tipo']) ?>" <?= (isset($_GET['tipo']) && $_GET['tipo'] == $t['tipo']) ? 'selected' : '' ?>><?= htmlspecialchars($t['tipo']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small fw-bold">Brinco</label>
+                                    <select id="brinco_select" name="brinco" class="form-control">
+                                        <option value="">Selecione</option>
+                                        <?php foreach ($brincos as $b): ?>
+                                            <option value="<?= htmlspecialchars($b['brinco']) ?>" <?= (isset($_GET['brinco']) && $_GET['brinco'] == $b['brinco']) ? 'selected' : '' ?>><?= htmlspecialchars($b['brinco']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button class="btn btn-primary w-100" type="submit">Filtrar</button>
+                                </div>
                             </div>
+                        </form>
 
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <tr>
-                                        <th style='text-align: center; vertical-align: middle;'>DATA</th>
-                                        <th style='text-align: center; vertical-align: middle; width: 150px;'>IDADE (MESES)</th>
-                                        <th style='text-align: center; vertical-align: middle;'>BRINCO</th>
-                                        <th style='text-align: center; vertical-align: middle;'>PESO</th>
-                                        <th style='text-align: center; vertical-align: middle; width: 250px;'>LOCAL</th>
-                                        <th style='text-align: center; vertical-align: middle;'>DESCRIÇÃO</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    if ($quantidade > 0) {
-                                        while ($row = mysqli_fetch_assoc($result)) {
-                                            echo "<tr>";
-                                            echo "<td style='text-align: center; vertical-align: middle;'>" . date('d/m/Y', strtotime($row['data'])) . "</td>";
-                                            echo "<td style='text-align: center; vertical-align: middle;'>" . $row['idade'] . " meses</td>";
-                                            echo "<td style='text-align: center; vertical-align: middle;'> <a href='view_animal.php?id=" . urlencode($row['cod_animal']) . "' style='text-decoration: none;'>" . htmlspecialchars($row['brinco']) . "</a></td>";
-                                            echo "<td style='text-align: center; vertical-align: middle;'>" . $row['peso'] . "</td>";
-                                            echo "<td style='text-align: center; vertical-align: middle;'>" . $row['local'] . "</td>";
-                                            echo "<td style='text-align: left; vertical-align: middle;'>" . $row['descricao'] . "</td>";
-                                            echo "</tr>";
-                                        }
-                                    } else {
-                                        echo "<tr><td colspan='6'>Nenhum nascimento encontrado</td></tr>";
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
+                        <?php
+                        $data_inicial = $_GET['data_inicial'] ?? '';
+                        $data_final = $_GET['data_final'] ?? '';
+                        $local = $_GET['local'] ?? '';
+                        $tipo = $_GET['tipo'] ?? '';
+                        $brinco = $_GET['brinco'] ?? '';
+
+                        $sql = "SELECT o.data, o.descricao, o.tipo, b.sexo, b.brinco, b.cod_animal, o.peso, b.local,
+                                TIMESTAMPDIFF(MONTH, b.data_nascimento, o.data) AS idade
+                                FROM ocorrencias o
+                                INNER JOIN bovinos b ON o.cod_animal = b.cod_animal
+                                WHERE 1=1 ";
+
+                        $params = []; $types = '';
+                        if ($data_inicial != '' && $data_final != '') { $sql .= " AND o.data BETWEEN ? AND ?"; $params[] = $data_inicial; $params[] = $data_final; $types .= 'ss'; }
+                        if ($local != '') { $sql .= " AND b.local = ?"; $params[] = $local; $types .= 's'; }
+                        if ($tipo != '') { $sql .= " AND o.tipo = ?"; $params[] = $tipo; $types .= 's'; }
+                        if ($brinco != '') { $sql .= " AND b.brinco = ?"; $params[] = $brinco; $types .= 's'; }
+
+                        $sql .= " ORDER BY o.id DESC";
+                        $stmt = mysqli_prepare($conn, $sql);
+                        if (!empty($params)) { mysqli_stmt_bind_param($stmt, $types, ...$params); }
+                        mysqli_stmt_execute($stmt);
+                        $result = mysqli_stmt_get_result($stmt);
+                        $quantidade = mysqli_num_rows($result);
+                        ?>
+
+                        <div class="alert alert-info">
+                            Quantidade de Ocorrências: <strong><?= number_format($quantidade, 0, ',', '.') ?></strong>
                         </div>
+
+                        <table id="tabelaOcorrencias" class="table table-bordered table-striped w-100">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>BRINCO</th>
+                                    <th>IDADE</th>
+                                    <th>SEXO</th>
+                                    <th>PESO</th>
+                                    <th>LOCAL</th>
+                                    <th>DATA</th>
+                                    <th>TIPO</th>
+                                    <th>DESCRIÇÃO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                                    <tr>
+                                        <td><strong><?= htmlspecialchars($row['brinco']) ?></strong></td>
+                                        <td><?= $row['idade'] ?> m</td>
+                                        <td><?= $row['sexo'] ?></td>
+                                        <td><?= $row['peso'] ?></td>
+                                        <td><?= $row['local'] ?></td>
+                                        <td><?= date('d/m/Y', strtotime($row['data'])) ?></td>
+                                        <td><?= $row['tipo'] ?></td>
+                                        <td class="text-start"><?= $row['descricao'] ?></td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 
     <script>
-        // Ocultar a mensagem após 5 segundos
-        setTimeout(function() {
-            var mensagemAlert = document.getElementById('mensagem-alert');
-            if (mensagemAlert) {
-                mensagemAlert.classList.remove('show');
-                mensagemAlert.classList.add('fade');
-                setTimeout(function() {
-                    mensagemAlert.remove();
-                }, 500); // Tempo para a transição de fade
-            }
-        }, 5000);
+    $(document).ready(function() {
+        $('#brinco_select').select2({ placeholder: 'Selecione', allowClear: true });
+
+        $('#tabelaOcorrencias').DataTable({
+            paging: false,
+            dom: 'Bfrtip',
+            order: [], 
+            language: { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-BR.json' },
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="bi bi-file-earmark-pdf"></i> Gerar PDF',
+                    className: 'btn btn-danger',
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    exportOptions: { 
+                        format: {
+                            body: function (data, row, column, node) {
+                                return node.innerText || node.textContent;
+                            }
+                        }
+                    },
+                    customize: function(doc) {
+                        var dInic = $('#data_inicial').val();
+                        var dFim = $('#data_final').val();
+                        var tipoSel = $('#filtro_tipo').val();
+                        var total = <?= $quantidade ?>;
+                        var logo = '<?= $logoBase64 ?>';
+
+                        var periodo = "Período: " + (dInic ? dInic.split('-').reverse().join('/') : "Início") + 
+                                      " até " + (dFim ? dFim.split('-').reverse().join('/') : "Fim");
+                        var tipoTexto = "Tipo: " + (tipoSel ? tipoSel : "Todos");
+
+                        doc.content.unshift({
+                            margin: [0, 0, 0, 20],
+                            table: {
+                                widths: [80, '*'],
+                                body: [
+                                    [
+                                        {
+                                            image: logo,
+                                            width: 70,
+                                            border: [false, false, false, false]
+                                        },
+                                        {
+                                            stack: [
+                                                { text: 'RELATÓRIO DE OCORRÊNCIAS', fontSize: 16, bold: true },
+                                                { text: periodo, fontSize: 11, margin: [0, 2, 0, 0] },
+                                                { text: tipoTexto, fontSize: 11 }
+                                            ],
+                                            alignment: 'center',
+                                            margin: [-80, 5, 0, 0],
+                                            border: [false, false, false, false]
+                                        }
+                                    ]
+                                ]
+                            },
+                            layout: 'noBorders'
+                        });
+
+                        doc.content.push({
+                            text: '\nTotal de Registros Encontrados: ' + total,
+                            fontSize: 12, bold: true, alignment: 'right', margin: [0, 10, 0, 0]
+                        });
+
+                        var tableNode = doc.content.find(n => n.table !== undefined && n.table.body.length > 1);
+                        if (tableNode) {
+                            tableNode.table.widths = ['8%', '8%', '8%', '8%', '15%', '8%', '20%', '20%'];
+                            // Ajuste do loop para incluir cabeçalho (i=0) e centralização vertical (margin)
+                            for (var i = 0; i < tableNode.table.body.length; i++) {
+                                for (var j = 0; j < tableNode.table.body[i].length; j++) {
+                                    // Alinhamento horizontal: centro para colunas 0-6, esquerda para coluna 7
+                                    tableNode.table.body[i][j].alignment = (j < 7) ? 'center' : 'left';
+                                    // Alinhamento vertical através de margens iguais [esq, topo, dir, baixo]
+                                    tableNode.table.body[i][j].margin = [0, 7, 0, 7];
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        });
+    });
     </script>
 </body>
-
 </html>

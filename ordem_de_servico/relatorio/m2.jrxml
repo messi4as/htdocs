@@ -70,7 +70,7 @@ E-MAIL: gestaomaiaraemaraisa@hotmail.com]]></text>
 			</staticText>
 			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle" evaluationTime="Auto">
 				<reportElement x="0" y="6" width="110" height="92" uuid="c7fc1dd9-da93-4f51-95dc-36461e7e5db2"/>
-				<imageExpression><![CDATA["C:/xampp/htdocs/images/logo_m2.png"]]></imageExpression>
+				<imageExpression><![CDATA["C:/xampp/htdocs/ordem_de_servico/images/LOGO ESCRITÓRIO2.png"]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -131,7 +131,7 @@ E-MAIL: gestaomaiaraemaraisa@hotmail.com]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="30">
-							<textField isStretchWithOverflow="true">
+							<textField isStretchWithOverflow="true" hyperlinkType="">
 								<reportElement positionType="Float" x="0" y="0" width="414" height="30" uuid="930191d9-0637-4c91-b757-b42a69e75470"/>
 								<textElement verticalAlignment="Middle" markup="html"/>
 								<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
@@ -275,9 +275,11 @@ E-MAIL: gestaomaiaraemaraisa@hotmail.com]]></text>
 				</textElement>
 				<text><![CDATA[FORMA DE PAGAMENTO:]]></text>
 			</staticText>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" hyperlinkType="" hyperlinkTarget="&lt;NULL&gt;">
 				<reportElement x="0" y="402" width="552" height="46" uuid="aba06efc-9083-4cce-87e7-af73c32bdeeb"/>
-				<textElement markup="html"/>
+				<textElement markup="html">
+					<font size="13"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{forma_pagamento}]]></textFieldExpression>
 			</textField>
 			<staticText>

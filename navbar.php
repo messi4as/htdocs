@@ -36,6 +36,7 @@
                     </li>
 
                     <li class="nav-item"><a class="nav-link" href="/galpao/planta.php">Galpão</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/inventario/inventario_view.php">Inventário</a></li>
             </div>
 
 

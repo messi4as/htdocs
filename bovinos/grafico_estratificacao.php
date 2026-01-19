@@ -6,7 +6,7 @@ require 'db_connect.php';
 function getOptions($conn, $column)
 {
     $options = [];
-    $sql = "SELECT DISTINCT $column FROM bovinos WHERE status = 'ATIVO'";
+    $sql = "SELECT DISTINCT $column FROM bovinos WHERE status = 'ATIVO' AND $column IS NOT NULL AND $column != ''";
     $result = mysqli_query($conn, $sql);
     while ($row = mysqli_fetch_assoc($result)) {
         $options[] = $row[$column];
@@ -19,43 +19,41 @@ $loteOptions = getOptions($conn, 'lote');
 $estratificacaoOptions = getOptions($conn, 'estratificacao');
 $situacaoAtualOptions = getOptions($conn, 'situacao_atual');
 
-// Função para obter dados dos bovinos com filtros
-function getBovinosData($conn, $local, $lote, $estratificacao, $situacao_atual)
-{
-    $sql = "SELECT local, lote, estratificacao, situacao_atual, COUNT(*) as quantidade 
-            FROM bovinos 
-            WHERE status = 'ATIVO'";
-    $conditions = [];
-    if ($local != '') {
-        $conditions[] = "local LIKE '%$local%'";
-    }
-    if ($lote != '') {
-        $conditions[] = "lote LIKE '%$lote%'";
-    }
-    if ($estratificacao != '') {
-        $conditions[] = "estratificacao LIKE '%$estratificacao%'";
-    }
-    if ($situacao_atual != '') {
-        $conditions[] = "situacao_atual LIKE '%$situacao_atual%'";
-    }
-    if (count($conditions) > 0) {
-        $sql .= " AND " . implode(' AND ', $conditions);
-    }
-    $sql .= " GROUP BY estratificacao";
-    $result = mysqli_query($conn, $sql);
-    $data = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $data[] = $row;
-    }
-    return $data;
-}
-
 $local = isset($_GET['local']) ? $_GET['local'] : '';
 $lote = isset($_GET['lote']) ? $_GET['lote'] : '';
 $estratificacao = isset($_GET['estratificacao']) ? $_GET['estratificacao'] : '';
 $situacao_atual = isset($_GET['situacao_atual']) ? $_GET['situacao_atual'] : '';
 
+// Função para obter dados agrupados para o gráfico
+function getBovinosData($conn, $local, $lote, $estratificacao, $situacao_atual)
+{
+    $sql = "SELECT estratificacao, COUNT(*) as quantidade FROM bovinos WHERE status = 'ATIVO'";
+    $conditions = [];
+    if ($local != '') $conditions[] = "local LIKE '%$local%'";
+    if ($lote != '') $conditions[] = "lote LIKE '%$lote%'";
+    if ($estratificacao != '') $conditions[] = "estratificacao LIKE '%$estratificacao%'";
+    if ($situacao_atual != '') $conditions[] = "situacao_atual LIKE '%$situacao_atual%'";
+    
+    if (count($conditions) > 0) $sql .= " AND " . implode(' AND ', $conditions);
+    
+    $sql .= " GROUP BY estratificacao ORDER BY FIELD(estratificacao, 
+        'MACHO, 0 A 12 MESES', 'FÊMEA, 0 A 12 MESES', 
+        'MACHO, 13 A 24 MESES', 'FÊMEA, 13 A 24 MESES', 
+        'MACHO, 25 A 36 MESES', 'FÊMEA, 25 A 36 MESES', 
+        'MACHO, ACIMA DE 36 MESES', 'FÊMEA, ACIMA DE 36 MESES')";
+    
+    $result = mysqli_query($conn, $sql);
+    $data = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
 $bovinosData = getBovinosData($conn, $local, $lote, $estratificacao, $situacao_atual);
+$quantidade_total = array_sum(array_column($bovinosData, 'quantidade'));
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -65,187 +63,122 @@ $bovinosData = getBovinosData($conn, $local, $lote, $estratificacao, $situacao_a
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" href="images/ico_fazenda.png" type="image/x-icon">
-    <title>VISUALIZAÇÃO DE BOVINOS - GRÁFICOS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>GRÁFICO POR ESTRATIFICAÇÃO</title>
     <style>
         @media print {
-            .no-print {
-                display: none;
-            }
-
-            .print-only {
-                display: table-cell;
-            }
-
-            canvas {
-                width: 100% !important;
-                height: auto !important;
-            }
+            .no-print { display: none; }
+            canvas { width: 100% !important; height: auto !important; }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-    <script>
-        Chart.register(ChartDataLabels);
-    </script>
 </head>
 
 <body>
     <?php include('navbar.php'); ?>
     <div class="container mt-4">
-        <?php include('mensagem.php'); ?>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="table-container">
-                        <div class="card-header">
-                            <h4>VISUALIZAÇÃO DE BOVINOS - GRÁFICO ESTRATIFICAÇÃO <div class="float-end">
-                                    <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
-
-                            </h4>
+        <div class="card shadow">
+            <div class="card-header">
+                <h4 class="mb-0">GRÁFICO POR ESTRATIFICAÇÃO
+                    <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
+                    <a href="grafico_lote.php" class="btn btn-warning me-2 float-end"><span class="bi bi-bar-chart"></span>&nbsp;Ver Gráfico por Lote</a>
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="" class="mb-4 no-print">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-3">
+                            <select name="local" class="form-select">
+                                <option value="">Local</option>
+                                <?php foreach ($localOptions as $option) : ?>
+                                    <option value="<?= $option ?>" <?= $local == $option ? 'selected' : '' ?>><?= $option ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-                        <div class="card-body">
-
-                            <form method="GET" action="">
-                                <div class="input-group mb-3">
-                                    <select name="local" class="form-control">
-                                        <option value="">Local</option>
-                                        <?php foreach ($localOptions as $option) : ?>
-                                            <option value="<?= $option ?>" <?= $local == $option ? 'selected' : '' ?>><?= $option ?></option>
-                                        <?php endforeach; ?>
-                                    </select> &nbsp; &nbsp;
-                                    <select name="lote" class="form-control">
-                                        <option value="">Lote</option>
-                                        <?php foreach ($loteOptions as $option) : ?>
-                                            <option value="<?= $option ?>" <?= $lote == $option ? 'selected' : '' ?>><?= $option ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <select name="estratificacao" class="form-control">
-                                        <option value="">Estratificação</option>
-                                        <?php foreach ($estratificacaoOptions as $option) : ?>
-                                            <option value="<?= $option ?>" <?= $estratificacao == $option ? 'selected' : '' ?>><?= $option ?></option>
-                                        <?php endforeach; ?>
-                                    </select> &nbsp; &nbsp;
-                                    <select name="situacao_atual" class="form-control">
-                                        <option value="">Situação Atual</option>
-                                        <?php foreach ($situacaoAtualOptions as $option) : ?>
-                                            <option value="<?= $option ?>" <?= $situacao_atual == $option ? 'selected' : '' ?>><?= $option ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <button class="btn btn-primary" type="submit">Filtrar</button>
+                        <div class="col-md-3">
+                            <select name="lote" class="form-select">
+                                <option value="">Lote</option>
+                                <?php foreach ($loteOptions as $option) : ?>
+                                    <option value="<?= $option ?>" <?= $lote == $option ? 'selected' : '' ?>><?= $option ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-
-
-
-                        <canvas id="bovinosChart"></canvas>
-
-                        </form>
-                        <?php
-                        $local = isset($_GET['local']) ? $_GET['local'] : '';
-                        $lote = isset($_GET['lote']) ? $_GET['lote'] : '';
-                        $estratificacao = isset($_GET['estratificacao']) ? $_GET['estratificacao'] : '';
-                        $situacao_atual = isset($_GET['situacao_atual']) ? $_GET['situacao_atual'] : '';
-
-                        $sql = "SELECT brinco, 
-                       TIMESTAMPDIFF(MONTH, data_nascimento, CURDATE()) AS idade, 
-                       estratificacao, 
-                       situacao_atual, 
-                       local, 
-                       lote 
-                FROM bovinos
-                WHERE status = 'ATIVO'";
-                        $conditions = [];
-                        if ($local != '') {
-                            $conditions[] = "local LIKE '%$local%'";
-                        }
-                        if ($lote != '') {
-                            $conditions[] = "lote LIKE '%$lote%'";
-                        }
-                        if ($estratificacao != '') {
-                            $conditions[] = "estratificacao LIKE '%$estratificacao%'";
-                        }
-                        if ($situacao_atual != '') {
-                            $conditions[] = "situacao_atual LIKE '%$situacao_atual%'";
-                        }
-                        if (count($conditions) > 0) {
-                            $sql .= " AND " . implode(' AND ', $conditions);
-                        }
-                        $result = mysqli_query($conn, $sql);
-                        $quantidade = mysqli_num_rows($result);
-                        ?>
-
-                        <div class="alert alert-info" role="alert">
-                            Quantidade de Bovinos: <?php echo $quantidade; ?>
+                        <div class="col-md-3">
+                            <select name="estratificacao" class="form-select">
+                                <option value="">Estratificação</option>
+                                <?php foreach ($estratificacaoOptions as $option) : ?>
+                                    <option value="<?= $option ?>" <?= $estratificacao == $option ? 'selected' : '' ?>><?= $option ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-
-
+                        <div class="col-md-3">
+                            <select name="situacao_atual" class="form-select">
+                                <option value="">Situação Atual</option>
+                                <?php foreach ($situacaoAtualOptions as $option) : ?>
+                                    <option value="<?= $option ?>" <?= $situacao_atual == $option ? 'selected' : '' ?>><?= $option ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                     </div>
+                    <button class="btn btn-primary" type="submit">Filtrar</button>
+                    <a href="grafico_estratificacao.php" class="btn btn-outline-secondary">Limpar</a>
+                </form>
+
+                <div style="position: relative; height:400px; width:100%; max-width: 900px; margin: 0 auto;">
+                    <canvas id="bovinosChart"></canvas>
+                </div>
+
+                <div class="alert alert-info mt-4" role="alert">
+                    <strong>Total de Bovinos:</strong> <?php echo $quantidade_total; ?>
                 </div>
             </div>
         </div>
     </div>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var ctx = document.getElementById('bovinosChart').getContext('2d');
-            var bovinosData = <?= json_encode($bovinosData) ?>;
+            const ctx = document.getElementById('bovinosChart').getContext('2d');
+            const bovinosData = <?= json_encode($bovinosData) ?>;
 
-            console.log(bovinosData); // Verifique os dados no console
+            const labels = bovinosData.map(item => item.estratificacao);
+            const data = bovinosData.map(item => item.quantidade);
 
-            var labels = bovinosData.map(function(item) {
-                return item.estratificacao;
-            });
-            var data = bovinosData.map(function(item) {
-                return item.quantidade;
-            });
-
-            var chart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Quantidade de Bovinos',
+                        label: 'Quantidade',
                         data: data,
-                        backgroundColor: 'rgba(207, 244, 252, 0.5)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1
                     }]
                 },
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     layout: {
-                        padding: {
-                            top: 20 // Adiciona espaço extra na parte superior
-                        }
+                        padding: { top: 40 }
                     },
                     plugins: {
                         datalabels: {
                             anchor: 'end',
-                            align: 'end',
-                            formatter: function(value) {
-                                return value;
-                            },
-                            color: 'black',
-                            font: {
-                                weight: 'bold'
-                            }
+                            align: 'top',
+                            offset: 4,
+                            font: { weight: 'bold', size: 14 },
+                            color: 'black'
                         },
-                        legend: {
-                            display: false // Oculta a legenda
-                        }
+                        legend: { display: false }
                     },
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            grace: '20%'
                         },
                         x: {
-                            ticks: {
-                                font: {
-                                    weight: 'bold'
-                                }
-                            }
+                            ticks: { font: { weight: 'bold' } }
                         }
                     }
                 },
@@ -254,5 +187,4 @@ $bovinosData = getBovinosData($conn, $local, $lote, $estratificacao, $situacao_a
         });
     </script>
 </body>
-
 </html>

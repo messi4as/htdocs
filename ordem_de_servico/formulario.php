@@ -206,10 +206,10 @@ require 'db_connect.php';
             theme: 'snow',
             modules: {
                 toolbar: [
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{
-                        'header': [1, 2, 3, false]
-                    }],
+                    ['bold', 'italic', 'underline'],
+                    // [{
+                    //    'header': [1, 2, 3, false]
+                    // }],
                     [{
                         'list': 'ordered'
                     }, {
@@ -243,10 +243,10 @@ require 'db_connect.php';
             theme: 'snow',
             modules: {
                 toolbar: [
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{
-                        'header': [1, 2, 3, false]
-                    }],
+                    ['bold', 'italic', 'underline'],
+                    // [{
+                    //    'header': [1, 2, 3, false]
+                    // }],
                     [{
                         'list': 'ordered'
                     }, {

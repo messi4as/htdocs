@@ -13,7 +13,23 @@
                         <a class="nav-link active" aria-current="page" href="/index.php">Home</a>
                     </li>
 
-                    <li class="nav-item"><a class="nav-link" href="/vale_refeicao/visualizar_grafico.php">Status</a></li>
+                    <!-- <li class="nav-item"><a class="nav-link" href="/vale_refeicao/visualizar_grafico.php">Status</a></li> -->
+
+
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Status
+                        </a>
+
+                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" aria-current="page" href="/vale_refeicao/visualizar_grafico.php">Geral</a></li>
+                            <li><a class="dropdown-item" aria-current="page" href="/vale_refeicao/visualizar_utilizadores.php">Utilizadores</a></li>
+
+                                </ul>
+                    </li>
+
+
+
                     <li class="nav-item"><a class="nav-link" href="/vale_refeicao/historico_cartoes.php">Histórico</a></li>
 
                     <li class="nav-item dropdown">
@@ -36,5 +52,5 @@
             </div>
 
         </div>
-        <a class="navbar-brand" href="/vale_refeicao/visualizar_grafico.php">GESTÃO DE VALE ALIMENTAÇÃO - FAZENDA ROSADA</a>
+        <a class="navbar-brand" href="/vale_refeicao/visualizar_grafico.php">VALE ALIMENTAÇÃO - FAZENDA ROSADA</a>
 </nav>

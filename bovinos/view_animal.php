@@ -113,6 +113,8 @@ if (isset($_GET['id'])) {
 <body>
   <?php include('navbar.php'); ?>
   <div class="container mt-4">
+            <?php include('mensagem.php'); ?>
+
     <div class="row">
       <div class="col-md-12">
         <div class="card">
@@ -379,6 +381,24 @@ if (isset($_GET['id'])) {
       });
     });
   </script>
+  <script>
+    // Seleciona o alerta de mensagem
+    const alert = document.querySelector('.alert');
+    
+    if (alert) {
+        // Define um tempo de 3 segundos (3000ms) antes de iniciar o fechamento
+        setTimeout(() => {
+            // Aplica uma transição suave de opacidade
+            alert.style.transition = "opacity 0.5s ease";
+            alert.style.opacity = "0";
+            
+            // Remove o elemento do DOM após a transição
+            setTimeout(() => {
+                alert.remove();
+            }, 500);
+        }, 3000); 
+    }
+</script>
 </body>
 
 </html>

@@ -32,18 +32,18 @@ require 'db_connect.php';
                     </div>
                     <div class="modal-body">
                         <?php
-                        if (isset($_GET['login_erro_infra'])) {
+                        if (isset($_GET['login_erro'])) {
                             echo '<div class="alert alert-danger" role="alert">Usuário ou senha incorretos.</div>';
                         }
                         ?>
-                        <form method="POST" action="processa_login_modal_infra.php">
+                        <form method="POST" action="processa_login_modal.php">
                             <div class="mb-3">
-                                <label for="modalUsuarioInfra" class="form-label">Usuário:</label>
-                                <input type="text" class="form-control" id="modalUsuarioInfra" name="nome_usuario" required>
+                                <label for="modalUsuario" class="form-label">Usuário:</label>
+                                <input type="text" class="form-control" id="modalUsuario" name="nome_usuario" required>
                             </div>
                             <div class="mb-3">
-                                <label for="modalSenhaInfra" class="form-label">Senha:</label>
-                                <input type="password" class="form-control" id="modalSenhaInfra" name="senha" required>
+                                <label for="modalSenha" class="form-label">Senha:</label>
+                                <input type="password" class="form-control" id="modalSenha" name="senha" required>
                             </div>
                             <input type="hidden" name="redirect_url" id="redirect_url_modal">
                             <input type="hidden" name="target_blank" id="target_blank_modal">
@@ -81,11 +81,19 @@ require 'db_connect.php';
                             </div>
                         </div>
                         <br>
-
                         <div class="button-container">
-                            <a href="#" class="btn btn-index d-flex align-items-center justify-content-center" style="width:300px;height:50px;" data-bs-toggle="modal" data-bs-target="#loginModal" data-redirect="/recibo/edit_emissor.php?id=2">
+
+                            <a href="/recibo/edit_emissor.php?id=2" class="btn btn-index d-flex align-items-center justify-content-center" style="width:300px;height:50px;">
                                 <span class="bi-search"></span>&nbsp;DADOS M2 SHOWS
                             </a>
+
+
+
+                            <!-- 
+                            <a href="#" class="btn btn-index d-flex align-items-center justify-content-center" style="width:300px;height:50px;" data-bs-toggle="modal" data-bs-target="#loginModal"  data-redirect="/recibo/edit_emissor.php?id=2">
+                                <span class="bi-search"></span>&nbsp;DADOS M2 SHOWS
+                            </a>
+                    -->
 
                             <form action="/imoveis/lista_imoveis.php" target="_self">
                                 <button type="submit" class="btn btn-index" style="width:300px;height:50px;">
@@ -108,7 +116,7 @@ require 'db_connect.php';
 
 
 
-                            <a href="#" class="btn btn-index d-flex align-items-center justify-content-center" style="width:300px;height:50px;" data-bs-toggle="modal" data-bs-target="#loginModal" data-redirect="organograma.php">
+                            <a href="#" class="btn btn-index d-flex align-items-center justify-content-center" style="width:300px;height:50px;" data-bs-toggle="modal" data-bs-target="#loginModal" data-redirect="../organograma/organograma.php">
                                 <span class="bi-search me-2"></span> ORGANOGRAMA
                             </a>
 
@@ -175,7 +183,7 @@ require 'db_connect.php';
 
                     document.addEventListener('DOMContentLoaded', function() {
                         const urlParams = new URLSearchParams(window.location.search);
-                        const loginErro = urlParams.get('login_erro_infra');
+                        const loginErro = urlParams.get('login_erro');
 
                         if (loginErro === '1') {
                             const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));

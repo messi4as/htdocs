@@ -103,7 +103,7 @@ $total_geral_formatado = formatar_valor($total_geral);
         td {
             border: 1px solid #ddd;
             padding: 8px;
-            text-align: center;
+            text-align: center !important;
         }
 
         th {
@@ -111,11 +111,11 @@ $total_geral_formatado = formatar_valor($total_geral);
         }
 
         .text-left {
-            text-align: left;
+            text-align: left !important;
         }
 
         .text-right {
-            text-align: right;
+            text-align: right !important;
         }
 
         /* Estilos para impressão */
@@ -145,6 +145,7 @@ $total_geral_formatado = formatar_valor($total_geral);
                 border: 1px solid #000;
                 padding: 8px;
                 text-align: center;
+                vertical-align: middle;
             }
 
             body {
@@ -183,6 +184,21 @@ $total_geral_formatado = formatar_valor($total_geral);
 
         .filtro-item label {
             margin-right: 5px;
+        }
+
+        /* Regra CSS para evitar quebras dentro de linhas importantes */
+        .total-responsavel {
+            /* Evita que o total por responsável seja dividido em duas páginas */
+            page-break-before: auto !important;
+            page-break-after: avoid !important;
+            page-break-inside: avoid !important;
+        }
+
+        .total-geral {
+            /* Força o Total Geral a ir para uma nova página se não couber no final da atual */
+            page-break-before: auto !important;
+            page-break-after: avoid !important;
+            page-break-inside: avoid !important;
         }
     </style>
 </head>
@@ -264,19 +280,18 @@ $total_geral_formatado = formatar_valor($total_geral);
                                                 <td class="text-center"><?= $parcela['valor_parcela_responsavel2_formatado']; ?></td>
                                             </tr>
                                         <?php endforeach; ?>
-                                        <tr>
-                                            <td colspan="5" class="text-right"><strong>TOTAL:</strong></td>
+
+                                        <tr class="total-responsavel">
+                                            <td colspan="5" class="text-right"><strong>TOTAL POR RESPONSÁVEL:</strong></td>
                                             <td class="text-center"><strong><?= $total_responsavel1_formatado; ?></strong></td>
                                             <td class="text-center"><strong><?= $total_responsavel2_formatado; ?></strong></td>
                                         </tr>
-                                    </tbody>
 
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="6" class="text-right"><strong>TOTAL GERAL:</strong></td>
-                                            <td class="text-center"><strong><?= $total_geral_formatado; ?></strong></td>
+                                        <tr class="total-geral">
+                                            <td colspan="6" class="text-right"><strong>TOTAL GERAL DA FATURA:</strong></td>
+                                            <td class="text-center" style="background-color: #f2f2f2;"><strong>R$ <?= $total_geral_formatado; ?></strong></td>
                                         </tr>
-                                    </tfoot>
+                                    </tbody>
 
 
 

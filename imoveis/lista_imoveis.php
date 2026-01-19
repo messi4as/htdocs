@@ -32,43 +32,99 @@ $quantidade = mysqli_num_rows($imovel);
 
     <title>Lista de Imóveis</title>
 
-    <style>
+   <style>
+    /* Estilos gerais */
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    /* Novo estilo para a célula do proprietário */
+    .proprietario-cell {
+        white-space: normal;
+        line-height: 1.2;
+    }
+
+    .proprietario-cell p,
+    .proprietario-cell div {
+        margin-bottom: 0;
+        padding: 0;
+    }
+
+    /* Estilos para Impressão */
+    @media print {
+        /* Esconde elementos desnecessários para a impressão */
+        .no-print,
+        .btn,
+        .card-header a,
+        form,
+        #mensagem-php,
+        .col-acoes {
+            display: none !important;
+        }
+
+        /* Ajusta o layout geral */
+        body {
+            font-size: 10pt;
+            padding: 0;
+            margin: 0;
+            background-color: #fff;
+        }
+        
+        /* Limpa estilos do Bootstrap para não interferirem na centralização */
+        .container,
+        .card,
+        .card-body,
+        .row,
+        .col-md-12 {
+            padding: 0;
+            margin: 0;
+            box-shadow: none;
+            border: none;
+            width: 100% !important;
+            max-width: none !important;
+        }
+        
+        /* Centraliza o cabeçalho e a tabela */
+        h4 {
+            text-align: center;
+            margin: 6px auto; /* Adiciona margem superior/inferior e centraliza horizontalmente */
+        }
+        
         .table-container {
-            width: 100%;
-            overflow-x: auto;
+            width: 95%; /* Define uma largura para a tabela */
+            margin: 0 auto; /* Centraliza o contêiner na página */
+            overflow-x: visible !important;
         }
-
+        
         table {
-            width: 100%;
-            border-collapse: collapse;
+            width: 100%; /* Garante que a tabela ocupe 100% do seu contêiner pai */
+            font-size: 9pt;
+            page-break-inside: auto;
         }
-
+        
         th,
         td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            padding: 4px;
+            word-wrap: break-word;
         }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        /* Novo estilo para a célula do proprietário */
-      .proprietario-cell {
-            white-space: normal; /* Garante que o texto quebre linhas */
-            line-height: 1.2;    /* Controla o espaçamento entre as linhas */
-            /* Removidas as propriedades de limite de linhas:
-               max-height, overflow, text-overflow, display, -webkit-line-clamp, line-clamp, -webkit-box-orient
-            */
-        }
-
-        /* Isso é importante para remover margens e paddings de tags que o Quill.js pode inserir */
-        .proprietario-cell p,
-        .proprietario-cell div {
-            margin-bottom: 0;
-            padding: 0;
-        }
-    </style>
+    }
+</style>
 
 </head>
 
@@ -83,6 +139,7 @@ $quantidade = mysqli_num_rows($imovel);
                         <div class="card-header">
                             <h4>LISTA DE IMÓVEIS
                                 <a href="cadastro_imoveis.php" class="btn btn-primary float-end"><span class="bi-plus-circle-fill"></span>&nbsp;Adicionar Imóvel</a>
+                                <button onclick="window.print()" class="btn btn-info float-end me-2"><span class="bi-printer-fill"></span>&nbsp;Imprimir</button>
                             </h4>
                         </div>
                         <div class="card-body">
@@ -97,14 +154,14 @@ $quantidade = mysqli_num_rows($imovel);
                                 Quantidade de Imóveis Cadastrados: <?php echo number_format($quantidade, 0, ',', '.'); ?>
                             </div>
 
-                            <table class="table table-bordered">
+                            <table class="table table-bordered table-striped table-hover table-sm table-responsive">
                                 <thead>
                                     <tr>
-                                        <th style="text-align: center; width:100px;">LOCALIZAÇÃO</th>
+                                        <th style="text-align: center; width:100px;" class="col-acoes">LOCALIZAÇÃO</th>
                                         <th style="text-align: center;">NOME</th>
                                         <th style="text-align: center;">BAIRRO</th>
                                         <th style="text-align: center; width:400px;">PROPRIETÁRIO</th>
-                                        <th style="text-align: center;">AÇÕES</th>
+                                        <th style="text-align: center;" class="col-acoes">AÇÕES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -113,13 +170,13 @@ $quantidade = mysqli_num_rows($imovel);
                                         while ($row = $result->fetch_assoc()) {
                                     ?>
                                             <tr>
-                                                <td style="text-align: center; vertical-align: middle;">
+                                                <td style="text-align: center; vertical-align: middle;" class="col-acoes">
                                                     <a href="<?= $row['localizacao_imovel']; ?>" target="_blank"><span class="bi-eye-fill"></span>&nbsp;Localizar</a>
                                                 </td>
                                                 <td style="text-align: center; vertical-align: middle;"><?= $row['nome_imovel']; ?></td>
                                                 <td style="text-align: left; vertical-align: middle;"><?= $row['bairro_imovel']; ?></td>
                                                 <td class="proprietario-cell" style="text-align: left; vertical-align: middle;"><?= stripslashes($row['proprietario_imovel']); ?></td>
-                                                <td style="text-align: center; vertical-align: middle;">
+                                                <td style="text-align: center; vertical-align: middle;" class="col-acoes">
                                                     <a href="edit_imoveis.php?id=<?= $row['cod_imovel'] ?>" class="btn btn-secondary btn-sm"><span class="bi-eye-fill"></span>&nbsp;Visualizar</a>
                                                 </td>
                                             </tr>

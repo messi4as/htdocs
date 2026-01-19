@@ -42,11 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sql = "UPDATE bovinos SET brinco='$brinco', imagem='$imagem', local='$local', sexo='$sexo', raca='$raca', data_nascimento='$data_nascimento', observacao='$observacao', agrupamento='$agrupamento', situacao_atual='$situacao_atual', tipo='$tipo', status='$status', lote='$lote', pasto='$pasto', estratificacao='$estratificacao' WHERE cod_animal='$cod_animal'";
 
     if (mysqli_query($conn, $sql)) {
-        $_SESSION['mensagem'] = "Animal atualizado com sucesso!";
-    } else {
-        $_SESSION['mensagem'] = "Erro ao atualizar animal: " . mysqli_error($conn);
-    }
+    $_SESSION['mensagem'] = "Animal atualizado com sucesso!";
+} else {
+    $_SESSION['mensagem'] = "Erro ao atualizar animal: " . mysqli_error($conn);
+}
 
-    header("Location: index.php");
-    exit(0);
+// Redireciona de volta para a visualização do próprio animal, em vez do index
+header("Location: view_animal.php?id=" . $cod_animal);
+exit(0);
 }

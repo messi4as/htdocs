@@ -5,8 +5,9 @@ $data_inicio = isset($_GET['data_inicio']) ? $_GET['data_inicio'] : '';
 $data_fim = isset($_GET['data_fim']) ? $_GET['data_fim'] : '';
 $nome = isset($_GET['nome']) ? $_GET['nome'] : '';
 $status = isset($_GET['status']) ? $_GET['status'] : '';
+$numeros_cartao = isset($_GET['numeros_cartao']) ? $_GET['numeros_cartao'] : '';
 
-// Consulta para obter o histórico de utilização dos cartões com filtros de data, nome e status
+// Consulta para obter o histórico de utilização dos cartões com filtros
 $sql = "SELECT c.numero, u.nome, u.funcao, u.data_utilizacao, u.responsavel, u.status_atualizado
         FROM utilizacoes u
         JOIN cartoes c ON u.cartao_id = c.id
@@ -24,6 +25,12 @@ if ($status) {
     $sql .= " AND u.status_atualizado = '$status'";
 }
 
+if ($numeros_cartao) {
+    $numeros_array = array_map('trim', explode(',', $numeros_cartao));
+    $numeros_formatados = "'" . implode("', '", array_map([$conn, 'real_escape_string'], $numeros_array)) . "'";
+    $sql .= " AND c.numero IN ($numeros_formatados)";
+}
+
 $result = $conn->query($sql);
 $quantidade = mysqli_num_rows($result);
 
@@ -32,6 +39,43 @@ $nomes_result = $conn->query("SELECT DISTINCT nome FROM utilizacoes");
 
 // Consulta para obter os status únicos
 $status_result = $conn->query("SELECT DISTINCT status_atualizado FROM utilizacoes");
+
+// Nova consulta para o gráfico, agora com os mesmos filtros
+$sql_grafico = "SELECT u.nome, COUNT(u.cartao_id) AS quantidade
+                FROM utilizacoes u
+                JOIN cartoes c ON u.cartao_id = c.id
+                WHERE 1=1";
+
+if ($data_inicio && $data_fim) {
+    $sql_grafico .= " AND u.data_utilizacao BETWEEN '$data_inicio' AND '$data_fim'";
+}
+
+if ($nome) {
+    $sql_grafico .= " AND u.nome LIKE '%$nome%'";
+}
+
+if ($status) {
+    $sql_grafico .= " AND u.status_atualizado = '$status'";
+}
+
+if ($numeros_cartao) {
+    $numeros_array = array_map('trim', explode(',', $numeros_cartao));
+    $numeros_formatados = "'" . implode("', '", array_map([$conn, 'real_escape_string'], $numeros_array)) . "'";
+    $sql_grafico .= " AND c.numero IN ($numeros_formatados)";
+}
+
+$sql_grafico .= " GROUP BY u.nome";
+
+$result_grafico = $conn->query($sql_grafico);
+
+$dados_grafico = [];
+while ($row = $result_grafico->fetch_assoc()) {
+    $dados_grafico[] = $row;
+}
+
+// Converte os dados para JSON para o JavaScript
+$json_dados_grafico = json_encode($dados_grafico);
+
 ?>
 
 <!DOCTYPE html>
@@ -45,6 +89,8 @@ $status_result = $conn->query("SELECT DISTINCT status_atualizado FROM utilizacoe
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <title>Histórico de Utilização de Cartões</title>
 
@@ -84,22 +130,31 @@ $status_result = $conn->query("SELECT DISTINCT status_atualizado FROM utilizacoe
                             <h2>HISTÓRICO DE UTILIZAÇÃO
                                 <div class="float-end">
 
-                                              <a href="listar_protocolos.php" class="btn btn-success">
-                    <i class="bi bi-plus-circle"></i> Protocolos
-                </a>
+                                    <a href="listar_protocolos.php" class="btn btn-success">
+                                        <i class="bi bi-plus-circle"></i> Protocolos
+                                    </a>
 
                             </h2>
 
-               
                         </div>
 
                         <div class="card-body">
+
+                            <div class="col-md-12 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4>Quantidade de Cartões por Utilizador</h4>
+                                    </div>
+                                    <div class="card-body" style="height: 600px;">
+                                        <canvas id="meuGrafico"></canvas>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="alert alert-info" role="alert">
                                 Quantidade de Registros: <?php echo number_format($quantidade, 0, ',', '.'); ?>
                             </div>
 
-                            <!-- Filtros -->
                             <form method="GET" action="" class="mb-3">
                                 <div class="row">
                                     <div class="col-md-3">
@@ -128,6 +183,10 @@ $status_result = $conn->query("SELECT DISTINCT status_atualizado FROM utilizacoe
                                             <?php endwhile; ?>
                                         </select>
                                     </div>
+                                    <div class="col-md-3">
+                                        <label for="numeros_cartao">Nº Cartão (separar por vírgula):</label>
+                                        <input type="text" id="numeros_cartao" name="numeros_cartao" class="form-control" value="<?= $numeros_cartao ?>" placeholder="Ex: 123, 456, 789">
+                                    </div>
                                     <div class="col-md-4">
                                         <label>&nbsp;</label>
                                         <button type="submit" class="btn btn-primary form-control">Filtrar</button>
@@ -135,7 +194,6 @@ $status_result = $conn->query("SELECT DISTINCT status_atualizado FROM utilizacoe
                                 </div>
                             </form>
 
-                            <!-- Tabela de Histórico de Utilização -->
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -161,7 +219,7 @@ $status_result = $conn->query("SELECT DISTINCT status_atualizado FROM utilizacoe
                                             echo "</tr>";
                                         }
                                     } else {
-                                        echo "<tr><td colspan='6'>tr>";
+                                        echo "<tr><td colspan='6'>Nenhum registro encontrado.</td></tr>";
                                     }
                                     ?>
                                 </tbody>
@@ -171,6 +229,84 @@ $status_result = $conn->query("SELECT DISTINCT status_atualizado FROM utilizacoe
                                 Quantidade de Registros: <?php echo number_format($quantidade, 0, ',', '.'); ?>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Registra o plugin de data labels
+            Chart.register(ChartDataLabels);
+
+            // Pega os dados JSON do PHP
+            const dadosJson = '<?php echo $json_dados_grafico; ?>';
+            const dados = JSON.parse(dadosJson);
+
+            // Prepara os rótulos (nomes) e os valores (quantidades) para o gráfico
+            const labels = dados.map(item => item.nome);
+            const data = dados.map(item => item.quantidade);
+
+            // Configurações do gráfico
+            const config = {
+                type: 'bar', // Tipo de gráfico (barras)
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Quantidade de Cartões',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Quantidade'
+                            },
+                            max: Math.max(...data) * 1.2,
+                            ticks: {
+                                padding: 10
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Utilizador'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: function(value) {
+                                return value;
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: 14
+                            },
+                            color: 'black'
+                        }
+                    }
+                }
+            };
+
+            // Renderiza o gráfico
+            const ctx = document.getElementById('meuGrafico').getContext('2d');
+            new Chart(ctx, config);
+        });
+    </script>
 </body>
 
 </html>

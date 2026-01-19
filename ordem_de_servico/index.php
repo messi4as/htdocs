@@ -16,118 +16,120 @@ require 'db_connect.php';
   <title>ORDEM DE SERVIÇO</title>
 
   <style>
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
+    .table-container { width: 100%; overflow-x: auto; }
+    
+    table { width: 100%; border-collapse: collapse; background-color: #fff; }
+
+    th, td { 
+      border: 1px solid #dee2e6; 
+      padding: 12px 10px; 
+      vertical-align: middle; 
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    th { 
+      background-color: #f8f9fa; 
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
     }
 
-    th,
-    td {
-      border: 1px solid #ddd;
-      padding: 8px;
+    /* Controle da Descrição para não quebrar o layout */
+    .col-descricao {
+      min-width: 350px;
+      max-width: 500px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      text-align: justify;
+      color: #333;
     }
 
-    th {
-      background-color: #f2f2f2;
+    /* Destaque para o Valor */
+    .col-valor {
+      font-weight: bold;
+      white-space: nowrap;
+      color: #000;
     }
   </style>
-
 </head>
 
 <body>
-  <?php include('navbar.php'); ?>
-  <div class="container mt-4">
-    <?php include('mensagem.php'); ?>
-    <div class="row">
-      <div class="col-md-12">
-        <div class="card">
-          <div class="table-container">
-            <div class="card-header">
-              <h4>HISTÓRICO DE ORDENS DE SERVIÇO
-                <a href="formulario.php" class="btn btn-success float-end"><span class="bi-file-earmark-plus-fill"></span>&nbsp;Nova Ordem de Serviço</a>
-              </h4>
-            </div>
-            <div class="card-body">
+    <?php include('navbar.php'); ?>
+    <div class="container mt-4">
+        <?php include('mensagem.php'); ?>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="table-container">
+                        <div class="card-header">
+        <h4>HISTÓRICO DE ORDENS DE SERVIÇO
+          <a href="formulario.php" class="btn btn-success float-end">
+            <i class="bi bi-file-earmark-plus-fill"></i> Nova Ordem
+          </a>
+        </h4>
+      </div>
 
-              <form method="GET" action="">
-                <div class="input-group mb-3">
-                  <input type="text" name="nome" class="form-control" placeholder="Buscar por Nome">
-                  <button class="btn btn-primary" type="submit"><span class="bi-search"></span>&nbsp;Buscar</button>
-                </div>
-              </form>
-
-              <?php
-              $nome = '';
-              if (isset($_GET['nome'])) {
-                $nome = mysqli_real_escape_string($conn, $_GET['nome']);
-              }
-
-              $sql = "SELECT * FROM ordem_servico";
-              if ($nome != '') {
-                $sql .= " WHERE nome LIKE '%$nome%'";
-              }
-              $sql .= " ORDER BY codigo DESC";
-              $os = mysqli_query($conn, $sql);
-
-              $quantidade = mysqli_num_rows($os);
-              ?>
-
-              <div class="alert alert-info" role="alert">
-                Quantidade de Ordens de Serviço Cadastradas: <?php echo number_format($quantidade, 0, ',', '.'); ?>
-              </div>
-
-              <table class="table table-bordered table-striped">
-                <thead>
-                  <tr>
-                    <th style="text-align: center;">CÓDIGO</th>
-                    <th style="text-align: center;">DATA</th>
-                    <th style="text-align: center; width:550px;">NOME</th>
-                    <th style="text-align: center;">VALOR</th>
-                    <th style="text-align: center;">AÇÕES</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <?php
-                  if (mysqli_num_rows($os) > 0) {
-                    foreach ($os as $oss) {
-                      // Formata o código do recibo
-                      $codigo = str_pad($oss['codigo'], 4, '0', STR_PAD_LEFT);
-                      $cod_formatado = substr($codigo, 0, 1) . '.' . substr($codigo, 1);
-                  ?>
-
-                      <tr>
-                        <td style="text-align: center; vertical-align: middle;"><?= $cod_formatado ?></td>
-                        <td style="text-align: center; vertical-align: middle;"><?= date('d/m/Y', strtotime($oss['data'])) ?></td>
-                        <td style="word-wrap: break-word; text-align: left; vertical-align: middle;"><?= ($oss['nome']) ?></td>
-                        <td style="text-align: center; vertical-align: middle;"><?= ($oss['valor']) ?></td>
-                        <td style="text-align: center; vertical-align: middle;">
-                          <a href="view_os.php?id=<?= $oss['codigo'] ?>" class="btn btn-secondary btn-sm"><span class="bi-eye-fill"></span>&nbsp;Visualizar</a>
-                          <a href="edit_os.php?id=<?= $oss['codigo'] ?>" class="btn btn-success btn-sm"><span class="bi-pencil-fill"></span>&nbsp;Editar</a>
-                           <!-- <form action="cadastrar.php" method="POST" class="d-inline">
-                            <button onclick="return confirm('Tem certeza que deseja excluir?')" type="submit" name="delete_os" value="<?= $oss['codigo'] ?>" class="btn btn-danger btn-sm"><span class="bi-trash3-fill"></span>&nbsp;Excluir</button>
-                          </form>  -->
-                        </td>
-                      </tr>
-                  <?php
-                    }
-                  } else {
-                    echo '<h5>Nenhuma Ordem de Serviço Encontrada</h5>';
-                  }
-                  ?>
-                </tbody>
-              </table>
-            </div>
+      <div class="card-body">
+        <form method="GET" action="" class="mb-3">
+          <div class="input-group">
+            <input type="text" name="nome" class="form-control" placeholder="Buscar por Nome">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> Buscar</button>
           </div>
+        </form>
+
+        <?php
+        $nome = isset($_GET['nome']) ? mysqli_real_escape_string($conn, $_GET['nome']) : '';
+        $sql = "SELECT * FROM ordem_servico";
+        if ($nome != '') { $sql .= " WHERE nome LIKE '%$nome%'"; }
+        $sql .= " ORDER BY codigo DESC";
+        $os = mysqli_query($conn, $sql);
+        $quantidade = mysqli_num_rows($os);
+        ?>
+
+        <div class="alert alert-info py-2">
+          Ordens de Serviço: <strong><?= number_format($quantidade, 0, ',', '.'); ?></strong>
+        </div>
+
+        <div class="table-container">
+          <table class="table table-bordered table-striped table-hover">
+            <thead>
+              <tr>
+                <th class="text-center col-valor">CÓDIGO</th>
+                <th class="text-center col-valor">DATA</th>
+                <th class="text-center col-valor">NOME</th>
+                <th class="text-center col-valor">DESCRIÇÃO</th>
+                <th class="text-center col-valor">VALOR</th>
+                <th class="text-center col-valor">AÇÕES</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <?php if ($quantidade > 0): foreach ($os as $oss): 
+                $codigo = str_pad($oss['codigo'], 4, '0', STR_PAD_LEFT);
+                $cod_formatado = substr($codigo, 0, 1) . '.' . substr($codigo, 1);
+              ?>
+                <tr>
+                  <td class="text-center"><strong><?= $cod_formatado ?></strong></td>
+                  <td class="text-center text-nowrap"><?= date('d/m/Y', strtotime($oss['data'])) ?></td>
+                  <td style="font-weight: 500;"><?= htmlspecialchars($oss['nome']) ?></td>
+                  <td class="col-descricao">
+                    <?= $oss['descricao'] // Renderiza HTML do banco (<b>, <br>, etc) ?>
+                  </td>
+                  <td class="text-center col-valor">
+                    R$ <?= is_numeric($oss['valor']) ? number_format($oss['valor'], 2, ',', '.') : $oss['valor'] ?>
+                  </td>
+                  <td class="text-center text-nowrap">
+                    <a href="view_os.php?id=<?= $oss['codigo'] ?>" class="btn btn-secondary btn-sm" title="Visualizar"><i class="bi bi-eye-fill"></i></a>
+                    <a href="edit_os.php?id=<?= $oss['codigo'] ?>" class="btn btn-success btn-sm" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+                  </td>
+                </tr>
+              <?php endforeach; else: ?>
+                <tr><td colspan="6" class="text-center py-4">Nenhum registro encontrado.</td></tr>
+              <?php endif; ?>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   </div>
 </body>
-
 </html>

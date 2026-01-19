@@ -5,17 +5,19 @@ require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-// Obter os dados dos parâmetros GET
-$data_inicio = isset($_GET['data_inicio']) ? $_GET['data_inicio'] : '';
-$data_fim = isset($_GET['data_fim']) ? $_GET['data_fim'] : '';
-$nome = isset($_GET['responsavel']) ? $_GET['responsavel'] : '';
-$codigo_string = isset($_GET['cod_financeiro']) ? $_GET['cod_financeiro'] : '';
+// Obter os dados dos parâmetros GET e aplicar sanitização básica
+$data_inicio = isset($_GET['data_inicio']) ? htmlspecialchars($_GET['data_inicio']) : '';
+$data_fim = isset($_GET['data_fim']) ? htmlspecialchars($_GET['data_fim']) : '';
+$nome = isset($_GET['responsavel']) ? htmlspecialchars($_GET['responsavel']) : '';
+$codigo_string = isset($_GET['cod_financeiro']) ? htmlspecialchars($_GET['cod_financeiro']) : '';
 
-// Buscar todos os responsáveis distintos do banco de dados
-$responsaveis_query = "SELECT DISTINCT responsavel FROM financeiro";
-$responsaveis_result = $conn->query($responsaveis_query);
+// Buscar todos os responsáveis distintos do banco de dados de forma segura
+$responsaveis_query = "SELECT DISTINCT responsavel FROM financeiro ORDER BY responsavel";
+$responsaveis_stmt = $conn->prepare($responsaveis_query);
+$responsaveis_stmt->execute();
+$responsaveis_result = $responsaveis_stmt->get_result();
 
-$sql = "SELECT * FROM financeiro WHERE 1=1"; // Para facilitar a inclusão das condições
+$sql = "SELECT * FROM financeiro WHERE 1=1";
 $tipos_parametros = '';
 $parametros = [];
 
@@ -43,8 +45,7 @@ if ($codigo_string != '') {
         $parametros = array_merge($parametros, $codigos_filtrados);
     }
 }
-$sql .= " ORDER BY data LIMIT 20000"; // Limitar a 1000 resultados para evitar sobrecarga
-// Preparar a consulta
+$sql .= " ORDER BY data LIMIT 20000";
 
 $stmt = $conn->prepare($sql);
 
@@ -56,18 +57,15 @@ if ($stmt) {
     $result = $stmt->get_result();
     $quantidade = $result->num_rows;
 } else {
-    // Lidar com erro na preparação da consulta
     echo "Erro na preparação da consulta: " . $conn->error;
     $result = false;
     $quantidade = 0;
 }
 
-// Para compatibilidade com o seu código existente, você pode criar um objeto mysqli_result
-// simulado se $result for um objeto mysqli_result
 if ($result instanceof mysqli_result) {
     $financeiro = $result;
 } else {
-    $financeiro = false; // Ou outra forma de indicar que não há resultados
+    $financeiro = false;
 }
 ?>
 
@@ -81,52 +79,108 @@ if ($result instanceof mysqli_result) {
     <link rel="icon" href="/images/ico_m2.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Adicionando Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <title>Financeiro</title>
 
     <style>
-        .form-container {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-        }
+        /* Estilos para impressão */
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+                font-size: 11pt;
+            }
 
-        .form-label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+            /* Oculta os filtros e os botões */
+            .d-print-none,
+            .btn {
+                display: none !important;
+            }
 
-        input[type="text"],
-        textarea,
-        select,
-        input[type="file"] {
-            width: 100%;
-        }
+            /* Oculta as colunas de "Comprovante" e "Ações" */
+            .no-print {
+                display: none;
+            }
 
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-        }
+            /* Limpa estilos de Bootstrap para que não interfiram */
+            .container,
+            .row,
+            .col-md-12,
+            .card {
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+            /* Centraliza o cabeçalho H4 */
+            h4 {
+                text-align: center;
+                margin-bottom: 20px;
+                margin: 0 auto;
+            }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
+            /* Define o contêiner da tabela para centralizá-la */
+            .table-container {
+                width: 95%;
+                margin: 0 auto;
+                overflow-x: visible !important;
+            }
 
-        th {
-            background-color: #f2f2f2;
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                page-break-inside: auto;
+                table-layout: fixed;
+            }
+
+            th,
+            td {
+                border: 1px solid #000;
+                padding: 5px;
+                font-size: 10pt;
+                word-wrap: break-word;
+            }
+
+            th {
+                background-color: #f2f2f2;
+                font-weight: bold;
+                text-align: center;
+            }
+
+            td {
+                text-align: left;
+                vertical-align: top;
+            }
+
+            td img {
+                width: 100px;
+                height: auto;
+            }
+
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            /* Novas regras para larguras das colunas na impressão */
+            .col-data {
+                width: 15%;
+            }
+            .col-descricao {
+                width: 35%;
+            }
+            .col-valor {
+                width: 15%;
+            }
+            .col-forma-pagamento {
+                width: 35%;
+            }
         }
     </style>
+
 </head>
 
 <body>
@@ -144,142 +198,73 @@ if ($result instanceof mysqli_result) {
                     <div class="table-container">
                         <div class="card-header">
                             <h4>FINANCEIRO M2
-
-                             
-                            <a href="grafico.php" class="btn btn-warning me-2 float-end"> <span class="bi bi-bar-chart"></span>&nbsp;Ver Gráfico </a>
-                            <a href="importar.php" class="btn btn-success me-2 float-end"> <span class="bi bi-bar-chart"></span>&nbsp;Importar Planilha </a>   
-                                <!-- <a href="cad_pagamentos.php" class="btn btn-success me-2 float-end "> <span class="bi-plus-circle-fill"></span>&nbsp;Adicionar </a>-->
-
+                                <a href="grafico.php" class="btn btn-warning me-2 float-end"> <span class="bi bi-bar-chart"></span>&nbsp;Ver Gráfico </a>
+                                <a href="importar.php" class="btn btn-success me-2 float-end"> <span class="bi bi-bar-chart"></span>&nbsp;Importar Planilha </a>
+                                <button onclick="window.print()" class="btn btn-info me-2 float-end"><span class="bi bi-printer"></span>&nbsp;Imprimir</button>
                                 <br>
-
                             </h4>
-
-
-                            <!-- //Importar Excel Financeiro 
-                            
-                                        <form action="importar_excel_financeiro.php" method="post" enctype="multipart/form-data">                                         
-                                            <label class="form-label">Importar Planilha Excel:</label>
-                                        <div class="row">  
-                                        
-                                        <div class="col-md-5">                                      
-                                            <input type="file" name="arquivo_excel" class="form-control" accept=".xlsx, .xls" required>
-                                        </div>
-
-                                        <div class="col-md-2">
-                                            <button type="submit" name="importar_excel_financeiro" class="btn btn-warning me-2 form-control">Importar Financeiro</button>
-                                        </div>                                        
-                                        </form>   
-                            -->
-
-
-                               <!-- //Atualizar Dados Fianceiros
-
-                                        <form action="atualizar_financeiro.php" method="post" enctype="multipart/form-data">
-                                            <label class="form-label">Importar Planilha Excel:</label>
-                                        <div class="row">
-
-                                        <div class="col-md-5">
-                                            <input type="file" name="arquivo_excel" class="form-control" accept=".xlsx, .xls" required>
-                                        </div>
-
-                                        <div class="col-md-2">
-                                            <button type="submit" name="atualizar_financeiro" class="btn btn-success form-control">Atualizar Financeiro</button>
-                                        </div>
-                                        </form>
-
-        -->
-
-
-                            <!-- //Atualizar Dados Fianceiros
-
-                                        <form action="atualizar_documentos.php" method="post" enctype="multipart/form-data">
-                                            <label class="form-label">Importar Planilha Excel:</label>
-                                        <div class="row">
-
-                                        <div class="col-md-5">
-                                            <input type="file" name="arquivo_excel" class="form-control" accept=".xlsx, .xls" required>
-                                        </div>
-
-                                        <div class="col-md-2">
-                                            <button type="submit" name="atualizar_documentos" class="btn btn-success form-control">Atualizar Documentos</button>
-                                        </div>
-                                        </form>
-
-                            -->
-
-
-
-                            <div class="row">
-
-                            </div>
-
                         </div>
-
-
-
                         <div class="card-body">
-                            <!-- Filtros -->
-                            <form method="GET" action="" class="mb-3">
-
-
+                            <form method="GET" action="" class="mb-3 d-print-none">
                                 <div class="row">
                                     <div class="col-md-3">
                                         <label for="data_fim" class="form-label">Código:</label>
-                                        <input type="text" id="" name="cod_financeiro" class="form-control" style="width:300px" value="<?= $codigo_string ?>" placeholder="Códigos (Separar por vírgula)">
+                                        <input type="text" id="" name="cod_financeiro" class="form-control" style="width:300px" value="<?= htmlspecialchars($codigo_string) ?>" placeholder="Códigos (Separar por vírgula)">
                                     </div>
                                     <div class="col-md-3">
                                         <label for="data_inicio" class="form-label">Data Início:</label>
-                                        <input type="date" id="data_inicio" name="data_inicio" class="form-control" value="<?= $data_inicio ?>">
+                                        <input type="date" id="data_inicio" name="data_inicio" class="form-control" value="<?= htmlspecialchars($data_inicio) ?>">
                                     </div>
                                     <div class="col-md-3">
                                         <label for="data_fim" class="form-label">Data Fim:</label>
-                                        <input type="date" id="data_fim" name="data_fim" class="form-control" value="<?= $data_fim ?>">
+                                        <input type="date" id="data_fim" name="data_fim" class="form-control" value="<?= htmlspecialchars($data_fim) ?>">
                                     </div>
                                     <div class="col-md-3">
                                         <label for="responsavel" class="form-label">Responsável:</label>
                                         <select id="responsavel" name="responsavel" class="form-control">
                                             <option value="">Selecione um responsável</option>
                                             <?php while ($row = $responsaveis_result->fetch_assoc()): ?>
-                                                <option value="<?= $row['responsavel'] ?>" <?= $nome == $row['responsavel'] ? 'selected' : '' ?>>
-                                                    <?= $row['responsavel'] ?>
+                                                <option value="<?= htmlspecialchars($row['responsavel']) ?>" <?= $nome == $row['responsavel'] ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($row['responsavel']) ?>
                                                 </option>
                                             <?php endwhile; ?>
                                         </select>
                                     </div>
                                 </div>
-
-
-
                                 <div class="row align-items-center">
                                     <div class="col-md-3">
                                         <br>
-
                                         <button type="submit" class="btn btn-primary form-control"><span class="bi bi-funnel-fill"></span>&nbsp;Filtrar</button>
                                     </div>
                                     <div class="col-md-3">
                                         <br>
-
                                         <a href="index.php" class="btn btn-secondary ms-2"><span class="bi-x-circle-fill"></span>&nbsp;Limpar Filtros</a>
                                     </div>
                                 </div>
-
                             </form>
 
+                            <div class="d-none d-print-block">
+                                <h5 class="text-center">Relatório de Pagamentos</h5>
+                                <?php if ($data_inicio && $data_fim): ?>
+                                    <p class="text-center">Período: <?= htmlspecialchars(date('d/m/Y', strtotime($data_inicio))) ?> a <?= htmlspecialchars(date('d/m/Y', strtotime($data_fim))) ?></p>
+                                <?php endif; ?>
+                                <?php if ($nome): ?>
+                                    <p class="text-center">Responsável: <?= htmlspecialchars($nome) ?></p>
+                                <?php endif; ?>
+                            </div>
 
                             <div class="alert alert-info" role="alert">
                                 Quantidade de Pagamentos Cadastrados: <?php echo number_format($quantidade, 0, ',', '.'); ?>
                             </div>
-
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th style="text-align: center;">DATA</th>
-                                        <th style="text-align: center;">DESCRIÇÃO</th>
-                                        <th style="text-align: center;">VALOR</th>
-                                        <th style="text-align: center;">FORMA DE PAGAMENTO</th>
-
-                                        <th style="text-align: center;">COMPROVANTE</th>
-                                        <th style="text-align: center;">AÇÕES</th>
+                                        <th class="col-data" style="text-align: center;">DATA</th>
+                                        <th class="col-descricao" style="text-align: center;">DESCRIÇÃO</th>
+                                        <th class="col-valor" style="text-align: center;">VALOR</th>
+                                        <th class="col-forma-pagamento" style="text-align: center;">FORMA DE PAGAMENTO</th>
+                                        <th class="no-print" style="text-align: center;">COMPROVANTE</th>
+                                        <th class="no-print" style="text-align: center;">AÇÕES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -288,12 +273,11 @@ if ($result instanceof mysqli_result) {
                                         while ($row = $result->fetch_assoc()) {
                                     ?>
                                             <tr>
-                                                <td style="text-align: center; vertical-align: middle;"><?= date('d/m/Y', strtotime($row['data'])) ?></td>
-                                                <td style="text-align: left; vertical-align: middle;"><?= $row['descricao']; ?></td>
-                                                <td style="text-align: center; vertical-align: middle;"><?= $row['valor']; ?></td>
-                                                <td style="text-align: left; vertical-align: middle;"><?= $row['forma_pagamento']; ?></td>
-
-                                                <td style="text-align: center; vertical-align: middle;">
+                                                <td class="col-data" style="text-align: center; vertical-align: middle;"><?= htmlspecialchars(date('d/m/Y', strtotime($row['data']))) ?></td>
+                                                <td class="col-descricao" style="text-align: left; vertical-align: middle;"><?= htmlspecialchars($row['descricao']); ?></td>
+                                                <td class="col-valor" style="text-align: center; vertical-align: middle;"><?= htmlspecialchars($row['valor']); ?></td>
+                                                <td class="col-forma-pagamento" style="text-align: left; vertical-align: middle;"><?= htmlspecialchars($row['forma_pagamento']); ?></td>
+                                                <td class="no-print" style="text-align: center; vertical-align: middle;">
                                                     <?php
                                                     $comprovantes = json_decode($row['comprovante'], true);
                                                     if (!empty($comprovantes) && is_array($comprovantes)):
@@ -309,18 +293,17 @@ if ($result instanceof mysqli_result) {
                                                     endif;
                                                     ?>
                                                 </td>
-                                                <td style="text-align: center; vertical-align: middle;">
-                                                    <a href="edit_pagamentos.php?id=<?= $row['cod_financeiro'] ?>" class="btn btn-secondary btn-sm"><span class="bi-eye-fill"></span>&nbsp;Visualizar</a>
+                                                <td class="no-print" style="text-align: center; vertical-align: middle;">
+                                                    <a href="edit_pagamentos.php?id=<?= htmlspecialchars($row['cod_financeiro']) ?>" class="btn btn-secondary btn-sm"><span class="bi-eye-fill"></span>&nbsp;Visualizar</a>
                                                 </td>
                                             </tr>
-                                    <?php
+                                        <?php
                                         }
                                     } else {
                                         echo '<tr><td colspan="9" style="text-align: center;">Nenhum Pagamento encontrado</td></tr>';
                                     }
                                     ?>
                                 </tbody>
-
                             </table>
                             <div class="alert alert-info" role="alert">
                                 QUANTIDADE DE PAGAMENTOS CADASTRADOS: <?php echo number_format($quantidade, 0, ',', '.'); ?>

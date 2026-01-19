@@ -36,5 +36,5 @@
             </div>
 
         </div>
-        <a class="navbar-brand" href="index.php">GERENCIAMENTO DE RECIBOS - M2 SHOWS</a>
+        <a class="navbar-brand" href="index.php">RECIBOS - M2 SHOWS</a>
 </nav>

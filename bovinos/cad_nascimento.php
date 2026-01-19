@@ -3,7 +3,7 @@ session_start();
 require 'db_connect.php';
 
 // Buscar brincos de fêmeas e agrupamento "vaca"
-$query_maes = "SELECT brinco FROM bovinos WHERE sexo = 'FÊMEA' AND agrupamento like 'VACA%'";
+$query_maes = "SELECT brinco FROM bovinos WHERE sexo = 'FÊMEA' AND agrupamento like 'VACA%' and status = 'ATIVO'";
 $result_maes = mysqli_query($conn, $query_maes);
 $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
 
@@ -14,15 +14,18 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" href="images/ico_fazenda.png" type="image/x-icon">
     <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="icon" href="images/ico_fazenda.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+
 
     <title>NOVO NASCIMENTO</title>
 
@@ -60,35 +63,30 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
             background-color: #f2f2f2;
         }
 
-         
-        /* Ajusta a altura da caixa de seleção do Select2 quando fechada */
-        .select2-container--default .select2-selection--single {
-            height: 38px;
-            /* Ajuste este valor para a altura desejada */
-            border: 1px solid #ced4da;
-            /* Mantém a borda padrão do Bootstrap */
-            border-radius: .25rem;
-            /* Mantém o arredondamento padrão do Bootstrap */
-        }
+       /* Ajuste para alinhar o Select2 ao design do Bootstrap 5 */
+    .select2-container--default .select2-selection--single {
+        height: 38px !important; /* Altura padrão do form-control no BS5 */
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.375rem !important; /* Arredondamento padrão BS5 */
+        padding-top: 5px;
+    }
 
-        /* Garante que o texto e a seta dentro da caixa fiquem alinhados verticalmente */
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 36px;
-            /* Geralmente 2px menor que a altura para alinhamento */
-            padding-left: .75rem;
-            /* Mantém o padding esquerdo do Bootstrap */
-            padding-right: 20px;
-            /* Adicione um pouco de padding para o texto não ficar muito perto da seta */
-        }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 24px !important;
+        color: #212529 !important;
+        padding-left: 12px !important;
+    }
 
-        /* Ajusta a altura do ícone de seta para baixo */
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 36px;
-            /* Mesma altura que a `line-height` do `rendered` para alinhar a seta */
-        }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+    }
 
-        
-    
+    /* Efeito de foco azul idêntico aos outros campos */
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #86b7fe !important;
+        outline: 0 !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+        }
     </style>
 
 </head>
@@ -96,9 +94,25 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
 <body>
     <script>
         $(document).ready(function() {
+            // Inicialização do Select2 para o brinco da mãe
             $('#brinco_mae').select2({
                 placeholder: 'Selecione um brinco',
                 allowClear: true
+            });
+
+            // Lógica para automatizar Grupo e Estratificação baseada no Sexo
+            $('select[name="sexo_bezerro"]').on('change', function() {
+                var sexo = $(this).val();
+                var $grupo = $('select[name="agrupamento"]');
+                var $estratificacao = $('select[name="estratificacao"]');
+
+                if (sexo === 'MACHO') {
+                    $grupo.val('BEZERRO');
+                    $estratificacao.val('Macho, 0 a 12 meses');
+                } else if (sexo === 'FÊMEA') {
+                    $grupo.val('BEZERRA');
+                    $estratificacao.val('Fêmea, 0 a 12 meses');
+                }
             });
         });
     </script>
@@ -107,7 +121,7 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
     <div class="container mt-4">
         <?php include('mensagem.php'); ?>
         <div class="row justify-content-center">
-            <div class="col-md-10">
+            <div class="col-md-8">
                 <div class="card">
                     <div class="table-container">
                         <div class="card-header">
@@ -125,6 +139,7 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
                                     <div class="form-group">
                                         <label for="brinco_mae" class="form-label">BRINCO DA MÂE:</label>
                                         <select id="brinco_mae" name="brinco_mae" class="form-control" required>
+                                            <option value=""></option>
                                             <?php foreach ($brincos_maes as $brinco): ?>
                                                 <option value="<?= $brinco['brinco']; ?>"><?= $brinco['brinco']; ?></option>
                                             <?php endforeach; ?>
@@ -150,30 +165,21 @@ $brincos_maes = mysqli_fetch_all($result_maes, MYSQLI_ASSOC);
                                             <option value="BEZERRA DE LEITE">BEZERRA DE LEITE</option>
                                             <option value="BEZERRO">BEZERRO</option>
                                             <option value="BEZERRO DE LEITE">BEZERRO DE LEITE</option>
-                                            <option value="GARROTE">GARROTE</option>
-                                            <option value="GARROTE DE LEITE">GARROTE DE LEITE</option>
-                                            <option value="NOVILHA">NOVILHA</option>
-                                            <option value="NOVILHA DE LEITE">NOVILHA DE LEITE</option>
-                                            <option value="TOURO">TOURO</option>
-                                            <option value="VACA">VACA</option>
+
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="situacao_atual" class="form-label">SITUAÇÃO ATUAL:</label>
-                                        <input type="text" name="situacao_atual" class="form-control" required>
+                                        <input type="text" name="situacao_atual" class="form-control" required value="MAMANDO">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="estratificacao" class="form-label">ESTRATIFICAÇÃO:</label>
                                         <select name="estratificacao" class="form-control" required>
+                                            <option value="" disabled selected>Selecione a Estratificação</option>
                                             <option value="Macho, 0 a 12 meses">Macho, 0 a 12 meses</option>
                                             <option value="Fêmea, 0 a 12 meses">Fêmea, 0 a 12 meses</option>
-                                            <option value="Macho, 13 a 24 meses">Macho, 13 a 24 meses</option>
-                                            <option value="Fêmea, 13 a 24 meses">Fêmea, 13 a 24 meses</option>
-                                            <option value="Macho, 25 a 36 meses">Macho, 25 a 36 meses</option>
-                                            <option value="Fêmea, 25 a 36 meses">Fêmea, 25 a 36 meses</option>
-                                            <option value="Macho, Acima de 36 meses">Macho, Acima de 36 meses</option>
-                                            <option value="Fêmea, Acima de 36 meses">Fêmea, Acima de 36 meses</option>
+
                                         </select>
                                     </div>
                                 </div>

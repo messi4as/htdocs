@@ -23,5 +23,5 @@
             </div>
 
         </div>
-        <a class="navbar-brand" href="index.php">GERENCIAMENTO DE ORDENS DE SERVIÇO - M2 SHOWS</a>
+        <a class="navbar-brand" href="index.php">ORDENS DE SERVIÇO - M2 SHOWS</a>
 </nav>

@@ -21,6 +21,12 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " aria-current="page" href="/bovinos/view_ocorrencias.php">Ocorrências</a>
+                        
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="/bovinos/estratificacao.php">Estratificação</a>
+                        
                     </li>
 
 
@@ -32,5 +38,5 @@
             </div>
 
         </div>
-        <a class="navbar-brand" href="index.php">GERENCIAMENTO DE BOVINOS - FAZENDA ROSADA</a>
+        <a class="navbar-brand" href="index.php">BOVINOS - FAZENDA ROSADA</a>
 </nav>
