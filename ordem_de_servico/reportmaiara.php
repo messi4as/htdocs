@@ -17,10 +17,12 @@ $filename = $nome . date("dmY His");
 $input = realpath('C:\xampp\htdocs\ordem_de_servico\relatorio\maiara.jrxml');
 $output = realpath('C:\xampp\htdocs\ordem_de_servico\relatorio') . DIRECTORY_SEPARATOR . $filename;
 
+// ... seu código anterior (input, output, etc)
+
 $options = [
     'format' => ['pdf'],
     'locale' => 'pt_BR',
-    'params' => ['cod_rel' => $os_codigo], // Passa o cod_os como parâmetro
+    'params' => ['cod_rel' => $os_codigo],
     'db_connection' => [
         'driver' => 'mysql',
         'username' => 'm2',
@@ -28,6 +30,7 @@ $options = [
         'host' => 'localhost',
         'database' => 'escritorio_m2',
         'port' => '3306'
+        // REMOVIDO o 'executable' daqui para evitar o erro de argumento inválido
     ]
 ];
 
@@ -51,7 +54,6 @@ if (file_exists($pdfFile)) {
 
     // Apagar o arquivo após enviá-lo
     unlink($pdfFile);
-
-
+} else {
     echo "Erro ao gerar o relatório.";
 }

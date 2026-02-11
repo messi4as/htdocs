@@ -18,7 +18,7 @@ require 'db_connect.php';
   <style>
     .table-container { width: 100%; overflow-x: auto; }
     
-    table { width: 100%; border-collapse: collapse; background-color: #fff; }
+    table { width: 100%; border-collapse: collapse; background-color: #ffffff; }
 
     th, td { 
       border: 1px solid #dee2e6; 
@@ -35,8 +35,8 @@ require 'db_connect.php';
 
     /* Controle da Descrição para não quebrar o layout */
     .col-descricao {
-      min-width: 350px;
-      max-width: 500px;
+      min-width: 300px;
+      max-width: 600px;
       font-size: 0.9rem;
       line-height: 1.4;
       text-align: justify;
@@ -57,7 +57,8 @@ require 'db_connect.php';
     <div class="container mt-4">
         <?php include('mensagem.php'); ?>
         <div class="row">
-            <div class="col-md-12">
+                      <div class="col-md-12 mb-3">
+
                 <div class="card">
                     <div class="table-container">
                         <div class="card-header">
@@ -115,8 +116,16 @@ require 'db_connect.php';
                     <?= $oss['descricao'] // Renderiza HTML do banco (<b>, <br>, etc) ?>
                   </td>
                   <td class="text-center col-valor">
-                    R$ <?= is_numeric($oss['valor']) ? number_format($oss['valor'], 2, ',', '.') : $oss['valor'] ?>
-                  </td>
+  <?php 
+    if (is_numeric($oss['valor'])) {
+        // Se for número, imprime o R$ e formata com vírgula
+        echo 'R$ ' . number_format($oss['valor'], 2, ',', '.');
+    } else {
+        // Se já tiver texto (como o R$ vindo do banco), imprime direto
+        echo htmlspecialchars($oss['valor']);
+    }
+  ?>
+</td>
                   <td class="text-center text-nowrap">
                     <a href="view_os.php?id=<?= $oss['codigo'] ?>" class="btn btn-secondary btn-sm" title="Visualizar"><i class="bi bi-eye-fill"></i></a>
                     <a href="edit_os.php?id=<?= $oss['codigo'] ?>" class="btn btn-success btn-sm" title="Editar"><i class="bi bi-pencil-fill"></i></a>

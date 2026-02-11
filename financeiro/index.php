@@ -45,7 +45,7 @@ if ($codigo_string != '') {
         $parametros = array_merge($parametros, $codigos_filtrados);
     }
 }
-$sql .= " ORDER BY data LIMIT 20000";
+$sql .= " ORDER BY data LIMIT 30000";
 
 $stmt = $conn->prepare($sql);
 

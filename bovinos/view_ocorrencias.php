@@ -11,12 +11,12 @@ if (file_exists($logoPath)) {
     $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 }
 
-// Recuperar locais para o filtro
-$locais_result = mysqli_query($conn, "SELECT DISTINCT local FROM ocorrencias where cod_animal in (SELECT cod_animal FROM bovinos)");
+// Recuperar locais para o filtro (Ordem Alfabética)
+$locais_result = mysqli_query($conn, "SELECT DISTINCT local FROM ocorrencias WHERE cod_animal IN (SELECT cod_animal FROM bovinos) ORDER BY local ASC");
 $locais = mysqli_fetch_all($locais_result, MYSQLI_ASSOC);
 
-// Recuperar Tipos para o filtro
-$tipos_result = mysqli_query($conn, "SELECT DISTINCT tipo FROM ocorrencias where cod_animal in (SELECT cod_animal FROM bovinos)");
+// Recuperar Tipos para o filtro (Ordem Alfabética)
+$tipos_result = mysqli_query($conn, "SELECT DISTINCT tipo FROM ocorrencias WHERE cod_animal IN (SELECT cod_animal FROM bovinos) ORDER BY tipo ASC");
 $tipos = mysqli_fetch_all($tipos_result, MYSQLI_ASSOC);
 
 // Recuperar Brincos para o filtro (Select2)

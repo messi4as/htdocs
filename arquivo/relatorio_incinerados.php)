@@ -1,0 +1,55 @@
+<?php 
+include('db_connect.php'); 
+include('/xampp/htdocs/navbar.php'); 
+
+$sql = "SELECT * FROM volumes_arquivos WHERE caixa_id = 145 ORDER BY data_cadastro DESC";
+$res = $conn->query($sql);
+?>
+
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <title>Relatório de Arquivos Incinerados</title>
+</head>
+<body class="bg-light">
+<div class="container mt-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-fire text-danger"></i> Livro de Registro: Volumes Incinerados</h5>
+            <button onclick="window.print()" class="btn btn-sm btn-outline-light"><i class="bi bi-printer"></i> Imprimir</button>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-secondary">
+                <i class="bi bi-info-circle"></i> Os volumes abaixo não possuem mais existência física. Os arquivos estão protegidos no Repositório Digital.
+            </div>
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Responsável</th>
+                        <th>Período</th>
+                        <th>Status Digital</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while($v = $res->fetch_assoc()): ?>
+                    <tr>
+                        <td><strong><?= htmlspecialchars($v['descricao']) ?></strong></td>
+                        <td><?= htmlspecialchars($v['responsavel']) ?></td>
+                        <td><?= date('d/m/Y', strtotime($v['data_inicio'])) ?> - <?= date('d/m/Y', strtotime($v['data_fim'])) ?></td>
+                        <td>
+                            <span class="badge bg-success"><i class="bi bi-check-all"></i> Preservado</span>
+                            <a href="<?= $v['tipo_fonte'] == 'link' ? '#' : $v['caminho_anexo'] ?>" target="_blank" class="btn btn-sm btn-link text-decoration-none p-0 ms-2">Ver Arquivo</a>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

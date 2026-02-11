@@ -264,33 +264,37 @@ $total_geral_formatado = formatar_valor($total_geral);
                                             <th>VALOR DA COMPRA</th>
                                             <th>PARCELA</th>
                                             <th>VENCIMENTO</th>
+                                            <th>TOTAL PARCELA</th>
                                             <th>MAIARA CARLA</th>
                                             <th>CARLA MARAISA</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php foreach ($parcelas as $parcela) : ?>
-                                            <tr>
-                                                <td class="text-center"><?= date('d/m/Y', strtotime($parcela['data_compra'])); ?></td>
-                                                <td class="text-left"><?= htmlspecialchars($parcela['descricao']); ?></td>
-                                                <td class="text-center"><?= $parcela['valor_compra_formatado'] ?></td>
-                                                <td class="text-center"><?= htmlspecialchars($parcela['referencia_parcela']) . " de " . htmlspecialchars($parcela['quantidade_parcelas']); ?></td>
-                                                <td class="text-center"><?= date('d/m/Y', strtotime($parcela['data_vencimento'])); ?></td>
-                                                <td class="text-center"><?= $parcela['valor_parcela_responsavel1_formatado']; ?></td>
-                                                <td class="text-center"><?= $parcela['valor_parcela_responsavel2_formatado']; ?></td>
-                                            </tr>
-                                        <?php endforeach; ?>
+    <tr>
+        <td class="text-center"><?= date('d/m/Y', strtotime($parcela['data_compra'])); ?></td>
+        <td class="text-left"><?= htmlspecialchars($parcela['descricao']); ?></td>
+        <td class="text-center"><?= $parcela['valor_compra_formatado'] ?></td>
+        <td class="text-center"><?= htmlspecialchars($parcela['referencia_parcela']) . " de " . htmlspecialchars($parcela['quantidade_parcelas']); ?></td>
+        <td class="text-center"><?= date('d/m/Y', strtotime($parcela['data_vencimento'])); ?></td>
+        
+        <td class="text-center">
+            <strong><?= formatar_valor($parcela['valor_parcela_responsavel1'] + $parcela['valor_parcela_responsavel2']); ?></strong>
+        </td>
+
+        <td class="text-center"><?= $parcela['valor_parcela_responsavel1_formatado']; ?></td>
+        <td class="text-center"><?= $parcela['valor_parcela_responsavel2_formatado']; ?></td>
+    </tr>
+<?php endforeach; ?>
 
                                         <tr class="total-responsavel">
-                                            <td colspan="5" class="text-right"><strong>TOTAL POR RESPONSÁVEL:</strong></td>
-                                            <td class="text-center"><strong><?= $total_responsavel1_formatado; ?></strong></td>
-                                            <td class="text-center"><strong><?= $total_responsavel2_formatado; ?></strong></td>
-                                        </tr>
+    <td colspan="6" class="text-right"><strong>TOTAL POR RESPONSÁVEL:</strong></td> <td class="text-center"><strong><?= $total_responsavel1_formatado; ?></strong></td>
+    <td class="text-center"><strong><?= $total_responsavel2_formatado; ?></strong></td>
+</tr>
 
-                                        <tr class="total-geral">
-                                            <td colspan="6" class="text-right"><strong>TOTAL GERAL DA FATURA:</strong></td>
-                                            <td class="text-center" style="background-color: #f2f2f2;"><strong>R$ <?= $total_geral_formatado; ?></strong></td>
-                                        </tr>
+<tr class="total-geral">
+    <td colspan="7" class="text-right"><strong>TOTAL GERAL DA FATURA:</strong></td> <td class="text-center" style="background-color: #f2f2f2;"><strong>R$ <?= $total_geral_formatado; ?></strong></td>
+</tr>
                                     </tbody>
 
 

@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INVENTÁRIO DE ATIVOS</title>
-
     <link rel="icon" href="images/ico_m2.png" type="image/x-icon">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -96,120 +94,123 @@
         .foto-lista-clicavel:hover {
             opacity: 0.8;
         }
-        
+
         /* Oculta elementos que não devem ser impressos */
         @media print {
-            .btn-editar, .btn-mover, .btn-reverter, .pagination, .modal, .card-header .row { 
+
+            .btn-editar,
+            .btn-mover,
+            .btn-reverter,
+            .pagination,
+            .modal,
+            .card-header .row {
                 display: none !important;
             }
-            body { 
-                margin: 0; 
+
+            body {
+                margin: 0;
             }
         }
     </style>
 </head>
-
 <body>
-
     <?php include('/xampp/htdocs/navbar.php'); ?>
-
-
     <div class="container-fluid mt-4">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-10 offset-md-1">
                 <div class="card">
                     <div class="card-header">
-                        <div class="container-fluid py-4">
-                            <h2 class="mb-4">  📋</a>INVENTÁRIO DE ATIVOS M2 SHOWS
-                                  <div class="float-end">
+                        <div class="container-fluid">
+                            <h2 class="mb-4"> 📋</a>INVENTÁRIO DE ATIVOS M2 SHOWS
+                                <div class="float-end">
 
-                                <button class="btn btn-primary" onclick="abrirModalCadastro()">
-                                    <i class="fa fa-plus"></i> Novo Item
-                                </button>
-                                <button class="btn btn-info" onclick="imprimirListaCompleta()" title="Imprimir Lista Filtrada Completa">
-                                    <i class="fa fa-print"></i> Imprimir Lista
-                                </button>
-                            </div>
-                                </h2>
+                                    <button class="btn btn-primary" onclick="abrirModalCadastro()">
+                                        <i class="fa fa-plus"></i> Novo Item
+                                    </button>
+                                    <button class="btn btn-info" onclick="imprimirListaCompleta()" title="Imprimir Lista Filtrada Completa">
+                                        <i class="fa fa-print"></i> Imprimir Lista
+                                    </button>
+                                </div>
+                            </h2>
                         </div>
-                        
-
-                            <div class="card mb-4 shadow-sm">
-                                <div class="card-body">
-                                    <div class="row align-items-end">
-                                        <div class="col-md-3">
-                                            <label class="form-label"><strong>LOCAL</strong></label>
-                                            <input type="text" id="filtroLocal" class="form-control"
-                                                placeholder="Ex: ESCRITÓRIO M2">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label"><strong>TIPO</strong></label>
-                                            <input type="text" id="filtroTipo" class="form-control"
-                                                placeholder="Ex: MÓVEIS">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label"><strong>AMBIENTE</strong></label>
-                                            <input type="text" id="filtroAmbiente" class="form-control"
-                                                placeholder="Ex: SALA FINANCEIRO">
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input" type="checkbox" id="checkTodos">
-                                                <label class="form-check-label" for="checkTodos"><strong>Exibir
-                                                        Vendidos/Baixados</strong></label>
-                                            </div>
-                                        </div>
 
 
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <div class="row align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="form-label"><strong>LOCAL</strong></label>
+                                        <input type="text" id="filtroLocal" class="form-control"
+                                            placeholder="Ex: ESCRITÓRIO M2">
                                     </div>
-                                </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label"><strong>TIPO</strong></label>
+                                        <input type="text" id="filtroTipo" class="form-control"
+                                            placeholder="Ex: MÓVEIS">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label"><strong>AMBIENTE</strong></label>
+                                        <input type="text" id="filtroAmbiente" class="form-control"
+                                            placeholder="Ex: SALA FINANCEIRO">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="checkTodos">
+                                            <label class="form-check-label" for="checkTodos"><strong>
+                                                    Vendidos / Baixados</strong></label>
+                                        </div>
+                                    </div>
 
+
+                                </div>
                             </div>
 
+                        </div>
 
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle caption-top">
-                                    <caption><strong>ITENS ATIVOS NO INVENTÁRIO</strong></caption>
 
-                                    <thead class="table-light">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle caption-top">
+                                <caption><strong>ITENS ATIVOS NO INVENTÁRIO</strong></caption>
 
-                                        <tr class="text-center align-middle">
-                                            <th>FOTO</th>
-                                            <th>ID</th>
-                                            <th>ITEM / TIPO</th>
-                                            <th>LOCAL / AMBIENTE</th>
-                                            <th>DATA DE CADASTRO</th>
-                                            <th>STATUS</th>
-                                            <th width="120">AÇÕES</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="listaItens">
-                                        <tr>
-                                            <td colspan="7" class="text-center text-muted">Carregando itens...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <thead class="table-light">
 
-                                <div class="row mt-3">
-                                    <div class="col-12">
-                                        <nav>
-                                            <ul class="pagination justify-content-center" id="paginacao">
-                                                </ul>
-                                        </nav>
-                                    </div>
+                                    <tr class="text-center align-middle">
+                                        <th>FOTO</th>
+                                        <th>ID</th>
+                                        <th>ITEM / TIPO</th>
+                                        <th>LOCAL / AMBIENTE</th>
+                                        <th>DATA DE CADASTRO</th>
+                                        <th>STATUS</th>
+                                        <th width="120">AÇÕES</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listaItens">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">Carregando itens...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <nav>
+                                        <ul class="pagination justify-content-center" id="paginacao">
+                                        </ul>
+                                    </nav>
                                 </div>
-                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
 
     <div class="modal fade" id="modalCad" tabindex="-1" aria-labelledby="modalCadLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form id="formItem" enctype="multipart/form-data">
+                <form id="formItem" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="acao" value="salvar">
                     <input type="hidden" name="id" id="itemId">
 
@@ -355,45 +356,41 @@
         const UPLOAD_DOCS_PATH = 'uploads/docs/';
 
         // VARIÁVEIS GLOBAIS DE PAGINAÇÃO
-        const ITENS_POR_PAGINA = 50; // Defina um limite razoável
+        const ITENS_POR_PAGINA = 150; // Defina um limite razoável
         let paginaAtual = 1;
 
-        $(document).ready(function() {
-            // Carrega a lista inicial dos itens
-            carregarLista(1); // Inicia na página 1
+       $(document).ready(function() {
+    // 1. LER OS DADOS DA URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const deveAbrirModal = urlParams.get('cadastrar');
+    const localVindoDaIndex = urlParams.get('local'); // Captura o ?local=FAZENDA
 
-            // Filtros automáticos: aciona o carregamento da lista em qualquer alteração
-            $('#filtroLocal, #filtroTipo, #filtroAmbiente, #checkTodos').on('change keyup', function() {
-                carregarLista(1); // SEMPRE volta para a primeira página ao filtrar
-            });
+    // 2. SE VIER UM LOCAL NA URL, PREENCHE O FILTRO ANTES DE CARREGAR A LISTA
+    if (localVindoDaIndex) {
+        // Importante: Verifique se o ID do seu campo de filtro de local é 'filtroLocal'
+        $('#filtroLocal').val(localVindoDaIndex);
+    }
 
-            // Submissão do Formulário de Cadastro/Edição
-            $('#formItem').on('submit', function(e) {
-                e.preventDefault();
-                var formData = new FormData(this);
+    // 3. CARREGAR A LISTA (Agora ela já vai ler o valor preenchido acima)
+    carregarLista(1);
 
-                $.ajax({
-                    url: 'ajax_inventario.php',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    dataType: 'json',
-                    success: function(resp) {
-                        if (resp.status === 'ok') {
-                            $('#modalCad').modal('hide');
-                            carregarLista(paginaAtual); // Atualiza a lista principal (na página atual)
-                            alert('Item salvo com sucesso!');
-                        } else {
-                            alert('Erro ao salvar item: ' + (resp.msg || 'Erro desconhecido.'));
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        alert("Erro ao salvar o item. Verifique o console ou o arquivo ajax_inventario.php. Resposta: " + xhr.responseText);
-                    }
-                });
-            });
-        });
+    // 4. SE VIER DA INDEX COM 'cadastrar=true', ABRE O MODAL CORRETO
+    if (deveAbrirModal === 'true') {
+        setTimeout(function() {
+            $('#formItem')[0].reset();
+            $('#itemId').val('');
+            $('#modalCad').modal('show');
+            
+            // Limpa a URL para não reabrir no F5, mas mantém o local se quiser continuar filtrado
+            // Se quiser limpar tudo: window.history.replaceState({}, document.title, "inventario.php");
+        }, 500);
+    }
+
+    // Seus filtros originais
+    $('#filtroLocal, #filtroTipo, #filtroAmbiente, #checkTodos').on('change keyup', function() {
+        carregarLista(1);
+    });
+});
 
         // ----------------------------------------------------------------------
         // FUNÇÕES DE LISTAGEM E PAGINAÇÃO (Atualizadas)
@@ -403,8 +400,8 @@
             paginaAtual = pagina; // Armazena a página atual
 
             // Calcula o offset (onde a busca deve começar)
-            const offset = (paginaAtual - 1) * ITENS_POR_PAGINA; 
-            
+            const offset = (paginaAtual - 1) * ITENS_POR_PAGINA;
+
             $.post('ajax_inventario.php', {
                 acao: 'listar',
                 local: $('#filtroLocal').val(),
@@ -416,7 +413,7 @@
                 offset: offset
             }, function(data) {
                 // O PHP deve retornar JSON com dados da paginação e o HTML
-                if(data.status === 'ok') {
+                if (data.status === 'ok') {
                     $('#listaItens').html(data.html); // HTML da tabela
                     montarPaginacao(data.total_itens); // Função para montar os botões
                 } else {
@@ -444,11 +441,11 @@
             // Limita para mostrar apenas algumas páginas ao redor da atual
             let startPage = Math.max(1, paginaAtual - 2);
             let endPage = Math.min(totalPaginas, paginaAtual + 2);
-            
+
             // Garante que pelo menos 5 páginas sejam mostradas se houver
             if (totalPaginas > 5) {
                 if (endPage - startPage < 4) {
-                     startPage = Math.max(1, endPage - 4);
+                    startPage = Math.max(1, endPage - 4);
                 }
             }
 
@@ -464,7 +461,7 @@
             </li>`;
 
             $('#paginacao').html(paginacaoHtml);
-            
+
             // Atualiza a legenda da tabela
             let paginaInfo = totalItens > 0 ? `(Página ${paginaAtual} de ${totalPaginas}. Total: ${totalItens} itens)` : '';
             $('caption').text(`ITENS ATIVOS NO INVENTÁRIO ${paginaInfo}`);
@@ -475,91 +472,112 @@
         // ----------------------------------------------------------------------
 
         function imprimirListaCompleta() {
-            // 1. Coleta os filtros
-            const filtros = {
-                acao: 'imprimir_lista', // Chama a nova ação que retorna o HTML completo
-                local: $('#filtroLocal').val(),
-                tipo: $('#filtroTipo').val(),
-                ambiente: $('#filtroAmbiente').val(),
-                todos: $('#checkTodos').is(':checked') ? 'true' : 'false'
-            };
+    // 1. Coleta os filtros
+    const filtros = {
+        acao: 'imprimir_lista', 
+        local: $('#filtroLocal').val(),
+        tipo: $('#filtroTipo').val(),
+        ambiente: $('#filtroAmbiente').val(),
+        todos: $('#checkTodos').is(':checked') ? 'true' : 'false'
+    };
 
-            // 2. Requisição AJAX para obter o HTML completo (sem paginação)
-            $.post('ajax_inventario.php', filtros, function(fullHtml) {
-                if (!fullHtml.trim().startsWith('<tr')) {
-                    // Se o retorno não for o início de uma linha <tr>, assume que é uma mensagem de erro ou vazia.
-                    alert("Erro ao gerar lista para impressão ou lista vazia.");
-                    return;
-                }
-
-                // 3. Monta o Conteúdo HTML completo para impressão
-                const titulo = `INVENTÁRIO DE ATIVOS M2 SHOWS - Lista Filtrada (${new Date().toLocaleDateString()})`;
-                
-                // Define o cabeçalho da tabela de impressão
-                const tableHeader = `
-                    <thead style="background-color:#f8f9fa;">
-                        <tr style="text-align: center; vertical-align: middle;">
-                            <th>FOTO</th>
-                            <th>ID</th>
-                            <th>ITEM / TIPO</th>
-                            <th>LOCAL / AMBIENTE</th>
-                            <th>DATA DE CADASTRO</th>
-                            <th>STATUS</th>
-                            <th width="120">AÇÕES</th>
-                        </tr>
-                    </thead>
-                `;
-
-                const printContent = `
-                    <html>
-                    <head>
-                        <title>${titulo}</title>
-                        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-                        <style>
-                            body { font-family: sans-serif; padding: 20px; }
-                            .print-header { text-align: center; margin-bottom: 20px; }
-                            .table { width: 100%; border-collapse: collapse; }
-                            .table th, .table td { border: 1px solid #ccc; padding: 8px; font-size: 11px; }
-                            .table img { width: 50px; height: 50px; object-fit: cover; border-radius: .25rem; }
-                            /* Estilo para linhas de itens baixados (se for o caso) */
-                            .table tr.table-danger { background-color: #f8d7da !important; color: #842029 !important; }
-                            .table small { font-size: 0.8em; } 
-                            /* Oculta a última coluna de AÇÕES na impressão */
-                            .table thead th:last-child, .table tbody tr td:last-child {
-                                display: none !important;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <h3 class="print-header">${titulo}</h3>
-                        <p><strong>Filtros Aplicados:</strong> Local: ${$('#filtroLocal').val() || 'Todos'} | Tipo: ${$('#filtroTipo').val() || 'Todos'} | Ambiente: ${$('#filtroAmbiente').val() || 'Todos'} | Incluindo Baixados: ${$('#checkTodos').is(':checked') ? 'Sim' : 'Não'}</p>
-                        <table class="table table-bordered table-striped">
-                            ${tableHeader}
-                            <tbody>
-                                ${fullHtml}
-                            </tbody>
-                        </table>
-                    </body>
-                    </html>
-                `;
-
-                // 4. Abre Nova Janela, Escreve Conteúdo e Imprime
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(printContent);
-                printWindow.document.close();
-                
-                // Aguarda o carregamento e dispara a impressão
-                printWindow.onload = function() {
-                    printWindow.focus(); 
-                    printWindow.print();
-                    // printWindow.close(); // Opcional
-                };
-
-            }, 'html').fail(function(xhr, status, error) {
-                alert("Erro na requisição da lista completa para impressão. Resposta: " + xhr.responseText);
-            });
+    // 2. Requisição AJAX
+    $.post('ajax_inventario.php', filtros, function(fullHtml) {
+        if (!fullHtml.trim().startsWith('<tr')) {
+            alert("Erro ao gerar lista para impressão ou lista vazia.");
+            return;
         }
 
+        // --- AJUSTE AQUI: CONTAGEM DE ITENS ---
+        // Criamos um elemento temporário para o jQuery contar as linhas <tr> recebidas
+        const totalItens = $('<table style="display:none"><tbody>' + fullHtml + '</tbody></table>').find('tr').length;
+        // --------------------------------------
+
+        const titulo = `INVENTÁRIO DE ATIVOS M2 SHOWS - Lista Filtrada (${new Date().toLocaleDateString()})`;
+
+        const tableHeader = `
+            <thead style="background-color:#f8f9fa;">
+                <tr style="text-align: center; vertical-align: middle;">
+                    <th>FOTO</th>
+                    <th>ID</th>
+                    <th>ITEM / TIPO</th>
+                    <th>LOCAL / AMBIENTE</th>
+                    <th>DATA DE CADASTRO</th>
+                    <th>STATUS</th>
+                    <th width="120">AÇÕES</th>
+                </tr>
+            </thead>
+        `;
+
+        const printContent = `
+            <html>
+            <head>
+                <title>${titulo}</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+               <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .print-header { text-align: center; margin-bottom: 10px; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th, .table td { border: 1px solid #ccc; padding: 8px; font-size: 11px; }
+    
+    /* ALTERADO: Adicionado image-rendering e fixado tamanho */
+    .table img { 
+        width: 60px !important; 
+        height: 60px !important; 
+        object-fit: cover; 
+        border-radius: .25rem;
+        image-rendering: optimizeSpeed; /* Melhora a performance de impressão */
+    }
+    
+    .table tr.table-danger { background-color: #f8d7da !important; color: #842029 !important; }
+    .table small { font-size: 0.8em; } 
+    .table thead th:last-child, .table tbody tr td:last-child {
+        display: none !important;
+    }
+    
+    .total-container { 
+        margin-top: 15px; 
+        padding: 10px; 
+        border: 2px solid #D4AF37; 
+        background-color: #fffdf5;
+        text-align: right; 
+        font-weight: bold; 
+        font-size: 14px;
+    }
+</style>
+            </head>
+            <body>
+                <h3 class="print-header">${titulo}</h3>
+                <p><strong>Filtros Aplicados:</strong> Local: ${$('#filtroLocal').val() || 'Todos'} | Tipo: ${$('#filtroTipo').val() || 'Todos'} | Ambiente: ${$('#filtroAmbiente').val() || 'Todos'} | Incluindo Baixados: ${$('#checkTodos').is(':checked') ? 'Sim' : 'Não'}</p>
+                
+                <table class="table table-bordered table-striped">
+                    ${tableHeader}
+                    <tbody>
+                        ${fullHtml}
+                    </tbody>
+                </table>
+
+                <div class="total-container">
+                    TOTAL DE ITENS NO RELATÓRIO: <span style="color: #D4AF37; font-size: 18px;">${totalItens}</span>
+                </div>
+
+            </body>
+            </html>
+        `;
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+
+        printWindow.onload = function() {
+            printWindow.focus();
+            printWindow.print();
+        };
+
+    }, 'html').fail(function(xhr, status, error) {
+        alert("Erro na requisição da lista completa para impressão. Resposta: " + xhr.responseText);
+    });
+}
 
         // ----------------------------------------------------------------------
         // FUNÇÕES DE MODAL (Mantidas)
@@ -793,6 +811,40 @@
             let id = $(this).data('id');
             reverterItem(id);
         });
+        // ----------------------------------------------------------------------
+        // AÇÃO DE SALVAR / EDITAR (SUBMIT DO FORMULÁRIO)
+        // ----------------------------------------------------------------------
+        $('#formItem').on('submit', function(e) {
+            e.preventDefault(); // Impede o recarregamento da página
+
+            // Cria um objeto FormData para suportar o envio de arquivos (fotos e docs)
+            let formData = new FormData(this);
+
+            $.ajax({
+                url: 'ajax_inventario.php',
+                type: 'POST',
+                data: formData,
+                processData: false, // Necessário para enviar arquivos
+                contentType: false, // Necessário para enviar arquivos
+                dataType: 'json',
+                success: function(resp) {
+                    if (resp.status === 'ok') {
+                        alert('Item salvo com sucesso!');
+                        $('#modalCad').modal('hide'); // Fecha o modal
+
+                        // Se for uma edição, mantemos na página atual. 
+                        // Se for novo, podemos voltar para a página 1.
+                        let idExistente = $('#itemId').val();
+                        carregarLista(idExistente ? paginaAtual : 1);
+                    } else {
+                        alert('Erro ao salvar: ' + (resp.msg || 'Erro desconhecido.'));
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert("Erro na requisição AJAX ao salvar: " + xhr.responseText);
+                }
+            });
+        });
 
         /**
          * Função para reverter a baixa de um item.
@@ -826,7 +878,7 @@
         function visualizarFotosItem(itemId, fotoInicialId = null) {
             // 1. Faz a requisição AJAX para buscar todas as fotos
             $.getJSON('ajax_inventario.php', {
-                acao: 'get_fotos_item', 
+                acao: 'get_fotos_item',
                 id: itemId
             }, function(data) {
                 if (data.status === 'ok' && data.fotos && data.fotos.length > 0) {

@@ -36,7 +36,7 @@ if (isset($_GET['id'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/bootstrap.min.css" rel="stylesheet">    
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" href="images/ico_m2.png" type="image/x-icon">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
@@ -73,7 +73,7 @@ if (isset($_GET['id'])) {
         }
     </script>
 
-<title>EDITAR RECIBOS</title>
+    <title>EDITAR RECIBOS</title>
 </head>
 
 <body>
@@ -85,7 +85,7 @@ if (isset($_GET['id'])) {
                     <div class="table-container">
                         <div class="card-header">
                             <h4>EDITAR RECIBOS
-                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
+                                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
                             </h4>
                         </div>
                         <div class="card-body">
@@ -242,9 +242,26 @@ if (isset($_GET['id'])) {
                                             </div>
 
                                         </div>
+
+
+                                        <br>
+                                        <div class="form-container">
+                                            <div class="form-group">
+                                                <label class="form-label">VALOR_POR_EXTENSO:</label>
+                                                <input type="text" id="valor_por_extenso" name="valor_ext_recibo"
+                                                    value="<?= htmlspecialchars($codigo_recibo['valor_ext_recibo']) ?>"
+                                                    class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                        <p>
+
+
+
+
+
                                         <div id="editor_descricao" class="quill-editor-container"> </div>
-                                            <textarea name="descricao_recibo" id="descricao_recibo" style="display:none;"><?= htmlspecialchars($descricao) ?></textarea>
-                                       
+                                        <textarea name="descricao_recibo" id="descricao_recibo" style="display:none;"><?= htmlspecialchars($descricao) ?></textarea>
+
 
                                         <p>
                                         <div>
@@ -277,6 +294,7 @@ if (isset($_GET['id'])) {
                 $('#celular').mask('(00) 0 0000-0000');
                 $('#fixo').mask('(00) 0000-0000');
                 $('#cep').mask('00.000-000');
+                updateValorPorExtenso();
 
 
             });
@@ -295,7 +313,7 @@ if (isset($_GET['id'])) {
                 });
             }
 
-
+ 
 
             function formatarValor(input) {
                 var valor = input.value.replace(/\D/g, '');
@@ -321,7 +339,7 @@ if (isset($_GET['id'])) {
                             valor_recibo: valorNumerico
                         }, function(data) {
                             console.log("Resposta do extenso.php:", data); // Log da resposta do extenso.php
-                            valorPorExtensoInput.value = data;
+                            valorPorExtensoInput.value = data.toUpperCase();
                         }).fail(function() {
                             console.error("Erro ao chamar extenso.php");
                         });
@@ -333,51 +351,70 @@ if (isset($_GET['id'])) {
                 }
             }
         </script>
-       <script>
-    // ... (suas funções JavaScript existentes) ...
+        <script>
+            // ... (suas funções JavaScript existentes) ...
 
-    var quillDescricao = new Quill('#editor_descricao', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'header': [1, 2, 3, false] }],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                [{ 'script': 'sub' }, { 'script': 'super' }],
-                [{ 'indent': '-1' }, { 'indent': '+1' }],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'align': [] }],
-                ['clean']
-            ]
-        }
-    });
+            var quillDescricao = new Quill('#editor_descricao', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{
+                            'header': [1, 2, 3, false]
+                        }],
+                        [{
+                            'list': 'ordered'
+                        }, {
+                            'list': 'bullet'
+                        }],
+                        [{
+                            'script': 'sub'
+                        }, {
+                            'script': 'super'
+                        }],
+                        [{
+                            'indent': '-1'
+                        }, {
+                            'indent': '+1'
+                        }],
+                        [{
+                            'color': []
+                        }, {
+                            'background': []
+                        }],
+                        [{
+                            'align': []
+                        }],
+                        ['clean']
+                    ]
+                }
+            });
 
-   // --- Carregar o conteúdo existente do textarea para o editor Quill ---
-        // Garante que o DOM esteja totalmente carregado antes de tentar carregar o conteúdo
-        document.addEventListener('DOMContentLoaded', function() {
-            var descricaoTextarea = document.getElementById('descricao_recibo');
+            // --- Carregar o conteúdo existente do textarea para o editor Quill ---
+            // Garante que o DOM esteja totalmente carregado antes de tentar carregar o conteúdo
+            document.addEventListener('DOMContentLoaded', function() {
+                var descricaoTextarea = document.getElementById('descricao_recibo');
 
-            if (descricaoTextarea && descricaoTextarea.value) {
-                // Use `dangerouslyPasteHTML` para carregar HTML no Quill
-                quillDescricao.clipboard.dangerouslyPasteHTML(descricaoTextarea.value);
+                if (descricaoTextarea && descricaoTextarea.value) {
+                    // Use `dangerouslyPasteHTML` para carregar HTML no Quill
+                    quillDescricao.clipboard.dangerouslyPasteHTML(descricaoTextarea.value);
+                }
+            });
+
+            // --- Atualizar o textarea oculto com o conteúdo do Quill antes do envio do formulário ---
+            var meuFormulario = document.getElementById('reForm'); // Use o ID do seu formulário
+
+            if (meuFormulario) {
+                meuFormulario.addEventListener('submit', function() {
+                    // Pega o HTML do editor de descrição e coloca no textarea oculto
+                    // Você pode adicionar .toUpperCase() aqui se quiser que o HTML seja salvo em maiúsculas
+                    document.getElementById('descricao_recibo').value = quillDescricao.root.innerHTML;
+
+                });
+            } else {
+                console.warn("Formulário com ID 'osForm' não encontrado. Certifique-se de que o Quill está sendo atualizado antes do envio.");
             }
-            });
-
-        // --- Atualizar o textarea oculto com o conteúdo do Quill antes do envio do formulário ---
-        var meuFormulario = document.getElementById('reForm'); // Use o ID do seu formulário
-
-        if (meuFormulario) {
-            meuFormulario.addEventListener('submit', function() {
-                // Pega o HTML do editor de descrição e coloca no textarea oculto
-                // Você pode adicionar .toUpperCase() aqui se quiser que o HTML seja salvo em maiúsculas
-                document.getElementById('descricao_recibo').value = quillDescricao.root.innerHTML;
-
-            });
-        } else {
-            console.warn("Formulário com ID 'osForm' não encontrado. Certifique-se de que o Quill está sendo atualizado antes do envio.");
-        }
-
-</script>
+        </script>
 </body>
 
 </html>

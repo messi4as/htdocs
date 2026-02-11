@@ -2,14 +2,12 @@
 session_start();
 require 'db_connect.php';
 
-
-// Obter todos os itens do banco de dados
+// --- LÓGICA DE BUSCA ORIGINAL ---
 $nome = '';
 if (isset($_GET['nome_item'])) {
     $nome = mysqli_real_escape_string($conn, $_GET['nome_item']);
 }
 
-// Obter o local a partir da URL
 $local = '';
 if (isset($_GET['local'])) {
     $local = mysqli_real_escape_string($conn, $_GET['local']);
@@ -22,14 +20,12 @@ if ($nome != '') {
 if ($local != '') {
     $sql .= $nome != '' ? " AND local LIKE '%$local%'" : " WHERE local LIKE '%$local%'";
 }
-$sql .= " ORDER BY local, nome_item ASC";
+$sql .= " ORDER BY nome_item ASC";
+
 $result = $conn->query($sql);
-$item = mysqli_query($conn, $sql);
+$item_query = mysqli_query($conn, $sql);
+$quantidade_total = mysqli_num_rows($item_query);
 
-$quantidade = mysqli_num_rows($item);
-
-
-// Função para obter opções únicas de uma coluna
 function getOptions($conn, $column)
 {
     $options = [];
@@ -40,30 +36,7 @@ function getOptions($conn, $column)
     }
     return $options;
 }
-
-$localOptions = getOptions($conn, 'local');
-// Função para obter dados dos itens com filtros
-function getBovinosData($conn, $local)
-{
-    $sql = "SELECT local COUNT(*) as quantidade 
-            FROM galpao 
-            WHERE 1=1";
-    if ($local != '') {
-        $conditions[] = "local LIKE '%$local%'";
-    }
-
-    $sql .= " GROUP BY local";
-    $result = mysqli_query($conn, $sql);
-    $data = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $data[] = $row;
-    }
-    return $data;
-}
-
-
 ?>
-
 <!doctype html>
 <html lang="pt-br">
 
@@ -74,250 +47,196 @@ function getBovinosData($conn, $local)
     <link rel="icon" href="/images/ico_m2.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+    <title>LISTA DE ITENS</title>
+   <style>
+        .img-clickable { cursor: pointer; }
+        .carousel-item img { max-height: 500px; object-fit: contain; width: 100%; background-color: #000; }
+        table th, table td { text-align: center; vertical-align: middle !important; }
+        .badge-quantidade { background-color: #e3f2fd; color: #0d6efd; padding: 5px 10px; border-radius: 5px; font-weight: bold; }
 
-    <title>Galpão</title>
+        /* DESTAQUE PARA QUANTIDADE ZERO */
+        .linha-esgotada td {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
 
-    <style>
-        /* Estilos para impressão */
+        /* REGRAS DE IMPRESSÃO */
         @media print {
-            body {
-                padding: 0;
-                margin: 0;
-                font-size: 11pt;
-            }
-
-            .no-print,
-            .d-print-none {
+            .no-print {
                 display: none !important;
             }
-
-            /* Limpa estilos de Bootstrap para que não interfiram */
-            .container,
-            .row,
-            .col-md-12,
-            .card {
-                width: 100% !important;
-                max-width: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                border: none !important;
-                box-shadow: none !important;
-            }
-
-            /* Centraliza o cabeçalho H4 */
-            h4 {
-                text-align: center;
-                margin-bottom: 20px;
-                margin: 0 auto;
-                /* Centraliza horizontalmente */
-            }
-
-            /* Define o contêiner da tabela para centralizá-la */
-            .table-container {
-                width: 95%;
-                /* Define a largura para centralizar */
-                margin: 0 auto;
-                /* Centraliza a tabela na página */
-                overflow-x: visible !important;
-            }
-
-            table {
-                width: 100%;
-                /* Garante que a tabela ocupe 100% do seu contêiner pai */
-                border-collapse: collapse;
-                page-break-inside: auto;
-                table-layout: fixed;
-            }
-
-            th,
-            td {
-                border: 1px solid #000;
-                padding: 5px;
-                font-size: 10pt;
-                word-wrap: break-word;
-            }
-
-            th {
-                background-color: #f2f2f2;
-                font-weight: bold;
-                text-align: center;
-            }
-
-            td {
-                text-align: left;
-                vertical-align: top;
-            }
-
-            td img {
-                width: 100px;
-                height: auto;
-            }
-
-            tr {
-                page-break-inside: avoid;
-                page-break-after: auto;
+            .card { border: none !important; }
+            body { background-color: white !important; }
+            .container-fluid { padding: 0 !important; }
+            /* Garante que o destaque vermelho saia na impressão em alguns navegadores */
+            .linha-esgotada td {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
+        :root {
+      --btn-color: rgb(175, 166, 118); /* Cor dourada em RGB */
+    }
+           .btn-custom {
+      background-color: var(--btn-color);
+      color: black;
+      border: none;
+      padding: 7px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+     .btn-custom:hover {
+      background-color: rgb(211, 191, 81); /* Cor darkgoldenrod em RGB */
+    }
     </style>
-
-
-
 </head>
 
 <body>
-
     <?php include('/xampp/htdocs/navbar.php'); ?>
+
     <div class="container mt-4">
         <?php include('/xampp/htdocs/mensagem.php'); ?>
+
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="table-container">
-                        <div class="card-header no-print">
+                    <div class="card-header">
+                        <h4>LISTA DE ITENS ARMAZENADOS NO GALPÃO
+                           
+                            <a href="cadastro_item.php" class="btn btn-primary float-end no-print"><span class="bi-plus-circle-fill"></span>&nbsp;Adicionar Item</a>
+                            <button onclick="window.print()" class="btn btn-info float-end me-2 no-print"><span class="bi-printer-fill"></span>&nbsp;Imprimir</button>
+                             <a href="planta.php" class="btn btn-custom float-end me-2 no-print"><span class="bi bi-card-checklist"></span>&nbsp;Planta</a>
+                        </h4>
 
-                            <h4>LISTA DE ITENS ARMAZENADOS NO GALPÃO
-                                <a href="cadastro_item.php" class="btn btn-primary float-end"><span class="bi-plus-circle-fill"></span>&nbsp;Adicionar Item</a>
-                                <button onclick="window.print()" class="btn btn-info float-end me-2"><span class="bi-printer-fill"></span>&nbsp;Imprimir</button>
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="no-print">
-                                <form method="GET" action="lista_item.php">
-                                    <div class="input-group mb-3">
-                                        <input type="text" name="nome_item" class="form-control" placeholder="Buscar por Nome">
-                                        <button class="btn btn-primary" type="submit"><span class="bi-search"></span>&nbsp;Buscar</button>
-                                    </div>
-                                </form>
-                                <form method="GET" action="lista_item.php" class="d-flex align-items-center">
-                                    <select name="local" class="form-control me-2">
-                                        <option value="">Local</option>
-                                        <?php foreach ($localOptions as $option) : ?>
-                                            <option value="<?= $option ?>" <?= $local == $option ? 'selected' : '' ?>><?= $option ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <button class="btn btn-primary" type="submit">Filtrar</button>
-                                </form>
-                                <br>
-                                <div class="alert alert-info" role="alert">
-                                    Quantidade de Itens Cadastrados: <?php echo number_format($quantidade, 0, ',', '.'); ?>
+                    </div>
+                    <div class="card-body">
+                        <form action="" method="GET" class="mb-4">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="text" name="nome_item" value="<?= $nome ?>" class="form-control" placeholder="Buscar por Nome">
                                 </div>
-                            </div>
 
-                            <div class="d-none d-print-block">
-                                <p><strong>Filtros Aplicados:</strong></p>
-                                <ul>
-                                    <li><strong>Filtro por Local:</strong> <?= !empty($local) ? htmlspecialchars($local) : 'Nenhum' ?></li>
-                                    <li><strong>Total de Itens:</strong> <?php echo number_format($quantidade, 0, ',', '.'); ?></li>
-                                </ul>
-                                <hr>
-                            </div>
 
-                            <h4 class="d-none d-print-block">RELATÓRIO DE ITENS DO GALPÃO</h4>
-
-                            <table class="table table-bordered table-striped table-hover table-sm table-responsive">
-                                <thead>
-                                    <tr>
-                                        <th style="text-align: center; vertical-align: middle;">FOTO</th>
-                                        <th style="text-align: center; vertical-align: middle;">NOME</th>
-                                        <th style="text-align: center; vertical-align: middle;">CATEGORIA</th>
-                                        <th style="text-align: center; vertical-align: middle;">ORIGEM</th>
-                                        <th style="text-align: center; vertical-align: middle;">QUANTIDADE</th>
-                                        <th style="text-align: center; vertical-align: middle;">DATA DE ENTRADA</th>
-                                        <th style="text-align: center; vertical-align: middle;">LOCAL</th>
-                                        <th class="no-print" style="text-align: center; vertical-align: middle;">AÇÕES</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    if ($result->num_rows > 0) {
-                                        while ($row = $result->fetch_assoc()) {
-                                    ?>
-                                            <tr>
-                                                <td>
-                                                    <?php if ($row['foto']): ?>
-                                                        <img src="<?= $row['foto']; ?>" 
-                                                             alt="Foto do Item" 
-                                                             style="width: 100px; height: auto; cursor: pointer;"
-                                                             class="img-clickable"
-                                                             data-bs-toggle="modal"
-                                                             data-bs-target="#imageModal"
-                                                             data-full-img="<?= $row['foto']; ?>">
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td style="text-align: center; vertical-align: middle;"><?= $row['nome_item']; ?></td>
-                                                <td style="text-align: center; vertical-align: middle;"><?= $row['categoria']; ?></td>
-                                                <td style="text-align: center; vertical-align: middle;"><?= $row['origem']; ?></td>
-                                                <td style="text-align: center; vertical-align: middle;"><?= $row['quantidade']; ?></td>
-                                                <td style="text-align: center; vertical-align: middle;"><?= date('d/m/Y', strtotime($row['data_entrada'])); ?></td>
-                                                <td style="text-align: center; vertical-align: middle;"><?= ($row['local']); ?></td>
-                                                <td class="no-print" style="text-align: center; vertical-align: middle;">
-                                                    <a href="edit_item.php?id=<?= $row['cod_item'] ?>" class="btn btn-secondary btn-sm"><span class="bi-eye-fill"></span>&nbsp;Visualizar</a>
-                                                </td>
-                                            </tr>
-                                    <?php
+                                <div class="col-md-4">
+                                    <select name="local" class="form-control">
+                                        <option value="">Selecione o Local</option>
+                                        <?php
+                                        $locais = getOptions($conn, 'local');
+                                        foreach ($locais as $l) {
+                                            echo "<option value='$l' " . ($local == $l ? 'selected' : '') . ">$l</option>";
                                         }
-                                    } else {
-                                        echo '<tr><td colspan="8" style="text-align: center;">Nenhum Item encontrado</td></tr>';
-                                    }
-                                    ?>
-                                </tbody>
-                            </table>
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 no-print">
+                                    <button type="submit" class="btn btn-info text-white no-print">Pesquisar</button>
+                                    <a href="lista_item.php" class="btn btn-danger no-print">Limpar</a>
+                                </div>
+
+
+                            </div>
+
+
+                        </form>
+
+                        <div class="alert alert-info" role="alert">
+                            Quantidade de Itens Cadastrados: <?php echo number_format($quantidade_total, 0, ',', '.'); ?>
                         </div>
+
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>FOTO</th>
+                                    <th>NOME</th>
+                                    <th>CATEGORIA</th>
+                                    <th>LOCAL</th>
+                                    <th>QUANTIDADE</th>
+                                    <th class="no-print">AÇÕES</th>
+                                </tr>
+                           </thead>
+                            <tbody>
+                                <?php while ($row = mysqli_fetch_assoc($result)): 
+                                    $classe_esgotado = ($row['quantidade'] <= 0) ? 'linha-esgotada' : '';
+                                ?>
+                                <tr class="<?= $classe_esgotado ?>">
+                                    <td>
+                                        <?php if ($row['foto']): ?>
+                                            <img src="<?= $row['foto']; ?>" 
+                                                 class="img-thumbnail img-clickable" 
+                                                 style="width: 80px;"
+                                                 data-bs-toggle="modal" 
+                                                 data-bs-target="#imageModal"
+                                                 data-item-id="<?= $row['cod_item']; ?>"
+                                                 data-nome="<?= $row['nome_item']; ?>">
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?= $row['nome_item']; ?></td>
+                                    <td><?= $row['categoria']; ?></td>
+                                    <td><?= $row['local']; ?></td>
+                                    <td><span class="badge-quantidade"><?= $row['quantidade']; ?></span></td>
+                                    <td class="no-print">
+                                        <a href="edit_item.php?id=<?= $row['cod_item']; ?>" class="btn btn-success btn-sm">
+                                            <i class="bi bi-pencil-square"></i> Editar
+                                        </a>
+                                    </td>
+                                </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-            <div class="modal-dialog **modal-md** modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="imageModalLabel">Visualização da Imagem</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <img src="" id="fullImage" class="img-fluid" alt="Imagem Ampliada">
+    </div>
+
+    <div class="modal fade no-print" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Galeria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body bg-dark p-0">
+                    <div id="carouselGaleria" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner" id="carouselContent"></div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselGaleria" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselGaleria" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // Pega o elemento do Modal e o elemento <img> dentro dele
-                var imageModal = document.getElementById('imageModal');
-                var fullImage = document.getElementById('fullImage');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var imageModal = document.getElementById('imageModal');
+            imageModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var itemId = button.getAttribute('data-item-id');
+                var nomeItem = button.getAttribute('data-nome');
+                var carouselInner = document.getElementById('carouselContent');
+                document.getElementById('modalTitle').textContent = nomeItem;
 
-                // Adiciona um listener para o evento 'show.bs.modal' do Bootstrap (disparado antes de o modal ser exibido)
-                imageModal.addEventListener('show.bs.modal', function (event) {
-                    // Botão que disparou o modal (a tag <img> clicada)
-                    var relatedTarget = event.relatedTarget;
-                    
-                    // Pega o valor do atributo 'data-full-img' da tag <img> clicada
-                    var imageUrl = relatedTarget.getAttribute('data-full-img');
+                carouselInner.innerHTML = '<div class="text-center p-5 text-white"><div class="spinner-border"></div></div>';
 
-                    // Define o src da imagem dentro do modal
-                    fullImage.src = imageUrl;
-                    
-                    // Opcional: define o nome do arquivo como título, pegando da célula da tabela
-                    // (td:nth-child(2) é a segunda coluna, que é o NOME)
-                    var itemNomeCell = relatedTarget.closest('tr').querySelector('td:nth-child(2)');
-                    var itemNome = itemNomeCell ? itemNomeCell.textContent.trim() : '';
-                    var modalTitle = imageModal.querySelector('.modal-title');
-                    
-                    if (itemNome) {
-                         modalTitle.textContent = 'Imagem do Item: ' + itemNome;
-                    } else {
-                         modalTitle.textContent = 'Visualização da Imagem';
-                    }
-                });
-
-                // Limpa o src da imagem quando o modal for escondido para liberar memória/evitar erros
-                imageModal.addEventListener('hidden.bs.modal', function (event) {
-                    fullImage.src = '';
-                });
+                fetch('buscar_galeria.php?id=' + itemId)
+                    .then(response => response.json())
+                    .then(imagens => {
+                        carouselInner.innerHTML = '';
+                        imagens.forEach((src, index) => {
+                            var div = document.createElement('div');
+                            div.className = 'carousel-item' + (index === 0 ? ' active' : '');
+                            div.innerHTML = `<img src="${src}" class="d-block">`;
+                            carouselInner.appendChild(div);
+                        });
+                    });
             });
-        </script>
+        });
+    </script>
 </body>
 
 </html>

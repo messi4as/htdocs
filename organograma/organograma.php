@@ -143,7 +143,13 @@ while ($row = $result_atividades->fetch_assoc()) {
             <div class="col-md-11">
                 <div class="card card-organograma">
                     <div class="card-header-funcao">
-                        <h4>ORGANOGRAMA ESCRITÓRIO M2 SHOWS</h4>
+                        <h4>ORGANOGRAMA ESCRITÓRIO M2 SHOWS
+
+                      
+                        <button class="btn btn-warning btn-sm float-end me-2" onclick="window.location.href='gerenciar.php';" title="Voltar ao Painel de Controle">
+                            <i class="bi bi-database"></i> GERENCIAMENTO
+                        </button>
+                        </h4>
                     </div>
                     <div class="card-body">
                         <?php if (empty($funcoes)): ?>

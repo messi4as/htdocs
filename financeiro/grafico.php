@@ -221,7 +221,7 @@ function formatarNumeroParaMoeda($valor)
 
 
                             <div class="alert alert-info" role="alert">
-                                QUANTIDADE DE PAGAMENTOS CADASTRADOS: <?php echo $quantidade; ?>
+                                QUANTIDADE DE PAGAMENTOS CADASTRADOS: <?php echo number_format($quantidade, 0, ',', '.'); ?>
                             </div>
                             <br>
 

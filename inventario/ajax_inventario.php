@@ -6,6 +6,50 @@ $UPLOAD_DOCS_DIR = 'uploads/docs/';
 // Inclui sua conexão existente ($conn)
 require_once 'db_connect.php';
 
+function redimensionarImagem($caminhoOriginal, $caminhoDestino, $larguraMaxima = 1000) {
+    // Verifica se a biblioteca GD está instalada
+    if (!function_exists('imagecreatefromjpeg')) {
+        return false; 
+    }
+
+    list($larguraOrig, $alturaOrig, $tipo) = getimagesize($caminhoOriginal);
+    
+    if ($larguraOrig <= $larguraMaxima) {
+        return true; // Imagem já é pequena
+    }
+
+    $fator = $larguraMaxima / $larguraOrig;
+    $novaLargura = $larguraMaxima;
+    $novaAltura = (int)($alturaOrig * $fator);
+
+    $novaImagem = imagecreatetruecolor($novaLargura, $novaAltura);
+    
+    // Mantém transparência se for PNG
+    if ($tipo == IMAGETYPE_PNG) {
+        imagealphablending($novaImagem, false);
+        imagesavealpha($novaImagem, true);
+    }
+
+    switch ($tipo) {
+        case IMAGETYPE_JPEG: $origem = imagecreatefromjpeg($caminhoOriginal); break;
+        case IMAGETYPE_PNG:  $origem = imagecreatefrompng($caminhoOriginal); break;
+        case IMAGETYPE_GIF:  $origem = imagecreatefromgif($caminhoOriginal); break;
+        default: return false;
+    }
+
+    imagecopyresampled($novaImagem, $origem, 0, 0, 0, 0, $novaLargura, $novaAltura, $larguraOrig, $alturaOrig);
+
+    // Salva
+    if ($tipo == IMAGETYPE_PNG) {
+        imagepng($novaImagem, $caminhoDestino, 7); // Compressão 0-9
+    } else {
+        imagejpeg($novaImagem, $caminhoDestino, 75); // Qualidade 75%
+    }
+
+    // Removi o imagedestroy para sumir o aviso do VS Code
+    return true;
+}
+
 // Verificar se a conexão falhou
 if ($conn->connect_error) {
     die("Conexão falhou: " . $conn->connect_error);
@@ -13,6 +57,9 @@ if ($conn->connect_error) {
 
 // Define o charset para evitar problemas com acentos
 $conn->set_charset("utf8mb4");
+
+
+
 
 // Define a ação recebida (POST ou GET)
 $acao = $_POST['acao'] ?? ($_GET['acao'] ?? ''); 
@@ -457,41 +504,65 @@ if ($acao == 'salvar') {
         $stmt->close();
     }
 
-    // UPLOAD DE FOTOS (Adiciona novas fotos ao item)
-    if (!empty($_FILES['fotos']['name'][0])) {
-        // ... (RESTO DO CÓDIGO DE UPLOAD DE FOTOS MANTIDO) ...
-        if (!file_exists($UPLOAD_FOTOS_DIR)) { mkdir($UPLOAD_FOTOS_DIR, 0777, true); }
+ 
+    
 
-        $has_existing_cover = false;
-        if (!empty($id_item)) { 
-             $stmt_check_cover = $conn->prepare("SELECT 1 FROM inventario_fotos WHERE item_id = ? AND eh_capa = 1 LIMIT 1");
-             $stmt_check_cover->bind_param("i", $id_item);
-             $stmt_check_cover->execute();
-             $stmt_check_cover->store_result();
-             $has_existing_cover = $stmt_check_cover->num_rows > 0;
-             $stmt_check_cover->close();
-        }
+  // UPLOAD DE FOTOS (Adiciona novas fotos ao item)
+if (isset($_FILES['fotos']) && !empty($_FILES['fotos']['name'][0])) {
+    
+    if (!file_exists($UPLOAD_FOTOS_DIR)) { 
+        mkdir($UPLOAD_FOTOS_DIR, 0777, true); 
+    }
 
-        foreach ($_FILES['fotos']['name'] as $key => $name) {
-            if($_FILES['fotos']['error'][$key] == 0){
-                $ext = pathinfo($name, PATHINFO_EXTENSION);
-                $novo_nome = uniqid() . "." . $ext;
-                
-                if(move_uploaded_file($_FILES['fotos']['tmp_name'][$key], $UPLOAD_FOTOS_DIR . $novo_nome)){
-                    $eh_capa = 0;
-                    if (!$has_existing_cover) {
-                        $eh_capa = 1;
-                        $has_existing_cover = true; 
-                    }
+    $has_existing_cover = false;
+    if (!empty($id_item)) { 
+         $stmt_check_cover = $conn->prepare("SELECT 1 FROM inventario_fotos WHERE item_id = ? AND eh_capa = 1 LIMIT 1");
+         $stmt_check_cover->bind_param("i", $id_item);
+         $stmt_check_cover->execute();
+         $stmt_check_cover->store_result();
+         $has_existing_cover = $stmt_check_cover->num_rows > 0;
+         $stmt_check_cover->close();
+    }
 
-                    $stmt_foto = $conn->prepare("INSERT INTO inventario_fotos (item_id, arquivo, eh_capa) VALUES (?, ?, ?)");
-                    $stmt_foto->bind_param("isi", $id_item, $novo_nome, $eh_capa);
-                    $stmt_foto->execute();
-                    $stmt_foto->close();
+    foreach ($_FILES['fotos']['name'] as $key => $name) {
+        // Verifica se o índice existe para evitar "Undefined array key"
+        if(isset($_FILES['fotos']['error'][$key]) && $_FILES['fotos']['error'][$key] == 0){
+            $ext = pathinfo($name, PATHINFO_EXTENSION);
+            $novo_nome = uniqid() . "." . $ext;
+            
+            if(move_uploaded_file($_FILES['fotos']['tmp_name'][$key], $UPLOAD_FOTOS_DIR . $novo_nome)){
+                $eh_capa = 0;
+                if (!$has_existing_cover) {
+                    $eh_capa = 1;
+                    $has_existing_cover = true; 
                 }
+
+                $stmt_foto = $conn->prepare("INSERT INTO inventario_fotos (item_id, arquivo, eh_capa) VALUES (?, ?, ?)");
+                $stmt_foto->bind_param("isi", $id_item, $novo_nome, $eh_capa);
+                $stmt_foto->execute();
+                $stmt_foto->close();
             }
         }
     }
+}
+
+// VERIFIQUE ABAIXO: O erro da linha 507 provavelmente está no UPLOAD DE DOCUMENTO
+if (isset($_FILES['doc']) && !empty($_FILES['doc']['name'])) {
+    if ($_FILES['doc']['error'] === 0) {
+        $name_doc = $_FILES['doc']['name'];
+        $ext_doc = pathinfo($name_doc, PATHINFO_EXTENSION);
+        $novo_nome_doc = uniqid() . "_doc." . $ext_doc;
+
+        if (!file_exists($UPLOAD_DOCS_DIR)) { mkdir($UPLOAD_DOCS_DIR, 0777, true); }
+
+        if (move_uploaded_file($_FILES['doc']['tmp_name'], $UPLOAD_DOCS_DIR . $novo_nome_doc)) {
+            $stmt_doc = $conn->prepare("INSERT INTO inventario_docs (item_id, arquivo, nome_doc) VALUES (?, ?, ?)");
+            $stmt_doc->bind_param("iss", $id_item, $novo_nome_doc, $name_doc);
+            $stmt_doc->execute();
+            $stmt_doc->close();
+        }
+    }
+}
     
     // UPLOAD DE DOCUMENTO (Adiciona novo documento ao item)
     if (!empty($_FILES['doc']['name'])) {

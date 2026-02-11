@@ -8,7 +8,7 @@ if (isset($_GET['nome_cartao'])) {
     $nome_cartao_filtro = mysqli_real_escape_string($conn, $_GET['nome_cartao']);
 }
 
-$sql = "SELECT id_compra, nome_cartao, data_compra, valor, quantidade_parcelas, anexo FROM compras";
+$sql = "SELECT id_compra, nome_cartao, data_compra, descricao, valor, quantidade_parcelas, anexo FROM compras";
 if (!empty($nome_cartao_filtro)) {
     $sql .= " WHERE nome_cartao LIKE '%$nome_cartao_filtro%'";
 }
@@ -150,6 +150,7 @@ function formatar_valor($valor)
                                     <tr>
                                         <th style="text-align: center; vertical-align: middle;">NOME DO CARTÃO</th>
                                         <th style="text-align: center; vertical-align: middle;">DATA DA COMPRA</th>
+                                        <th style="text-align: center; vertical-align: middle;">DESCRIÇÃO</th>
                                         <th style="text-align: center; vertical-align: middle;">VALOR</th>
                                         <th style="text-align: center; vertical-align: middle;">QTD DE PARCELAS</th>
                                         <th style="text-align: center; vertical-align: middle;">COMPROVANTE(S)</th>
@@ -164,25 +165,26 @@ function formatar_valor($valor)
                                             <tr>
                                                 <td style="text-align: center; vertical-align: middle;"><?= htmlspecialchars($compra['nome_cartao']); ?></td>
                                                 <td style="text-align: center; vertical-align: middle;"><?= date('d/m/Y', strtotime($compra['data_compra'])); ?></td>
+                                                <td style="text-align: left; vertical-align: middle;"><?= htmlspecialchars($compra['descricao']); ?></td>
                                                 <td style="text-align: center; vertical-align: middle; width:150px"><?= formatar_valor($compra['valor']); ?></td>
                                                 <td style="text-align: center; vertical-align: middle;"><?= htmlspecialchars($compra['quantidade_parcelas']); ?></td>
-                                                <td style="text-align: center; vertical-align: middle;">
+                                                <td style="text-align: center; vertical-align: middle; width:100px">
                                                     <?php
                                                     $comprovantes = json_decode($compra['anexo'], true);
                                                     if (!empty($comprovantes) && is_array($comprovantes)) :
                                                         foreach ($comprovantes as $comprovante) :
                                                     ?>
-                                                                <a href="<?= htmlspecialchars($comprovante); ?>" target="_blank"><span class="bi bi-box-arrow-down"></span>&nbsp;Ver Comprovante</a><br>
+                                                                <a href="<?= htmlspecialchars($comprovante); ?>" target="_blank"><span class="bi bi-box-arrow-down"></span>&nbsp;Abrir</a><br>
                                                             <?php
                                                         endforeach;
                                                     else :
                                                         ?>
-                                                        <p>Nenhum Comprovante Anexado.</p>
+                                                        <p>Sem Anexo.</p>
                                                     <?php
                                                     endif;
                                                     ?>
                                                 </td>
-                                                <td style="text-align: center; vertical-align: middle;">
+                                                <td style="text-align: center; vertical-align: middle; width:200px">
                                                     <a href="visualizar_parcelas.php?id_compra=<?= $compra['id_compra'] ?>" class="btn btn-info btn-sm"><span class="bi-list-check"></span>&nbsp;Parcelas</a>
                                                     <a href="edit_compra.php?id=<?= $compra['id_compra'] ?>" class="btn btn-secondary btn-sm"><span class="bi-pencil-fill"></span>&nbsp;Editar</a>
                                                 </td>

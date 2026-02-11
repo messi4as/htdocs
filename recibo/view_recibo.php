@@ -1,6 +1,7 @@
 <?php
 session_start();
 require 'db_connect.php';
+require 'extenso.php'; // 1. Importa a função de extenso
 ?>
 <!doctype html>
 <html lang="pt-br">
@@ -39,18 +40,28 @@ require 'db_connect.php';
                         <div class="card-body">
                             <?php
                             if (isset($_GET['id'])) {
-                                $codigo_recibo = mysqli_real_escape_string($conn, $_GET['id']);
+                               $codigo_recibo = mysqli_real_escape_string($conn, $_GET['id']);
                                 $sql = "SELECT * FROM recibo, emitente, emissor WHERE cod_recibo='$codigo_recibo' 
-                            and recibo.cod_emitente = emitente.cod_emitente and recibo.cod_emissor = emissor.cod_emissor";
+                                        AND recibo.cod_emitente = emitente.cod_emitente 
+                                        AND recibo.cod_emissor = emissor.cod_emissor";
                                 $query = mysqli_query($conn, $sql);
 
-                                if (mysqli_num_rows($query) > 0) {
-                                    $codigo_recibo = mysqli_fetch_array($query);
+                               if (mysqli_num_rows($query) > 0) {
+                                    $dados = mysqli_fetch_array($query);
 
                                     // Formata o código do recibo
-                                    $codigo = str_pad($codigo_recibo['cod_recibo'], 4, '0', STR_PAD_LEFT);
+                                    $codigo = str_pad($dados['cod_recibo'], 4, '0', STR_PAD_LEFT);
                                     $cod_formatado = substr($codigo, 0, 1) . '.' . substr($codigo, 1);
 
+                                    // 2. Lógica para garantir o valor por extenso
+                                    $valor_numerico = $dados['valor_recibo'];
+                                    
+                                    // Limpa o valor (remove R$, pontos de milhar e troca vírgula por ponto)
+                                    $valor_limpo = str_replace(['R$', '.', ','], ['', '', '.'], $valor_numerico);
+                                    $valor_limpo = trim($valor_limpo);
+
+                                    // Se o campo 'valor_ext_recibo' estiver vazio no banco, chama a função
+                                    $extenso_final = !empty($dados['valor_ext_recibo']) ? $dados['valor_ext_recibo'] : extenso(floatval($valor_limpo));
                             ?>
 
                                     <style>
@@ -158,65 +169,70 @@ require 'db_connect.php';
                                     <div class="form-container">
                                         <div class="form-group">
                                             <label class="form-label">&nbsp;PRESTADOR_DE_SERVIÇO:</label>
-                                            <a class="form-control"><?= $codigo_recibo['nome_emitente']; ?></a>
+                                            <a class="form-control"><?= $dados['nome_emitente']; ?></a>
                                         </div>
                                     </div>
                                     <br>
                                     <div class="form-container">
                                         <div class="form-group">
                                             <label class="form-label">&nbsp;SÓCIO_/_REPRESENTANTE:</label>
-                                            <a class="form-control"><?= $codigo_recibo['nome_emissor']; ?></a>
+                                            <a class="form-control"><?= $dados['nome_emissor']; ?></a>
                                         </div>
                                     </div>
                                     <br>
                                     <div class="form-container">
                                         <div class="form-group">
                                             <label class="form-label">DATA:</label>
-                                            <a class="form-control"><?= date('d/m/Y', strtotime($codigo_recibo['data_recibo'])) ?></a>
+                                            <a class="form-control"><?= date('d/m/Y', strtotime($dados['data_recibo'])) ?></a>
 
                                             <label class="form-label">&nbsp;LOCAL: </label>
-                                            <a class="form-control"><?= $codigo_recibo['local_recibo']; ?></a>
+                                            <a class="form-control"><?= $dados['local_recibo']; ?></a>
 
                                             <label class="form-label">&nbsp;VALOR:</label>
-                                            <a class="form-control"><?= $codigo_recibo['valor_recibo']; ?></a>
+                                            <a class="form-control"><?= $dados['valor_recibo']; ?></a>
                                         </div>
                                     </div>
                                     <br>
                                     <div class="form-container">
-                                        <div class="form-group">
-                                            <label class="form-label">VALOR_POR_EXTENSO:</label>
-                                            <a class="form-control"><?= $codigo_recibo['valor_ext_recibo']; ?></a>
-                                        </div>
-                                    </div>
+    <div class="form-group">
+        <label class="form-label">VALOR_POR_EXTENSO:</label>
+        <a class="form-control">
+            <?php 
+                // Exibe o que está no banco, mas se estiver vazio, usa a função extenso()
+                echo !empty($dados['valor_ext_recibo']) ? $dados['valor_ext_recibo'] : mb_strtoupper($extenso_final); 
+            ?>
+        </a>
+    </div>
+</div>
                                     <br>
 
 
                                     <label class="form-label">DESCRIÇÃO:</label>
-                                    <div class="form-control" style="background-color: #e9ecef;"><?= $codigo_recibo['descricao_recibo']; ?></div>
+                                    <div class="form-control" style="background-color: #e9ecef;"><?= $dados['descricao_recibo']; ?></div>
 
 
                                     <br>
                                     <!-- Contêiner para alinhar os botões -->
                                     <div class="button-container">
                                         <form action="reportrecibo_pj_pj.php" method="get" target="_blank">
-                                            <input type="hidden" name="id_recibo" value="<?php echo $codigo_recibo['cod_recibo']; ?>">
+                                            <input type="hidden" name="id_recibo" value="<?php echo $dados['cod_recibo']; ?>">
                                             <button type="submit" class="btn btn-pj-pj" style="width:250px;height:50px;"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Recibo PJ-M2</button>
                                         </form>
 
 
                                         <form action="reportrecibo_pj_pf.php" method="get" target="_blank">
-                                            <input type="hidden" name="id_recibo" value="<?php echo $codigo_recibo['cod_recibo']; ?>">
+                                            <input type="hidden" name="id_recibo" value="<?php echo $dados['cod_recibo']; ?>">
                                             <button type="submit" class="btn btn-pj-pf" style="width:300px;height:50px;"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Recibo PJ-MAIARA/MARAISA</button>
                                         </form>
 
                                         <form action="reportrecibo_pf_pf.php" method="get" target="_blank">
-                                            <input type="hidden" name="id_recibo" value="<?php echo $codigo_recibo['cod_recibo']; ?>">
+                                            <input type="hidden" name="id_recibo" value="<?php echo $dados['cod_recibo']; ?>">
                                             <button type="submit" class="btn btn-pf-pf" style="width:300px;height:50px;"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Recibo PF-MAIARA/MARAISA</button>
                                         </form>
 
 
                                         <form action="reportrecibo_pf_pj.php" method="get" target="_blank">
-                                            <input type="hidden" name="id_recibo" value="<?php echo $codigo_recibo['cod_recibo']; ?>">
+                                            <input type="hidden" name="id_recibo" value="<?php echo $dados['cod_recibo']; ?>">
                                             <button type="submit" class="btn btn-pf-pj" style="width:250px;height:50px;"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Recibo PF-M2</button>
                                         </form>
 

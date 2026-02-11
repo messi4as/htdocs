@@ -10,356 +10,188 @@ require 'db_connect.php';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" href="/images/ico_m2.png" type="image/x-icon">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
 
     <style>
-        .form-container {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-        }
-
-        .form-label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"],
-        textarea,
-        select {
-            text-transform: none;
-            width: 100%;
-        }
-
-        #preview-container {
-            width: 200px;
-            height: 200px;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        #preview {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: none;
-        }
-
-        #document-preview-container {
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
-        }
-
-        iframe {
-            width: 100%;
-            height: 200px;
-            border: 1px solid #ddd;
-        }
-
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .documento-item {
-            margin-bottom: 10px;
-        }
-
-        .documento-link {
-            margin-right: 10px;
-        }
-
-        .documento-botao {
-            width: 80px;
-            height: 40px;
-        }
-
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-        }
+        .form-container { display: flex; flex-direction: row; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+        .form-label { font-weight: bold; margin-bottom: 5px; }
+        #preview-container { width: 200px; height: 200px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; background: #f9f9f9; }
+        #preview { width: 100%; height: 100%; object-fit: contain; }
+        #editor_proprietario { height: 200px; background-color: white; border: 1px solid #ccc; }
+        .documento-item { display: flex; align-items: center; background: #f8f9fa; padding: 8px; border: 1px solid #eee; border-radius: 4px; margin-bottom: 5px; }
+        .documento-link { flex-grow: 1; text-decoration: none; color: #007bff; font-weight: 500; }
     </style>
 
-    <title>EDITAR VEÍCULOS</title>
-
+    <title>EDITAR VEÍCULO</title>
 </head>
 
 <body>
     <?php include('/xampp/htdocs/navbar.php'); ?>
     <div class="container mt-4">
         <?php include('/xampp/htdocs/mensagem.php'); ?>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="table-container">
-                        <div class="card-header">
-                            <h4>EDITAR VEÍCULOS
-                                <a href="lista_veiculos.php" class="btn btn-danger float-end"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</a>
-                            </h4>
+        
+        <?php
+        if (isset($_GET['id'])) {
+            $veiculo_id = mysqli_real_escape_string($conn, $_GET['id']);
+            $sql = "SELECT * FROM veiculos WHERE cod_veiculo='$veiculo_id'";
+            $query = mysqli_query($conn, $sql);
+            if (mysqli_num_rows($query) > 0) {
+                $veiculo = mysqli_fetch_array($query);
+                $proprietario_conteudo = stripslashes($veiculo['proprietario_veiculo']);
+                $foto_veiculo = $veiculo['foto_veiculo'];
+                $docs_json = $veiculo['documentos_veiculo'];
+                $documentos = json_decode($docs_json, true) ?: [];
+            }
+        }
+        ?>
+
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white d-flex justify-content-between">
+                <h4 class="mb-0">EDITAR VEÍCULO</h4>
+                <a href="lista_veiculos.php" class="btn btn-danger btn-sm">VOLTAR</a>
+            </div>
+            <div class="card-body">
+                <form action="cadastrar.php" method="post" id="veForm" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="<?= $veiculo['cod_veiculo'] ?>">
+                    <input type="hidden" name="foto_atual" value="<?= $foto_veiculo ?>">
+                    <input type="hidden" name="documentos_atuais" value='<?= $docs_json ?>'>
+
+                    <div class="form-container mb-3">
+                        <div id="preview-container">
+                            <img id="preview" src="<?= $foto_veiculo ?>" style="<?= $foto_veiculo ? '' : 'display:none;' ?>">
                         </div>
-                        <div class="card-body">
-                            <?php
-                            if (isset($_GET['id']))
-                                $veiculo = mysqli_real_escape_string($conn, $_GET['id']);
-                            $sql = "SELECT * FROM veiculos WHERE cod_veiculo='$veiculo'";
-                            $query = mysqli_query($conn, $sql);
+                        <div class="flex-fill">
+                            <label class="form-label">NOME:</label>
+                            <input type="text" name="nome_veiculo" value="<?= $veiculo['nome_veiculo'] ?>" class="form-control mb-2" onkeyup="this.value = this.value.toUpperCase()">
+                            <label class="form-label">MARCA/MODELO:</label>
+                            <input type="text" name="marca_modelo_veiculo" value="<?= $veiculo['marca_modelo_veiculo'] ?>" class="form-control mb-2" onkeyup="this.value = this.value.toUpperCase()">
+                            <label class="form-label">FOTO:</label>
+                            <input type="file" name="foto_veiculo" class="form-control" onchange="previewImage(event)">
+                        </div>
+                        <div style="width: 200px;">
+                            <label class="form-label">PLACA:</label>
+                            <input id="placa" type="text" name="placa_veiculo" value="<?= $veiculo['placa_veiculo'] ?>" class="form-control mb-2">
+                            <label class="form-label">UF:</label>
+                            <input id="uf" type="text" name="uf_veiculo" value="<?= $veiculo['uf_veiculo'] ?>" class="form-control mb-2">
+                            <label class="form-label">RENAVAN:</label>
+                            <input id="renavan" type="text" name="renavan_veiculo" value="<?= $veiculo['renavan_veiculo'] ?>" class="form-control">
+                        </div>
+                    </div>
 
-                            if (mysqli_num_rows($query) > 0)
-                                $veiculo = mysqli_fetch_array($query);
-                            $proprietario = stripslashes($veiculo['proprietario_veiculo']);
-                            $foto_veiculo = $veiculo['foto_veiculo'];
+                    <div class="mb-3">
+                        <label class="form-label">DADOS DO PROPRIETÁRIO:</label>
+                        <div id="editor_proprietario"></div>
+                        <textarea name="proprietario_veiculo" id="textarea_proprietario" style="display:none;"><?= $proprietario_conteudo ?></textarea>
+                    </div>
 
-                            if (isset($veiculo['documentos_veiculo'])) {
-                                $documentos_veiculos = json_decode($veiculo['documentos_veiculo'], true);
-                            } else {
-                                $documentos_veiculos = []; // Defina um array vazio ou um valor padrão
-                            }
+                    <div class="mb-3">
+                        <label class="form-label text-primary fw-bold">ANEXAR NOVOS DOCUMENTOS:</label>
+                        <input type="file" name="documentos_veiculo[]" class="form-control" multiple onchange="gerarInputsNomes(event)">
+                        <div id="nomes-documentos-container" class="mt-2"></div>
+                    </div>
+
+                    <div class="mb-3 border p-2">
+                        <label class="form-label">DOCUMENTOS ATUAIS:</label>
+                        <div id="lista_docs">
+                            <?php foreach ($documentos as $doc): 
+                                $path = is_array($doc) ? $doc['path'] : $doc;
+                                $label = is_array($doc) ? $doc['nome'] : basename($doc);
                             ?>
-                            <script>
-                                function excluirDocumentoVeiculo(caminho) {
-                                    if (confirm('Tem certeza que deseja excluir este documento?')) {
-                                        var form = document.createElement('form');
-                                        form.method = 'POST';
-                                        form.action = 'excluir_documento_veiculo.php';
-
-                                        var inputCaminho = document.createElement('input');
-                                        inputCaminho.type = 'hidden';
-                                        inputCaminho.name = 'caminho_documento';
-                                        inputCaminho.value = caminho;
-
-                                        var inputIdVeiculo = document.createElement('input');
-                                        inputIdVeiculo.type = 'hidden';
-                                        inputIdVeiculo.name = 'id_veiculo';
-                                        inputIdVeiculo.value = '<?= $veiculo['cod_veiculo'] ?>';
-
-                                        var inputDocumentosAtuais = document.createElement('input');
-                                        inputDocumentosAtuais.type = 'hidden';
-                                        inputDocumentosAtuais.name = 'documentos_atuais';
-                                        inputDocumentosAtuais.value = '<?= json_encode($documentos_veiculos) ?>';
-
-                                        form.appendChild(inputCaminho);
-                                        form.appendChild(inputIdVeiculo);
-                                        form.appendChild(inputDocumentosAtuais);
-                                        document.body.appendChild(form);
-                                        form.submit();
-                                    }
-                                }
-                            </script>
-
-                            <form action="cadastrar.php" method="post" id="veForm" enctype="multipart/form-data">
-
-                                <input type="hidden" name="id" value="<?= $veiculo['cod_veiculo'] ?>">
-                                <input type="hidden" name="foto_atual" value="<?= $foto_veiculo ?>">
-                                <input type="hidden" name="documentos_atuais" value='<?php echo json_encode($documentos_veiculos) ?>'>
-
-                                <div class="form-container">
-                                    <div id="preview-container">
-                                        <img id="preview" src="<?= $foto_veiculo ?>" alt="Pré-visualização da Foto" style="display: block;">
-                                    </div>
-
-                                    <div class="form-container">
-                                        <div class="form-group">
-                                            <label class="form-label">NOME:</label>
-                                            <input type="text" name="nome_veiculo" value="<?= $veiculo['nome_veiculo'] ?>" class="form-control" style="width:300px;" onchange="convertToUppercase()">
-
-                                            <label class="form-label">&nbsp;MARCA/MODELO:</label>
-                                            <input type="text" name="marca_modelo_veiculo" value="<?= $veiculo['marca_modelo_veiculo'] ?>" class="form-control" onchange="convertToUppercase()">
-
-                                            <label class="form-label">&nbsp;FOTO:</label>
-                                            <input id="foto" type="file" name="foto_veiculo" class="form-control" accept="image/*" onchange="previewImage(event)" style="width:300px;">
-                                        </div>
-
-                                        <div class="form-container">
-                                            <div class="form-group">
-                                                <label class="form-label">&nbsp;PLACA:</label>
-                                                <input id="placa" type="text" name="placa_veiculo" value="<?= $veiculo['placa_veiculo'] ?>" class="form-control" onchange="convertToUppercase()">
-
-                                                <label class="form-label">&nbsp;UF:</label>
-                                                <input id="uf" type="text" name="uf_veiculo" value="<?= $veiculo['uf_veiculo'] ?>" class="form-control" onchange="convertToUppercase()">
-                                            </div>
-
-                                            <div class="form-container">
-                                                <div class="form-group">
-                                                    <label class="form-label">RENAVAN:</label>
-                                                    <input id="renavan" type="text" name="renavan_veiculo" value="<?= $veiculo['renavan_veiculo'] ?>" class="form-control" style="width:400px;">
-
-                                                    <label class="form-label">CHASSI:</label>
-                                                    <input type="text" name="chassi_veiculo" class="form-control" value="<?= $veiculo['chassi_veiculo'] ?>" onchange="convertToUppercase()">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="documento-item">
+                                    <a href="<?= $path ?>" target="_blank" class="documento-link">
+                                        <i class="bi bi-file-earmark-pdf text-danger"></i> <?= $label ?>
+                                    </a>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="excluirDocumento('<?= addslashes($path) ?>')">
+                                        <i class="bi bi-trash"></i> Excluir
+                                    </button>
                                 </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
 
-                                <div>
-                                    <label class="form-label">&nbsp;PROPRIETÁRIO:</label>
-                                    <div id="editor_proprietario" class="quill-editor-container"></div>
-                                    <textarea name="proprietario_veiculo" style="display:none;" id="proprietario_veiculo"><?= $proprietario ?></textarea>
-                                </div>
-                                <br>
-                                    <input id="documentos" type="file" name="documentos_veiculo[]" class="form-control" accept=".pdf,.doc,.docx" multiple onchange="previewDocuments(event)">
-                                    <br>
+                    <button type="submit" name="edit_veiculos" class="btn btn-success w-100 btn-lg">SALVAR ALTERAÇÕES</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-                                    <div id="document-preview-container">
-                                        <div class="form-group">
-                                            <?php
-                                            if (!empty($documentos_veiculos) && is_array($documentos_veiculos)) {
-                                                foreach ($documentos_veiculos as $documento_atual) {
-                                                    echo '<div style="margin-bottom: 10px;">';
-                                                    echo '<a class="documento-link" href="' . $documento_atual . '" target="_blank">' . basename($documento_atual) . '</a>';
-                                                    //echo ' <button class="btn btn-danger documento-botao" type="button" onclick="excluirDocumentoVeiculo(\'' . $documento_atual . '\')">Excluir</button>';
-                                                    echo '</div>';
-                                                }
-                                            }
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <br>
+    <script>
+        var quill;
 
-                                    <div>
-                                        <button type="submit" name="edit_veiculos" class="btn btn-success" style="width:200px;height:50px;"><span class="bi-file-earmark-plus-fill"></span>&nbsp;Salvar</button>
-                                    </div>
-                            </form>
+        $(document).ready(function() {
+            $('#placa').inputmask('AAA-9A99');
+            $('#uf').inputmask('AA');
+            $('#renavan').inputmask('99999999999');
+        });
 
-                            <script>
-                                $(document).ready(function() {
-                                    $('#renavan').mask('0000000000000');
-                                    $('#placa').mask('AAA-9A99');
-                                    $('#uf').mask('AA');
-                                });
+        window.onload = function() {
+            quill = new Quill('#editor_proprietario', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [['bold', 'italic', 'underline'], [{'list': 'ordered'}, {'list': 'bullet'}], ['clean']]
+                }
+            });
 
-                                function convertToUppercase() {
-                                    var inputs = document.querySelectorAll('input[type="text"]'); // Apenas inputs de texto
-                                    inputs.forEach(function(input) {
-                                        input.value = input.value.toUpperCase();
-                                    });
-                                    var reader = new FileReader();
-                                    reader.onload = function() {
-                                        var output = document.getElementById('preview');
-                                        output.src = reader.result;
-                                        output.style.display = 'block';
-                                    };
-                                    reader.readAsDataURL(event.target.files[0]);
-                                }
+            var dadosIniciais = document.getElementById('textarea_proprietario').value;
+            if (dadosIniciais) {
+                setTimeout(function() {
+                    quill.clipboard.dangerouslyPasteHTML(dadosIniciais);
+                }, 150);
+            }
+        };
 
-                                function previewDocuments(event) {
-                                    var files = event.target.files;
-                                    var container = document.getElementById('document-preview-container');
-                                    container.innerHTML = '';
-                                    for (var i = 0; i < files.length; i++) {
-                                        var file = files[i];
-                                        var url = URL.createObjectURL(file);
-                                        var iframe = document.createElement('iframe');
-                                        iframe.src = url;
-                                        iframe.style.width = '300px';
-                                        iframe.style.height = '400px';
-                                        iframe.style.border = '1px solid #ddd';
-                                        container.appendChild(iframe);
-                                    }
-                                }
+        document.getElementById('veForm').onsubmit = function() {
+            document.getElementById('textarea_proprietario').value = quill.root.innerHTML === '<p><br></p>' ? '' : quill.root.innerHTML;
+        };
 
-                                // Inicializa o editor para a proprietario
-                                var quillProprietario = new Quill('#editor_proprietario', {
-                                    theme: 'snow',
-                                    modules: {
-                                        toolbar: [
-                                            ['bold', 'italic', 'underline', 'strike'],
-                                            [{
-                                                'header': [1, 2, 3, false]
-                                            }],
-                                            [{
-                                                'list': 'ordered'
-                                            }, {
-                                                'list': 'bullet'
-                                            }],
-                                            [{
-                                                'script': 'sub'
-                                            }, {
-                                                'script': 'super'
-                                            }],
-                                            [{
-                                                'indent': '-1'
-                                            }, {
-                                                'indent': '+1'
-                                            }],
-                                            [{
-                                                'color': []
-                                            }, {
-                                                'background': []
-                                            }],
-                                            [{
-                                                'align': []
-                                            }],
-                                            ['clean']
-                                        ]
-                                    }
-                                });
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('preview');
+                output.src = reader.result; output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
 
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    var proprietarioTextarea = document.getElementById('proprietario_veiculo');
+        function gerarInputsNomes(event) {
+            const container = document.getElementById('nomes-documentos-container');
+            container.innerHTML = '';
+            const files = event.target.files;
+            for (let i = 0; i < files.length; i++) {
+                const div = document.createElement('div');
+                div.className = 'input-group mb-1 shadow-sm';
+                div.innerHTML = `
+                    <span class="input-group-text small" style="font-size:10px; width: 150px; overflow: hidden;">${files[i].name}</span>
+                    <input type="text" name="nomes_arquivos[]" class="form-control form-control-sm" placeholder="Dê um nome a este documento" required>
+                `;
+                container.appendChild(div);
+            }
+        }
 
-                                    if (proprietarioTextarea && proprietarioTextarea.value) {
-                                        // Use `dangerouslyPasteHTML` para carregar HTML no Quill
-                                        quillProprietario.clipboard.dangerouslyPasteHTML(proprietarioTextarea.value);
-                                    }
-                                });
+        // FUNÇÃO DE EXCLUSÃO
+        function excluirDocumento(caminho) {
+            if (confirm('Tem certeza que deseja excluir este documento permanentemente?')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'excluir_documento_veiculo.php';
 
-                                var meuFormulario = document.getElementById('veForm');
-                                
-                                if (meuFormulario) {
-                                    meuFormulario.addEventListener('submit', function() {
-                                        document.getElementById('proprietario_veiculo').value = quillProprietario.root.innerHTML;
-                                    });
-                                } else {
-                                    console.warn("Formulário com ID 'veForm' não encontrado. Certifique-se de que o Quill está sendo atualizado antes do envio.");
-                                }
-                            </script>
-
-
+                form.innerHTML = `
+                    <input type="hidden" name="caminho_documento" value="${caminho}">
+                    <input type="hidden" name="id_veiculo" value="<?= $veiculo['cod_veiculo'] ?>">
+                    <input type="hidden" name="documentos_atuais" value='<?= $docs_json ?>'>
+                `;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
 </body>
-
 </html>

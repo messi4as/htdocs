@@ -17,6 +17,45 @@ require 'db_connect.php';
 
     <title>Ver Ordem de Serviço</title>
 
+    <style>
+        /* Estilo para simular o campo de input desabilitado, mas legível */
+        .view-field {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            display: block;
+            width: 100%;
+            min-height: 38px;
+            color: #212529;
+            word-wrap: break-word;
+        }
+
+      .form-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    display: block;
+    color: #000 !important; /* Força a cor preta, ignorando qualquer herança */
+}
+
+        /* Cores customizadas dos botões */
+        .btn-maiara { background-color: rgb(255, 242, 205); color: black; border: 1px solid #decba4; }
+        .btn-maraisa { background-color: rgb(166, 202, 236); color: black; border: 1px solid #8ba8c4; }
+        .btn-m2 { background-color: rgb(242, 242, 242); color: black; border: 1px solid #ccc; }
+        .btn-fazenda { background-color: rgb(252, 114, 206); color: black; border: 1px solid #d15fa8; }
+        
+        .btn-report {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .card-header h4 { margin-bottom: 0; }
+    </style>
 </head>
 
 <body>
@@ -25,241 +64,143 @@ require 'db_connect.php';
         <?php include('mensagem.php'); ?>
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="table-container">
-                        <div class="card-header">
-                            <h4>DETALHE DA ORDEM DE SERVIÇO
-                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
-            
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <?php
-                            if (isset($_GET['id'])) {
-                                $os_codigo = mysqli_real_escape_string($conn, $_GET['id']);
-                                $sql = "SELECT * FROM ordem_servico WHERE codigo='$os_codigo'";
-                                $query = mysqli_query($conn, $sql);
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h4>DETALHE DA ORDEM DE SERVIÇO
+                            <button class="btn btn-danger float-end" onclick="window.history.back();">
+                                <span class="bi-arrow-left-circle"></span>&nbsp;Voltar
+                            </button>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <?php
+                        if (isset($_GET['id'])) {
+                            $os_codigo_id = mysqli_real_escape_string($conn, $_GET['id']);
+                            $sql = "SELECT * FROM ordem_servico WHERE codigo='$os_codigo_id'";
+                            $query = mysqli_query($conn, $sql);
 
-                                if (mysqli_num_rows($query) > 0) {
-                                    $os_codigo = mysqli_fetch_array($query);
+                            if (mysqli_num_rows($query) > 0) {
+                                $os = mysqli_fetch_array($query);
 
-                                    // Formata o código do recibo
-                                    $codigo = str_pad($os_codigo['codigo'], 4, '0', STR_PAD_LEFT);
-                                    $cod_formatado = substr($codigo, 0, 1) . '.' . substr($codigo, 1);
-                            ?>
-                                    <style>
-                                        .form-container {
-                                            display: flex;
-                                            flex-wrap: wrap;
-                                            gap: 20px;
-                                            justify-content: space-between;
-                                            /* Adicionado */
-                                        }
-
-                                        .form-group {
-                                            display: flex;
-                                            align-items: center;
-                                            flex: 1;
-                                            /* Adicionado */
-                                            margin: 0 10px;
-                                            /* Adicionado */
-                                        }
-
-                                        .form-label {
-                                            font-weight: bold;
-                                            margin-right: 10px;
-                                        }
-
-                                        input[type="text"],
-                                        textarea,
-                                        select {
-                                            text-transform: none;
-                                            width: 100%;
-                                            /* Adicionado */
-                                        }
-
-                                        .btn {
-                                            flex: 0 0 auto;
-                                            /* Adicionado */
-                                            margin-left: 10px;
-                                            /* Adicionado */
-                                        }
-
-                                        .button-container {
-                                            display: flex;
-                                            gap: 10px;
-                                            /* Espaçamento entre os botões */
-                                            flex-wrap: wrap;
-                                            /* Permite que os botões quebrem linha se necessário */
-                                            justify-content: space-between;
-                                            /* Adicionado */
-                                        }
-
-                                        .btn-maiara {
-                                            background-color: rgb(263, 242, 205);
-                                            /* Amarelo */
-                                            color: black;
-                                        }
-
-                                        .btn-maraisa {
-                                            background-color: rgb(166, 202, 236);
-                                            /* Azul */
-                                            color: black;
-                                        }
-
-                                        .btn-m2 {
-                                            background-color: rgb(242, 242, 242);
-                                            /* Cinza */
-                                            color: black;
-                                        }
-
-                                        .btn-fazenda {
-                                            background-color: rgb(252, 114, 206);
-                                            /* Rosa */
-                                            color: black;
-                                        }
-
-                                        .table-container {
-                                            width: 100%;
-                                            overflow-x: auto;
-                                        }
-
-                                        table {
-                                            width: 100%;
-                                            border-collapse: collapse;
-                                        }
-
-                                        th,
-                                        td {
-                                            border: 1px solid #ddd;
-                                            padding: 8px;
-                                        }
-
-                                        th {
-                                            background-color: #f2f2f2;
-                                        }
-                                    </style>
-
-                                    <div class="form-container">
-                                        <div class="form-group">
-                                            <label class="form-label">CÓDIGO</label>
-                                            <a class="form-control" style="width:75px ; background-color: #e9ecef;">
-                                                <?= $cod_formatado ?>
-                                            </a>
-
-                                            <label class="form-label">&nbsp;NOME</label>
-                                            <a class="form-control">
-                                                <?= mb_strtoupper($os_codigo['nome']); ?>
-                                            </a>
-                                        </div>
+                                // Formatação do código
+                                $codigo_raw = str_pad($os['codigo'], 4, '0', STR_PAD_LEFT);
+                                $cod_formatado = substr($codigo_raw, 0, 1) . '.' . substr($codigo_raw, 1);
+                        ?>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <label class="form-label">CÓDIGO</label>
+                                        <div class="view-field"><?= $cod_formatado ?></div>
                                     </div>
-                                    <br>
-
-                                    <div class="form-container">
-                                        <div class="form-group">
-                                            <label class="form-label">CPF:</label>
-                                            <a class="form-control">
-                                                <?= $os_codigo['cpf']; ?>
-                                            </a>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">CNPJ:</label>
-                                            <a class="form-control">
-                                                <?= $os_codigo['cnpj']; ?>
-                                            </a>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">CELULAR:</label>
-                                            <a class="form-control">
-                                                <?= $os_codigo['celular']; ?>
-                                            </a>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="form-label">TELEFONE_FIXO:</label>
-                                            <a class="form-control">
-                                                <?= $os_codigo['telefone_fixo']; ?>
-                                            </a>
-                                        </div>
+                                    <div class="col-md-10">
+                                        <label class="form-label">NOME</label>
+                                        <div class="view-field"><?= mb_strtoupper($os['nome']); ?></div>
                                     </div>
-                                    <br>
+                                </div>
 
-                                    <label class="form-label">ENDEREÇO:</label>
-                                    <a class="form-control">
-                                        <?= mb_strtoupper($os_codigo['endereco']); ?>
-                                    </a>
-                                    <br>
-
-                                    <div class="form-container">
-                                        <div class="form-group">
-                                            <label class="form-label">CIDADE:</label>
-                                            <a class="form-control">
-                                                <?= mb_strtoupper($os_codigo['cidade']); ?>
-                                            </a>
-
-                                            <label class="form-label">&nbsp;CEP:</label>
-                                            <a class="form-control">
-                                                <?= $os_codigo['cep']; ?>
-                                            </a>
-
-                                            <label class="form-label">&nbsp;DATA:</label>
-                                            <a class="form-control">
-                                                <?= date('d/m/Y', strtotime($os_codigo['data'])) ?>
-                                            </a>
-
-                                            <label class="form-label">&nbsp;VALOR:</label>
-                                            <a class="form-control">
-                                                <?= $os_codigo['valor']; ?>
-                                            </a>
-                                        </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-3">
+                                        <label class="form-label">CPF</label>
+                                        <div class="view-field"><?= $os['cpf'] ?: '---'; ?></div>
                                     </div>
-                                    <br>
+                                    <div class="col-md-3">
+                                        <label class="form-label">CNPJ</label>
+                                        <div class="view-field"><?= $os['cnpj'] ?: '---'; ?></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">CELULAR</label>
+                                        <div class="view-field"><?= $os['celular'] ?: '---'; ?></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">TELEFONE FIXO</label>
+                                        <div class="view-field"><?= $os['telefone_fixo'] ?: '---'; ?></div>
+                                    </div>
+                                </div>
 
-                                    <label class="form-label">DESCRIÇÃO:</label>
-                                    <div class="form-control" style="background-color: #e9ecef;"><?= $os_codigo['descricao']; ?></div>
+                                <div class="row mt-2">
+                                    <div class="col-md-12">
+                                        <label class="form-label">ENDEREÇO</label>
+                                        <div class="view-field"><?= mb_strtoupper($os['endereco']); ?></div>
+                                    </div>
+                                </div>
 
-                                    <label class="form-label">FORMA DE PAGAMENTO:</label>
-                                    <div class="form-control" style="background-color: #e9ecef;"><?= $os_codigo['forma_pagamento']; ?></div>
+                                <div class="row mt-2">
+                                    <div class="col-md-4">
+                                        <label class="form-label">CIDADE</label>
+                                        <div class="view-field"><?= mb_strtoupper($os['cidade']); ?></div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">CEP</label>
+                                        <div class="view-field"><?= $os['cep']; ?></div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">DATA</label>
+                                        <div class="view-field"><?= date('d/m/Y', strtotime($os['data'])) ?></div>
+                                    </div>
+                                    <div class="col-md-3">
+    <label class="form-label">VALOR</label>
+    <div class="view-field">
+        <?php 
+            if (is_numeric($os['valor'])) {
+                echo 'R$ ' . number_format($os['valor'], 2, ',', '.');
+            } else {
+                echo htmlspecialchars($os['valor']);
+            }
+        ?>
+    </div>
+</div>
 
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">DESCRIÇÃO</label>
+                                        <div class="view-field" style="height: auto; min-height: 100px; white-space: pre-wrap;"><?= $os['descricao']; ?></div>
+                                    </div>
+                                </div>
 
-                                    <br>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">FORMA DE PAGAMENTO</label>
+                                        <div class="view-field" style="height: auto; white-space: pre-wrap;"><?= $os['forma_pagamento']; ?></div>
+                                    </div>
+                                </div>
 
-                                    <!-- Contêiner para alinhar os botões -->
-                                    <div class="button-container">
+                                <hr class="my-4">
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-3">
                                         <form action="reportmaiara.php" method="get" target="_blank">
-                                            <input type="hidden" name="cod_rel" value="<?php echo $os_codigo['codigo']; ?>">
-                                            <button type="submit" class="btn btn-maiara" style="width:250px;height:50px;"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Gerar Relatório Maiara</button>
-                                        </form>
-
-                                        <form action="reportmaraisa.php" method="get" target="_blank">
-                                            <input type="hidden" name="cod_rel" value="<?php echo $os_codigo['codigo']; ?>">
-                                            <button type="submit" class="btn btn-maraisa" style="width:250px;height:50px;"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Gerar Relatório Maraisa</button>
-                                        </form>
-
-                                        <form action="reportm2.php" method="get" target="_blank">
-                                            <input type="hidden" name="cod_rel" value="<?php echo $os_codigo['codigo']; ?>">
-                                            <button type="submit" class="btn btn-m2" style="width:250px;height:50px;"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Gerar Relatório M2</button>
-                                        </form>
-
-                                        <form action="reportfazenda.php" method="get" target="_blank">
-                                            <input type="hidden" name="cod_rel" value="<?php echo $os_codigo['codigo']; ?>">
-                                            <button type="submit" class="btn btn-fazenda" style="width:250px;height:50px;"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Gerar Relatório Fazenda</button>
+                                            <input type="hidden" name="cod_rel" value="<?= $os['codigo']; ?>">
+                                            <button type="submit" class="btn btn-maiara btn-report"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Relatório Maiara</button>
                                         </form>
                                     </div>
-                            <?php
-                                } else {
-                                    echo "<h5>Ordem de Serviço não encontrada</h5>";
-                                }
+                                    <div class="col-md-3">
+                                        <form action="reportmaraisa.php" method="get" target="_blank">
+                                            <input type="hidden" name="cod_rel" value="<?= $os['codigo']; ?>">
+                                            <button type="submit" class="btn btn-maraisa btn-report"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Relatório Maraisa</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <form action="reportm2.php" method="get" target="_blank">
+                                            <input type="hidden" name="cod_rel" value="<?= $os['codigo']; ?>">
+                                            <button type="submit" class="btn btn-m2 btn-report"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Relatório M2</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <form action="reportfazenda.php" method="get" target="_blank">
+                                            <input type="hidden" name="cod_rel" value="<?= $os['codigo']; ?>">
+                                            <button type="submit" class="btn btn-fazenda btn-report"><span class="bi-file-earmark-pdf-fill"></span>&nbsp;Relatório Fazenda</button>
+                                        </form>
+                                    </div>
+                                </div>
+                        <?php
+                            } else {
+                                echo "<div class='alert alert-warning'>Ordem de Serviço não encontrada.</div>";
                             }
-                            ?>
-                        </div>
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-
 </body>
-
 </html>

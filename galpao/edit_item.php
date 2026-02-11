@@ -2,8 +2,10 @@
 session_start();
 require 'db_connect.php';
 
-
-
+// Função para converter os <br> do banco em quebras de linha para o textarea
+function br2nl($text) {
+    return preg_replace('/<br\s*?\/?>/i', "\n", $text);
+}
 ?>
 <!doctype html>
 <html lang="pt-br">
@@ -11,113 +13,31 @@ require 'db_connect.php';
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+    
     <link rel="icon" href="/images/ico_m2.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- jQuery deve ser carregado primeiro -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Plugins que dependem do jQuery -->
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
-
-    <!-- Bootstrap JS -->
+    
     <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
 
-
     <style>
-        .form-container {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-        }
-
-        .form-label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"],
-        textare,
-        select,
-        input[type="file"] {
-            width: 100%;
-        }
-
-        #preview-container {
-            width: 200px;
-            height: 200px;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        #preview {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: none;
-        }
-
-        #document-preview-container {
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
-        }
-
-        iframe {
-            width: 100%;
-            height: 200px;
-            border: 1px solid #ddd;
-        }
-
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .documento-item {
-            margin-bottom: 10px;
-        }
-
-        .documento-link {
-            margin-right: 10px;
-        }
-
-        .documento-botao {
-            width: 80px;
-            height: 40px;
-        }
+        .form-container { display: flex; flex-direction: row; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+        .form-label { font-weight: bold; margin-bottom: 5px; }
+        #preview-container { width: 200px; height: 200px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px; }
+        #preview { width: 100%; height: 100%; object-fit: contain; }
+        .galeria-item { position: relative; border: 1px solid #ddd; padding: 5px; border-radius: 5px; }
+        .btn-excluir-foto { position: absolute; top: -5px; right: -5px; padding: 0px 5px; font-size: 12px; border-radius: 50%; }
+        .table-container { width: 100%; overflow-x: auto; }
     </style>
 
     <title>EDITAR ITEM</title>
-
 </head>
 
 <body>
@@ -126,126 +46,70 @@ require 'db_connect.php';
         <?php include('/xampp/htdocs/mensagem.php'); ?>
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="table-container">
-                        <div class="card-header">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h4>EDITAR ITEM
+                            <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
+                        </h4>
+                    </div>
 
-                            <h4>EDITAR ITEM
-                                <button class="btn btn-danger float-end" onclick="window.history.back();"><span class="bi-arrow-left-circle"></span>&nbsp;Voltar</button>
-                            </h4>
-                        </div>
+                    <div class="card-body">
+                        <?php
+                        if (isset($_GET['id'])) {
+                            $id_item = mysqli_real_escape_string($conn, $_GET['id']);
+                            $sql = "SELECT * FROM galpao WHERE cod_item='$id_item'";
+                            $query = mysqli_query($conn, $sql);
 
-                        <div class="card-body">
-
-                            <?php
-                            if (isset($_GET['id'])) {
-                                $id_item = mysqli_real_escape_string($conn, $_GET['id']);
-                                $sql = "SELECT * FROM galpao WHERE cod_item='$id_item'";
-                                $query = mysqli_query($conn, $sql);
-
-
-
-                                if (mysqli_num_rows($query) > 0) {
-                                    $item = mysqli_fetch_array($query);
-                                    $descricao = str_replace('<br>', "\n", $item['descricao']);
-                                    $foto = $item['foto'];
-
-
-
-                                    if (isset($item['anexo_documento'])) {
-                                        $anexos_documentos = json_decode($item['anexo_documento'], true);
-                                    } else {
-                                        $anexos_documentos = []; // Defina um array vazio ou um valor padrão
-                                    }
-
-                                    // Buscar Movimentações relacionadas ao Item
-                                    $query_movimentacoes = "SELECT * FROM movimentacao WHERE id_item = '$id_item' ORDER BY id desc";
-                                    $result_movimentacoes = mysqli_query($conn, $query_movimentacoes);
-                                    $movimentacoes = mysqli_fetch_all($result_movimentacoes, MYSQLI_ASSOC);
-                                } else {
-                                    $_SESSION['message'] = "Movimenração não encontrado!";
-                                    header("Location: index.php");
-                                    exit(0);
-                                }
-                            } else {
-                                $_SESSION['message'] = "ID do animal não fornecido!";
-                                header("Location: index.php");
-                                exit(0);
+                            if (mysqli_num_rows($query) > 0) {
+                                $item = mysqli_fetch_array($query);
+                                $foto = $item['foto'];
+                                $anexos_documentos = json_decode($item['anexo_documento'], true) ?? [];
+                                
+                                // Buscar Movimentações
+                                $query_movimentacoes = "SELECT * FROM movimentacao WHERE id_item = '$id_item' ORDER BY id desc";
+                                $result_movimentacoes = mysqli_query($conn, $query_movimentacoes);
+                                $movimentacoes = mysqli_fetch_all($result_movimentacoes, MYSQLI_ASSOC);
                             }
+                        }
+                        ?>
 
+                        <form action="cadastrar.php" method="post" enctype="multipart/form-data" onsubmit="addCurrencyPrefix();">
+                            <input type="hidden" name="id" value="<?= $item['cod_item'] ?>">
+                            <input type="hidden" name="foto_atual" value="<?= $foto ?>">
+                            <input type="hidden" name="documentos_atuais" value='<?= json_encode($anexos_documentos) ?>'>
 
-                            ?>
+                            <div class="form-container">
+                                <div id="preview-container">
+                                    <img id="preview" src="<?= $foto ?>" alt="Foto" style="display: <?= $foto ? 'block' : 'none' ?>;">
+                                </div>
 
-                            <script>
-                                function excluirDocumentoItem(caminho) {
-                                    if (confirm('Tem certeza que deseja excluir este documento?')) {
-                                        var form = document.createElement('form');
-                                        form.method = 'POST';
-                                        form.action = 'excluir_documento_item.php';
+                                <div class="form-group">
+                                    <label class="form-label">NOME:</label>
+                                    <input type="text" name="nome_item" value="<?= $item['nome_item'] ?>" class="form-control" style="width:300px;" onchange="convertToUppercase()">
+                                    
+                                    <label class="form-label">CATEGORIA:</label>
+                                    <input type="text" name="categoria" value="<?= $item['categoria'] ?>" class="form-control" onchange="convertToUppercase()">
+                                    
+                                    <label class="form-label">FOTO PRINCIPAL:</label>
+                                    <input id="foto" type="file" name="foto" class="form-control" accept="image/*" onchange="previewImage(event)">
+                                </div>
 
-                                        var inputCaminho = document.createElement('input');
-                                        inputCaminho.type = 'hidden';
-                                        inputCaminho.name = 'caminho_documento';
-                                        inputCaminho.value = caminho;
+                                <div class="form-group">
+                                    <label class="form-label">QUANTIDADE:</label>
+                                    <input type="text" name="quantidade" value="<?= $item['quantidade'] ?>" class="form-control">
+                                    
+                                    <label class="form-label">VALOR:</label>
+                                    <input id="valor" type="text" name="valor" value="<?= $item['valor'] ?>" class="form-control" oninput="formatarValor(this)">
+                                    
+                                    <label class="form-label">STATUS:</label>
+                                    <input type="text" name="status" value="<?= $item['status'] ?>" class="form-control" onchange="convertToUppercase()">
+                                </div>
 
-                                        var inputIdItem = document.createElement('input');
-                                        inputIdItem.type = 'hidden';
-                                        inputIdItem.name = 'id_item';
-                                        inputIdItem.value = '<?= $item['cod_item'] ?>';
+                                <div class="form-group">
+                                    <label class="form-label">ORIGEM:</label>
+                                    <input type="text" name="origem" value="<?= $item['origem'] ?>" class="form-control" style="width:350px;" onchange="convertToUppercase()">
 
-                                        var inputDocumentosAtuais = document.createElement('input');
-                                        inputDocumentosAtuais.type = 'hidden';
-                                        inputDocumentosAtuais.name = 'documentos_atuais';
-                                        inputDocumentosAtuais.value = '<?= json_encode($anexos_documentos) ?>';
-
-                                        form.appendChild(inputCaminho);
-                                        form.appendChild(inputIdItem);
-                                        form.appendChild(inputDocumentosAtuais);
-                                        document.body.appendChild(form);
-                                        form.submit();
-                                    }
-                                }
-                            </script>
-                            <form action="cadastrar.php" method="post" enctype="multipart/form-data" onsubmit=" addCurrencyPrefix();">
-                                <input type="hidden" name="id" value="<?= $item['cod_item'] ?>">
-                                <input type="hidden" name="foto_atual" value="<?= $foto ?>">
-                                <input type="hidden" name="documentos_atuais" value='<?php echo json_encode($anexos_documentos) ?>'>
-
-                                <div class="form-container">
-                                    <div id="preview-container">
-                                        <img id="preview" src="<?= $foto ?>" alt="Pré-visualização da Foto" style="display: block;">
-                                    </div>
-
-                                    <div class="form-container">
-                                        <div class="form-group">
-                                            <label class="form-label">NOME:</label>
-                                            <input type="text" name="nome_item" value="<?= $item['nome_item'] ?>" class="form-control" style="width:300px;" onchange="convertToUppercase()">
-
-                                            <label class="form-label">&nbsp;CATEGORIA:</label>
-                                            <input type="text" name="categoria" value="<?= $item['categoria'] ?>" class="form-control" onchange="convertToUppercase()">
-
-                                            <label class="form-label">&nbsp;FOTO:</label>
-                                            <input id="foto" type="file" name="foto" class="form-control" accept="image/*" onchange="previewImage(event)" style="width:300px;">
-                                        </div>
-
-                                        <div class="form-container">
-                                            <div class="form-group">
-                                                <label class="form-label">&nbsp;QUANTIDADE:</label>
-                                                <input id="quantidade" type="text" name="quantidade" value="<?= $item['quantidade'] ?>" class="form-control" onchange="convertToUppercase()">
-
-                                                <label class="form-label">&nbsp;VALOR:</label>
-                                                <input id="valor" type="text" name="valor" value="<?= $item['valor'] ?>" class="form-control" oninput="formatarValor(this)">
-
-                                                <label class="form-label">&nbsp;STATUS:</label>
-                                                <input id="status" type="text" name="status" value="<?= $item['status'] ?>" class="form-control" onchange="convertToUppercase()">
-                                            </div>
-
-                                            <div class="form-container">
-                                                <div class="form-group">
-                                                    <label class="form-label">ORIGEM:</label>
-                                                    <input id="origem" type="text" name="origem" value="<?= $item['origem'] ?>" class="form-control" style="width:400px;" onchange="convertToUppercase()">
-
-                                                    <label for="local" class="form-label">LOCAL:</label>
+                                    <label for="local" class="form-label">LOCAL:</label>
                                                     <select name="local" class="form-control" required>
                                                         <option value="TÉRREO - SALA 01" <?= $item['local'] == 'TÉRREO - SALA 01' ? 'selected' : ''; ?>>TÉRREO - SALA 01</option>
                                                         <option value="CAMARIM 01" <?= $item['local'] == 'CAMARIM 01' ? 'selected' : ''; ?>>CAMARIM 01</option>
@@ -266,100 +130,140 @@ require 'db_connect.php';
                                                         <option value="1º ANDAR - SALA 03" <?= $item['local'] == '1º ANDAR - SALA 03' ? 'selected' : ''; ?>>1º ANDAR - SALA 03</option>
                                                     </select>
 
-                                                    <label for="data_entrada" class="form-label">DATA DE ENTRADA:</label>
-                                                    <input type="date" name="data_entrada" value="<?= $item['data_entrada'] ?>" class="form-control" required>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <label class="form-label">DATA DE ENTRADA:</label>
+                                    <input type="date" name="data_entrada" value="<?= $item['data_entrada'] ?>" class="form-control">
                                 </div>
+                            </div>
 
-                                <label for="descricao" class="form-label">&nbsp;DESCRIÇÃO:</label>
-                                <textarea name="descricao" class="form-control" style="height:150px;"><?= htmlspecialchars($item['descricao']); ?></textarea>
+                            <div class="mt-3">
+                                <label class="form-label">DESCRIÇÃO:</label>
+                                <textarea name="descricao" class="form-control" style="height:150px;"><?= br2nl($item['descricao']); ?></textarea>
+                            </div>
 
-
-                                <label class="form-label">&nbsp;DOCUMENTOS:</label>
-                                <input id="documentos" type="file" name="anexo_documento[]" class="form-control" accept=".pdf,.doc,.docx" multiple onchange="previewDocuments(event)">
-                                <br>
-
-                                <div id="document-preview-container">
-                                    <div class="form-group">
-
-
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">GALERIA DE IMAGENS:</label>
+                                    <input type="file" name="galeria[]" class="form-control mb-2" accept="image/*" multiple>
+                                    <div class="d-flex flex-wrap gap-2">
                                         <?php
-                                        // Supondo que $documentos contenha os caminhos dos documentos atuais
-                                        if (!empty($anexos_documentos) && is_array($anexos_documentos)) {
-                                            foreach ($anexos_documentos as $documento_atual) {
-                                                echo '<div style="margin-bottom: 10px;">';
-                                                echo '<a class="documento-link" href="' . $documento_atual . '" target="_blank">' . basename($documento_atual) . '</a>';
-                                                // echo ' <button class="btn btn-danger documento-botao" type="button" onclick="excluirDocumentoItem(\'' . $documento_atual . '\')">Excluir</button>';
-                                                echo '</div>';
-                                            }
-                                        }
-                                        ?>
-
-
+                                        $q_f = mysqli_query($conn, "SELECT * FROM galpao_imagens WHERE id_item = '$id_item'");
+                                        while($f = mysqli_fetch_assoc($q_f)): ?>
+                                            <div class="galeria-item">
+                                                <img src="<?= $f['caminho_imagem'] ?>" style="width: 70px; height: 70px; object-fit: cover;">
+                                                <a href="excluir_foto_galeria.php?id=<?= $f['id'] ?>&item=<?= $id_item ?>" class="btn btn-danger btn-excluir-foto">×</a>
+                                            </div>
+                                        <?php endwhile; ?>
                                     </div>
                                 </div>
-                                <br>
-
-                                <div>
-                                    <button type="submit" name="edit_itens" class="btn btn-success" style="width:200px;height:50px;"><span class="bi-file-earmark-plus-fill"></span>&nbsp;Salvar</button>
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#movimentacaoModal" style="width:200px;height:50px;">Registrar Movimentação</button>
+                                <div class="col-md-6">
+                                    <label class="form-label">DOCUMENTOS:</label>
+                                    <input type="file" name="anexo_documento[]" class="form-control mb-2" multiple>
+                                    <?php foreach ($anexos_documentos as $doc): ?>
+                                        <div class="small"><i class="bi bi-file-earmark-text"></i> <?= basename($doc) ?></div>
+                                    <?php endforeach; ?>
                                 </div>
+                            </div>
 
-                                <br>
+                            <div class="mt-4">
+                                <button type="submit" name="edit_itens" class="btn btn-success" style="width:200px; height:50px;"><i class="bi bi-check-lg"></i> Salvar Alterações</button>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#movimentacaoModal" style="width:250px; height:50px;"><i class="bi bi-plus-circle"></i> Registrar Movimentação</button>
+                            </div>
+                        </form>
 
-                                <table class="table" id="movimetacoesTable">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align: center; vertical-align: middle;">DATA</th>
-                                            <th style="text-align: center; vertical-align: middle;">DESCRIÇÃO</th>
-                                            <th style="text-align: center; vertical-align: middle;">RESPONSÁVEL</th>
+                        <hr class="my-5">
 
+                        <h5>HISTÓRICO DE MOVIMENTAÇÕES</h5>
+                        <table class="table table-bordered table-striped" id="movimentacoesTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 150px;">DATA</th>
+                                    <th>DESCRIÇÃO</th>
+                                    <th>RESPONSÁVEL</th>
+                                    <th style="width: 50px;">AÇÃO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($movimentacoes)): ?>
+                                    <?php foreach ($movimentacoes as $mov): ?>
+                                        <tr data-id="<?= $mov['id']; ?>">
+                                            <td><?= date('d/m/Y', strtotime($mov['data_movimentacao'])); ?></td>
+                                            <td><?= $mov['descricao']; ?></td>
+                                            <td><?= $mov['responsavel']; ?></td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-danger btn-sm delete-movimentacao"><i class="bi bi-trash"></i></button>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php if (!empty($movimentacoes)): ?>
-                                            <?php foreach ($movimentacoes as $movimentacao): ?>
-                                                <tr data-id="<?= $movimentacao['id']; ?>">
-                                                    <td style="text-align: center; vertical-align: middle;"><?= date('d/m/Y', strtotime($movimentacao['data_movimentacao'])); ?></td>
-                                                    <td style="text-align: left; vertical-align: middle;"><?= $movimentacao['descricao']; ?></td>
-                                                    <td style="text-align: center; vertical-align: middle;"><?= $movimentacao['responsavel']; ?></td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        <?php else: ?>
-                                            <tr>
-                                                <td colspan="6">Nenhuma movimentação registrada.</td>
-                                            </tr>
-                                        <?php endif; ?>
-                                    </tbody>
-                                </table>
-
-
-
-
-
-
-                            </form>
-                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr><td colspan="4" class="text-center">Sem registros.</td></tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="js/jquery.mask.min.js"></script>
+
+    <div class="modal fade" id="movimentacaoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">REGISTRAR MOVIMENTAÇÃO</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="movimentacaoForm">
+                    <div class="modal-body">
+                        <input type="hidden" name="id_item" value="<?= $item['cod_item']; ?>">
+                        <div class="mb-3">
+                            <label class="form-label">DATA:</label>
+                            <input type="date" class="form-control" name="data_movimentacao" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">DESCRIÇÃO:</label>
+                            <textarea class="form-control" name="descricao" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">RESPONSÁVEL:</label>
+                            <input type="text" class="form-control" name="responsavel" onchange="this.value = this.value.toUpperCase()">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">SALVAR</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         $(document).ready(function() {
+            // Salvar Movimentação (Ajax)
+            $('#movimentacaoForm').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: 'salvar_movimentacao.php',
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        location.reload();
+                    }
+                });
+            });
 
-            $('#renavan').mask('0000000000000');
-            $('#placa').mask('AAA-9A99');
-            $('#uf').mask('AA');
-
+            // Excluir Movimentação
+            $('.delete-movimentacao').on('click', function() {
+                var row = $(this).closest('tr');
+                var id = row.data('id');
+                if (confirm('Excluir esta movimentação?')) {
+                    $.post('excluir_movimentacao.php', { id: id }, function(data) {
+                        row.remove();
+                    });
+                }
+            });
         });
-
-
 
         function formatarValor(input) {
             var valor = input.value.replace(/\D/g, '');
@@ -369,148 +273,23 @@ require 'db_connect.php';
             input.value = valor;
         }
 
-        function addCurrencyPrefix() {
-            var valorInput = document.getElementById('valor');
-            if (valorInput.value && !valorInput.value.startsWith('R$')) {
-                valorInput.value = 'R$ ' + valorInput.value;
-            }
-        }
-
         function previewImage(event) {
             var reader = new FileReader();
             reader.onload = function() {
-                var output = document.getElementById('preview');
-                output.src = reader.result;
-                output.style.display = 'block';
+                document.getElementById('preview').src = reader.result;
+                document.getElementById('preview').style.display = 'block';
             };
             reader.readAsDataURL(event.target.files[0]);
         }
 
-        function previewDocuments(event) {
-            var files = event.target.files;
-            var container = document.getElementById('document-preview-container');
-            container.innerHTML = '';
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                var url = URL.createObjectURL(file);
-                var iframe = document.createElement('iframe');
-                iframe.src = url;
-                iframe.style.width = '300px';
-                iframe.style.height = '400px';
-                iframe.style.border = '1px solid #ddd';
-                container.appendChild(iframe);
-            }
+        function convertToUppercase() {
+            document.querySelectorAll('input[type="text"], textarea').forEach(i => i.value = i.value.toUpperCase());
+        }
+        
+        function addCurrencyPrefix() {
+            var v = document.getElementById('valor');
+            if (v.value && !v.value.startsWith('R$')) v.value = 'R$ ' + v.value;
         }
     </script>
-
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="movimentacaoModal" tabindex="-1" aria-labelledby="movimentacaoModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="movimentacaoModalLabel">REGISTRAR MOVIMENTAÇÃO</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="movimentacaoForm">
-                        <input type="hidden" name="id_item" value="<?= $item['cod_item']; ?>">
-                        <div class="mb-3">
-                            <label for="data_movimentacao" class="form-label">DATA:</label>
-                            <input type="date" class="form-control" id="data" name="data_movimentacao" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="descricao" class="form-label">DESCRIÇÃO:</label>
-                            <textarea class="form-control" id="descricao" name="descricao" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="responsavel" class="form-label">RESPONSÁVEL:</label>
-                            <input type="text" class="form-control" id="responsavel" name="responsavel">
-                        </div>
-                        <button type="submit" class="btn btn-success">SALVAR</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-    <script>
-        $(document).ready(function() {
-            $('#movimentacaoForm').on('submit', function(event) {
-                event.preventDefault();
-
-                var formData = new FormData(this);
-
-                $.ajax({
-                    url: 'salvar_movimentacao.php',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        try {
-                            var data = JSON.parse(response);
-                            console.log(data); // Adicione esta linha para depuração
-                            if (data.success) {
-                                // Atualizar a tabela de movimentações
-                                var table = $('#movimentacoesTable');
-                                var newRow = $('<tr>');
-                                newRow.append('<td>' + data.movimentacao.data_movimentacao + '</td>');
-                                newRow.append('<td>' + data.movimentacao.descricao + '</td>');
-                                newRow.append('<td>' + data.movimentacao.responsavel + '</td>');
-                                table.append(newRow);
-                                // Fechar o modal
-                                $('#movimentacaoModal').modal('hide');
-                                // Adicionar um pequeno atraso antes de recarregar a página
-                                setTimeout(function() {
-                                    location.reload();
-                                }, 500); // 500 milissegundos de atraso
-                            } else {
-                                alert('Erro ao salvar movimentação: ' + data.error);
-                            }
-                        } catch (e) {
-                            console.error('Erro ao processar resposta:', e);
-                            alert('Erro ao salvar movimentação');
-                        }
-                    },
-                    error: function(error) {
-                        console.error('Erro:', error);
-                        alert('Erro ao salvar movimentação');
-                    }
-                });
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.delete-movimentacao').forEach(button => {
-                button.addEventListener('click', function() {
-                    var row = this.closest('tr');
-                    var id = row.getAttribute('data-id');
-
-                    if (confirm('Tem certeza que deseja excluir esta Movimentação?')) {
-                        fetch('excluir_movimentacao.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                },
-                                body: 'id=' + id
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    row.remove();
-                                } else {
-                                    alert('Erro ao excluir Movimentação');
-                                }
-                            })
-                            .catch(error => console.error('Erro:', error));
-                    }
-                });
-            });
-        });
-    </script>
 </body>
-
 </html>

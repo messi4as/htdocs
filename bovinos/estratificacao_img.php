@@ -3,7 +3,7 @@ session_start();
 require 'db_connect.php';
 
 // 1. Recuperar os LOTES para o filtro (Alterado de agrupamento para lote)
-$lote_query = "SELECT DISTINCT lote FROM bovinos_com_idade WHERE status = 'ATIVO' AND lote IS NOT NULL AND lote != '' ORDER BY lote ASC";
+$lote_query = "SELECT DISTINCT lote FROM bovinos_com_idade WHERE   lote IS NOT NULL AND lote != '' ORDER BY lote ASC";
 $lote_result = mysqli_query($conn, $lote_query);
 ?>
 <!doctype html>
@@ -79,7 +79,7 @@ $lote_result = mysqli_query($conn, $lote_query);
                 $brinco = mysqli_real_escape_string($conn, $_GET['brinco'] ?? '');
                 $lote = mysqli_real_escape_string($conn, $_GET['lote'] ?? '');
 
-                $sql = "SELECT * FROM bovinos_com_idade WHERE status = 'ATIVO'";
+                $sql = "SELECT * FROM bovinos_com_idade WHERE status IS NOT NULL";
                 if ($brinco != '') {
                     $brincos_arr = array_map('trim', explode(',', $brinco));
                     $conds = array_map(fn($b) => "brinco LIKE '%$b%'", $brincos_arr);

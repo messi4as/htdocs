@@ -60,41 +60,42 @@ function extenso($valor)
         }
     }
 
-    // Corrige a formatação para valores redondos como 2000, 3000, etc.
+  // ... código anterior (unidades, dezenas, centenas) ...
+
     $texto = implode(" ", $texto);
-    if (strpos($texto, "mil") !== false && strpos($texto, "reais") === false) {
+
+    // --- BLOCO DE CORREÇÃO GRAMATICAL ---
+    
+    // 1. Corrigir "CEM" para "CENTO" quando houver complemento (ex: 111 vira CENTO E ONZE)
+    // Procuramos "CEM" que não esteja no fim da frase ou que venha antes de "E"
+    $texto = preg_replace('/\bcem\b(?=\s+e\b)/i', 'cento', $texto);
+
+    // 2. Adicionar "E" entre Milhões e Milhares (ex: UM MILHÃO E CEM MIL)
+    // Se houver "milhão/milhões" e logo depois vier uma centena (cento, duzentos...)
+    $texto = preg_replace('/(milhão|milhões)\s+(cento|duzentos|trezentos|quatrocentos|quinhentos|seiscentos|setecentos|oitocentos|novecentos|dez|vinte|trinta|quarenta|cinquenta|sessenta|setenta|oitenta|noventa|um|dois|três|quatro|cinco|seis|sete|oito|nove)/i', '$1 e $2', $texto);
+
+    // 3. Tratamento para Milhões/Milhão e o "DE REAIS"
+    if (strpos($texto, "milhão") !== false || strpos($texto, "milhões") !== false) {
+        $texto = str_replace("milhão reais", "milhão de reais", $texto);
+        $texto = str_replace("milhões reais", "milhões de reais", $texto);
+        
+        // Se for milhão redondo (ex: 1.000.000,00), adiciona "de reais"
+        if (strpos($texto, "reais") === false && strpos($texto, "centavo") === false) {
+            $texto .= " de reais";
+        }
+    } 
+    // 4. Tratamento para Milhares simples (Evita o erro "REAISHÃO")
+    elseif (strpos($texto, "mil") !== false && strpos($texto, "reais") === false) {
         $texto = str_replace("mil", "mil reais", $texto);
     }
 
-    // Adiciona "e" entre "mil" e "centenas" quando necessário
-    $texto = preg_replace('/mil (cem|duzentos|trezentos|quatrocentos|quinhentos|seiscentos|setecentos|oitocentos|novecentos)/', 'mil e $1', $texto);
-
-    // Adiciona "e" entre "reais" e "centavos" quando necessário
+    // 5. Adicionar "E" entre Reais e Centavos
     if (strpos($texto, "reais") !== false && strpos($texto, "centavo") !== false) {
         $texto = str_replace("reais ", "reais e ", $texto);
     }
 
-    // Adiciona "e" entre "mil" e "dezenas/unidades" quando necessário
-    $texto = preg_replace('/mil (vinte|trinta|quarenta|cinquenta|sessenta|setenta|oitenta|noventa|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez|onze|doze|treze|quatorze|quinze|dezesseis|dezessete|dezoito|dezenove)/', 'mil e $1', $texto);
-
-    // Corrige a formatação para valores como "milhões de reais"
-    $texto = str_replace("milhão reais", "milhão de reais", $texto);
-    $texto = str_replace("milhões reais", "milhões de reais", $texto);
-
-    // Corrige a formatação para valores como "milhões de reais e centavos"
-    $texto = str_replace("milhões de reais e", "milhões de reais e", $texto);
-
-    // Corrige a formatação para valores redondos em milhões
-    $texto = preg_replace('/milhões e reais/', 'milhões de reais', $texto);
-
-    // Corrige a formatação para valores redondos em milhões sem centavos
-    $texto = preg_replace('/milhão de reais$/', 'milhão de reais', $texto);
-    $texto = preg_replace('/milhões de reais$/', 'milhões de reais', $texto);
-
-    // Corrige a formatação para "um milhão de reais"
-    $texto = str_replace("um milhão de reais", "um milhão de reais", $texto);
-
-    return $texto;
+    // 6. Retornar em MAIÚSCULAS
+    return mb_strtoupper($texto, 'UTF-8');
 }
 
 if (isset($_GET['valor_recibo'])) {

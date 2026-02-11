@@ -22,17 +22,23 @@
         .foto-lista-clicavel:hover {
             opacity: 0.8;
         }
-        
+
         /* Oculta a última coluna (AÇÕES, que estará vazia) e elementos não necessários na impressão */
         @media print {
-            .pagination, .modal, .card-header .row { 
+
+            .pagination,
+            .modal,
+            .card-header .row {
                 display: none !important;
             }
-            body { 
-                margin: 0; 
+
+            body {
+                margin: 0;
             }
+
             /* Garante que a coluna AÇÕES (agora vazia) não apareça na impressão */
-            .table thead th:last-child, .table tbody tr td:last-child {
+            .table thead th:last-child,
+            .table tbody tr td:last-child {
                 display: none !important;
             }
         }
@@ -49,83 +55,83 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="container-fluid py-4">
-                            <h2 class="mb-4">  <a href="/inventario/inventario.php">📋</a> VISUALIZAÇÃO DO INVENTÁRIO DE ATIVOS M2 SHOWS
-                                  <div class="float-end">
-                                <button class="btn btn-info" onclick="imprimirListaCompleta()" title="Imprimir Lista Filtrada Completa">
-                                    <i class="fa fa-print"></i> Imprimir Lista
-                                </button>
-                            </div>
-                                </h2>
+                            <h2 class="mb-4"> <a href="/inventario/inventario.php">📋</a> VISUALIZAÇÃO DO INVENTÁRIO DE ATIVOS M2 SHOWS
+                                <div class="float-end">
+                                    <button class="btn btn-info" onclick="imprimirListaCompleta()" title="Imprimir Lista Filtrada Completa">
+                                        <i class="fa fa-print"></i> Imprimir Lista
+                                    </button>
+                                </div>
+                            </h2>
                         </div>
-                        
 
-                            <div class="card mb-4 shadow-sm">
-                                <div class="card-body">
-                                    <div class="row align-items-end">
-                                        <div class="col-md-3">
-                                            <label class="form-label"><strong>LOCAL</strong></label>
-                                            <input type="text" id="filtroLocal" class="form-control"
-                                                placeholder="Ex: ESCRITÓRIO M2">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label"><strong>TIPO</strong></label>
-                                            <input type="text" id="filtroTipo" class="form-control"
-                                                placeholder="Ex: MÓVEIS">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label"><strong>AMBIENTE</strong></label>
-                                            <input type="text" id="filtroAmbiente" class="form-control"
-                                                placeholder="Ex: SALA FINANCEIRO">
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input" type="checkbox" id="checkTodos">
-                                                <label class="form-check-label" for="checkTodos"><strong>Exibir
-                                                        Vendidos/Baixados</strong></label>
-                                            </div>
+
+                        <div class="card mb-4 shadow-sm">
+                            <div class="card-body">
+                                <div class="row align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="form-label"><strong>LOCAL</strong></label>
+                                        <input type="text" id="filtroLocal" class="form-control"
+                                            placeholder="Ex: ESCRITÓRIO M2">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label"><strong>TIPO</strong></label>
+                                        <input type="text" id="filtroTipo" class="form-control"
+                                            placeholder="Ex: MÓVEIS">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label"><strong>AMBIENTE</strong></label>
+                                        <input type="text" id="filtroAmbiente" class="form-control"
+                                            placeholder="Ex: SALA FINANCEIRO">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="checkTodos">
+                                            <label class="form-check-label" for="checkTodos"><strong>Exibir
+                                                    Vendidos/Baixados</strong></label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
 
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle caption-top">
-                                    <caption><strong>ITENS ATIVOS NO INVENTÁRIO</strong></caption>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle caption-top">
+                                <caption><strong>ITENS ATIVOS NO INVENTÁRIO</strong></caption>
 
-                                    <thead class="table-light">
+                                <thead class="table-light">
 
-                                        <tr class="text-center align-middle">
-                                            <th>FOTO</th>
-                                            <th>ID</th>
-                                            <th>ITEM / TIPO</th>
-                                            <th>LOCAL / AMBIENTE</th>
-                                            <th>DATA DE CADASTRO</th>
-                                            <th>STATUS</th>
-                                            <!-- <th width="120">AÇÕES</th> -->
-                                        </tr>
-                                    </thead>
-                                    <tbody id="listaItens">
-                                        <tr>
-                                            <td colspan="7" class="text-center text-muted">Carregando itens...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                    <tr class="text-center align-middle">
+                                        <th>FOTO</th>
+                                        <th>ID</th>
+                                        <th>ITEM / TIPO</th>
+                                        <th>LOCAL / AMBIENTE</th>
+                                        <th>DATA DE CADASTRO</th>
+                                        <th>STATUS</th>
+                                        <!-- <th width="120">AÇÕES</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody id="listaItens">
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">Carregando itens...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
 
-                                <div class="row mt-3">
-                                    <div class="col-12">
-                                        <nav>
-                                            <ul class="pagination justify-content-center" id="paginacao">
-                                                </ul>
-                                        </nav>
-                                    </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <nav>
+                                        <ul class="pagination justify-content-center" id="paginacao">
+                                        </ul>
+                                    </nav>
                                 </div>
-                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <div class="modal fade" id="modalVisualizarFoto" tabindex="-1" aria-labelledby="modalVisualizarFotoLabel"
@@ -168,15 +174,25 @@
         // UPLOAD_DOCS_PATH não é necessário, pois a aba Docs foi removida/não será usada.
 
         // VARIÁVEIS GLOBAIS DE PAGINAÇÃO
-        const ITENS_POR_PAGINA = 50; 
+        const ITENS_POR_PAGINA = 50;
         let paginaAtual = 1;
 
         $(document).ready(function() {
-            carregarLista(1); 
+            // --- NOVO CÓDIGO PARA FILTRO VIA URL ---
+            const urlParams = new URLSearchParams(window.location.search);
+            const localViaUrl = urlParams.get('local');
 
-            // Filtros automáticos: aciona o carregamento da lista em qualquer alteração
+            if (localViaUrl) {
+                // Preenche o campo de texto do filtro
+                $('#filtroLocal').val(decodeURIComponent(localViaUrl));
+            }
+            // ---------------------------------------
+
+            carregarLista(1); // Esta função já usa o valor de #filtroLocal para buscar os dados
+
+            // Filtros automáticos (seus filtros originais)
             $('#filtroLocal, #filtroTipo, #filtroAmbiente, #checkTodos').on('change keyup', function() {
-                carregarLista(1); 
+                carregarLista(1);
             });
         });
 
@@ -185,9 +201,9 @@
         // ----------------------------------------------------------------------
 
         function carregarLista(pagina = 1) {
-            paginaAtual = pagina; 
-            const offset = (paginaAtual - 1) * ITENS_POR_PAGINA; 
-            
+            paginaAtual = pagina;
+            const offset = (paginaAtual - 1) * ITENS_POR_PAGINA;
+
             $.post('ajax_inventario.php', {
                 acao: 'listar',
                 local: $('#filtroLocal').val(),
@@ -197,11 +213,11 @@
                 limite: ITENS_POR_PAGINA,
                 offset: offset,
                 // O NOVO PARÂMETRO CHAVE para sinalizar ao PHP que a lista é SÓ LEITURA
-                somente_leitura: 'true' 
+                somente_leitura: 'true'
             }, function(data) {
-                if(data.status === 'ok') {
-                    $('#listaItens').html(data.html); 
-                    montarPaginacao(data.total_itens); 
+                if (data.status === 'ok') {
+                    $('#listaItens').html(data.html);
+                    montarPaginacao(data.total_itens);
                 } else {
                     $('#listaItens').html('<tr><td colspan="7" class="text-center text-danger">Erro: ' + data.msg + '</td></tr>');
                 }
@@ -226,10 +242,10 @@
             // Links de Páginas (ex: 1, 2, 3...)
             let startPage = Math.max(1, paginaAtual - 2);
             let endPage = Math.min(totalPaginas, paginaAtual + 2);
-            
+
             if (totalPaginas > 5) {
                 if (endPage - startPage < 4) {
-                     startPage = Math.max(1, endPage - 4);
+                    startPage = Math.max(1, endPage - 4);
                 }
             }
 
@@ -245,7 +261,7 @@
             </li>`;
 
             $('#paginacao').html(paginacaoHtml);
-            
+
             let paginaInfo = totalItens > 0 ? `(Página ${paginaAtual} de ${totalPaginas}. Total: ${totalItens} itens)` : '';
             $('caption').text(`ITENS ATIVOS NO INVENTÁRIO ${paginaInfo}`);
         }
@@ -257,7 +273,7 @@
         function imprimirListaCompleta() {
             // 1. Coleta os filtros
             const filtros = {
-                acao: 'imprimir_lista', 
+                acao: 'imprimir_lista',
                 local: $('#filtroLocal').val(),
                 tipo: $('#filtroTipo').val(),
                 ambiente: $('#filtroAmbiente').val(),
@@ -274,7 +290,7 @@
 
                 // 3. Monta o Conteúdo HTML completo para impressão
                 const titulo = `INVENTÁRIO DE ATIVOS M2 SHOWS - Lista Filtrada (${new Date().toLocaleDateString()})`;
-                
+
                 const tableHeader = `
                     <thead style="background-color:#f8f9fa;">
                         <tr style="text-align: center; vertical-align: middle;">
@@ -325,9 +341,9 @@
                 const printWindow = window.open('', '_blank');
                 printWindow.document.write(printContent);
                 printWindow.document.close();
-                
+
                 printWindow.onload = function() {
-                    printWindow.focus(); 
+                    printWindow.focus();
                     printWindow.print();
                 };
 
@@ -343,12 +359,12 @@
 
         function visualizarFotosItem(itemId, fotoInicialId = null) {
             $.getJSON('ajax_inventario.php', {
-                acao: 'get_fotos_item', 
+                acao: 'get_fotos_item',
                 id: itemId
             }, function(data) {
                 if (data.status === 'ok' && data.fotos && data.fotos.length > 0) {
                     let carouselInner = '';
-                    let startIndex = 0; 
+                    let startIndex = 0;
                     let totalFotos = data.fotos.length;
 
                     $.each(data.fotos, function(index, foto) {
@@ -372,12 +388,12 @@
                     var carousel = bootstrap.Carousel.getInstance(carouselEl) || new bootstrap.Carousel(carouselEl, {
                         interval: false
                     });
-                    carousel.to(startIndex); 
+                    carousel.to(startIndex);
 
                     $('#modalVisualizarFoto').off('slid.bs.carousel').on('slid.bs.carousel', function() {
                         let currentIndex = $('#carouselFotosModal .carousel-item.active').index();
                         $('#fotoAtualInfo').text(`Foto ${currentIndex + 1} de ${totalFotos}`);
-                    }).trigger('slid.bs.carousel'); 
+                    }).trigger('slid.bs.carousel');
 
                     $('#modalVisualizarFoto').modal('show');
 
@@ -395,7 +411,7 @@
             // Como é o clique na lista, passamos NULL para fotoInicialId, assim ele mostra a capa (índice 0)
             visualizarFotosItem(itemId);
         });
-        
+
         // O click de miniaturas da GALERIA DE EDIÇÃO foi removido, pois o modal de edição foi removido.
     </script>
 

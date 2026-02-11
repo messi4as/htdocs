@@ -7,17 +7,21 @@ if (isset($_POST['caminho_documento']) && isset($_POST['id_veiculo']) && isset($
     $id_veiculo = $_POST['id_veiculo'];
     $documentos_atuais = json_decode($_POST['documentos_atuais'], true);
 
-    // Excluir o arquivo do servidor
+    // 1. Excluir o arquivo físico do servidor
     if (file_exists($caminho_documento)) {
         unlink($caminho_documento);
     }
 
-    // Atualizar a lista de documentos no banco de dados
-    $documentos_atuais = array_filter($documentos_atuais, function ($doc) use ($caminho_documento) {
+    // 2. Filtrar a lista para remover o documento (compatível com formato string e array)
+    $documentos_filtrados = array_filter($documentos_atuais, function ($doc) use ($caminho_documento) {
+        if (is_array($doc)) {
+            return $doc['path'] !== $caminho_documento;
+        }
         return $doc !== $caminho_documento;
     });
 
-    $documentos_json = json_encode($documentos_atuais);
+    // 3. Reindexar o array para evitar buracos no JSON e salvar
+    $documentos_json = json_encode(array_values($documentos_filtrados));
 
     $stmt = $conn->prepare("UPDATE veiculos SET documentos_veiculo=? WHERE cod_veiculo=?");
     $stmt->bind_param("si", $documentos_json, $id_veiculo);
@@ -31,7 +35,6 @@ if (isset($_POST['caminho_documento']) && isset($_POST['id_veiculo']) && isset($
     header('Location: edit_veiculos.php?id=' . $id_veiculo);
     exit(0);
 } else {
-    $_SESSION['mensagem'] = 'Dados insuficientes para excluir o documento';
-    header('Location: edit_veiculos.php?id=' . $_POST['id_veiculo']);
+    header('Location: lista_veiculos.php');
     exit(0);
 }

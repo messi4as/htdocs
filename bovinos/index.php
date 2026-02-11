@@ -2,18 +2,16 @@
 session_start();
 require 'db_connect.php';
 
-// Recuperar os status do banco de dados
-$status_query = "SELECT DISTINCT status FROM bovinos_com_idade";
+// Recuperar os status do banco de dados em ordem alfabética
+$status_query = "SELECT DISTINCT status FROM bovinos_com_idade ORDER BY status ASC";
 $status_result = mysqli_query($conn, $status_query);
 
-// --- START CHANGE ---
-// Recuperar os lotes do banco de dados
-$lote_query = "SELECT DISTINCT lote FROM bovinos_com_idade";
+// Recuperar os lotes do banco de dados em ordem alfabética
+$lote_query = "SELECT DISTINCT lote FROM bovinos_com_idade ORDER BY lote ASC";
 $lote_result = mysqli_query($conn, $lote_query);
-// --- END CHANGE ---
 
-// RECUPERAR OS PASTOS DO BANCO DE DADOS
-$pasto_query = "SELECT DISTINCT pasto FROM bovinos_com_idade";
+// RECUPERAR OS PASTOS DO BANCO DE DADOS em ordem alfabética
+$pasto_query = "SELECT DISTINCT pasto FROM bovinos_com_idade ORDER BY pasto ASC";
 $pasto_result = mysqli_query($conn, $pasto_query);
 
 ?>
@@ -68,13 +66,9 @@ $pasto_result = mysqli_query($conn, $pasto_query);
                         <div class="card-header">
                             <h4>BOVINOS - FAZENDA ROSADA
                                 <div class="float-end">
-
                                     <a href="estratificacao_img.php" class="btn btn-info me-2 float-end"> <span class="bi bi-image"></span>&nbsp;Ver Imagens </a>
-
                                     <a href="cad_nascimento.php" class="btn btn-success"><span class="bi-file-earmark-plus-fill"></span>&nbsp;Novo Nascimento</a>
-
                                     <a href="cad_animal.php" class="btn btn-primary me-2"><span class="bi-file-earmark-plus-fill"></span>&nbsp;Novo Animal</a>
-
                                     <a href="visualizacao_graficos.php" class="btn btn-warning me-2 float-end"> <span class="bi bi-bar-chart"></span>&nbsp;Ver Gráfico por Grupo </a>
                                 </div>
                             </h4>
@@ -83,9 +77,10 @@ $pasto_result = mysqli_query($conn, $pasto_query);
 
                             <form method="GET" action="" class="mb-1">
                                 <div class="input-group mb-3">
-                                    <input type="text" name="brinco" class="form-control" placeholder="Buscar por Brinco (separados por vírgula)" value="<?= htmlspecialchars($brinco ?? '') ?>"> &nbsp; &nbsp;
+                                    <input type="number" name="cod_animal" class="form-control" placeholder="Cód. Animal" value="<?= htmlspecialchars($_GET['cod_animal'] ?? '') ?>"> &nbsp; &nbsp;
+                                    <input type="text" name="brinco" class="form-control" placeholder="Buscar por Brinco (separados por vírgula)" value="<?= htmlspecialchars($_GET['brinco'] ?? '') ?>"> &nbsp; &nbsp;
                                     <select name="status" class="form-control">
-                                        <option value="">Buscar por status</option> &nbsp; &nbsp;
+                                        <option value="">Buscar por status</option>
                                         <?php
                                         while ($row = mysqli_fetch_assoc($status_result)) {
                                             $selected = (isset($_GET['status']) && $_GET['status'] == $row['status']) ? 'selected' : '';
@@ -94,7 +89,7 @@ $pasto_result = mysqli_query($conn, $pasto_query);
                                         ?>
                                     </select> &nbsp; &nbsp;
                                     <select name="lote" class="form-control">
-                                        <option value="">Buscar por lote</option> &nbsp; &nbsp;
+                                        <option value="">Buscar por lote</option>
                                         <?php
                                         while ($row = mysqli_fetch_assoc($lote_result)) {
                                             $selected = (isset($_GET['lote']) && $_GET['lote'] == $row['lote']) ? 'selected' : '';
@@ -103,13 +98,12 @@ $pasto_result = mysqli_query($conn, $pasto_query);
                                         ?>
                                     </select> &nbsp; &nbsp;
                                     <select name="pasto" class="form-control">
-                                        <option value="">Buscar por Pasto</option> &nbsp; &nbsp;
+                                        <option value="">Buscar por Pasto</option>
                                         <?php
                                         while ($row = mysqli_fetch_assoc($pasto_result)) {
                                             $selected = (isset($_GET['pasto']) && $_GET['pasto'] == $row['pasto']) ? 'selected' : '';
                                             echo '<option value="' . htmlspecialchars($row['pasto']) . '" ' . $selected . '>' . htmlspecialchars($row['pasto']) . '</option>';
                                         }
-
                                         ?>
                                     </select> &nbsp; &nbsp;
                                     <button class="btn btn-primary" type="submit"><span class="bi-search"></span>&nbsp;Buscar</button>
@@ -117,20 +111,17 @@ $pasto_result = mysqli_query($conn, $pasto_query);
                             </form>
 
                             <?php
-                            $brinco = '';
-                            $status = '';
-                            $pasto = '';
-                            $lote = ''; // Initialize $lote
-                            if (isset($_GET['brinco']) || isset($_GET['status']) || isset($_GET['lote'])) {
-                                $brinco = mysqli_real_escape_string($conn, $_GET['brinco'] ?? '');
-                                $status = mysqli_real_escape_string($conn, $_GET['status'] ?? '');
-                                // --- START CHANGE ---
-                                $lote = mysqli_real_escape_string($conn, $_GET['lote'] ?? '');
-                                // --- END CHANGE ---
-                                $pasto = mysqli_real_escape_string($conn, $_GET['pasto'] ?? '');
-                            }
+                            $brinco = mysqli_real_escape_string($conn, $_GET['brinco'] ?? '');
+                            $status = mysqli_real_escape_string($conn, $_GET['status'] ?? '');
+                            $lote = mysqli_real_escape_string($conn, $_GET['lote'] ?? '');
+                            $pasto = mysqli_real_escape_string($conn, $_GET['pasto'] ?? '');
+                            $cod_animal_busca = mysqli_real_escape_string($conn, $_GET['cod_animal'] ?? '');
 
                             $sql = "SELECT * FROM bovinos_com_idade WHERE 1=1";
+                            
+                            if ($cod_animal_busca != '') {
+                                $sql .= " AND cod_animal = '$cod_animal_busca'";
+                            }
                             if ($brinco != '') {
                                 $brincos = explode(',', $brinco);
                                 $brincos = array_map('trim', $brincos);
@@ -141,17 +132,16 @@ $pasto_result = mysqli_query($conn, $pasto_query);
                                 $sql .= " AND (" . implode(' OR ', $brinco_conditions) . ")";
                             }
                             if ($status != '') {
-                                $sql .= " AND status LIKE '%" . mysqli_real_escape_string($conn, $status) . "%'";
+                                $sql .= " AND status LIKE '%$status%'";
                             }
-                            // --- START CHANGE ---
                             if ($lote != '') {
-                                $sql .= " AND lote LIKE '%" . mysqli_real_escape_string($conn, $lote) . "%'";
+                                $sql .= " AND lote LIKE '%$lote%'";
                             }
-                            // --- END CHANGE ---
                             if ($pasto != '') {
-                                $sql .= " AND pasto LIKE '%" . mysqli_real_escape_string($conn, $pasto) . "%'";
+                                $sql .= " AND pasto LIKE '%$pasto%'";
                             }
-                            $sql .= " ORDER BY brinco DESC"; // Ordenar pelo brinco de forma decrescente
+                            $sql .= " ORDER BY cod_animal DESC"; 
+                            
                             $bovino = mysqli_query($conn, $sql);
                             $quantidade = mysqli_num_rows($bovino);
                             ?>
@@ -163,6 +153,7 @@ $pasto_result = mysqli_query($conn, $pasto_query);
                             <table class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
+                                        <th style="text-align: center;">CÓDIGO</th>
                                         <th style="text-align: center;">BRINCO</th>
                                         <th style="text-align: center;">IDADE (MESES)</th>
                                         <th style="text-align: center;">LOCAL</th>
@@ -176,9 +167,10 @@ $pasto_result = mysqli_query($conn, $pasto_query);
                                         foreach ($bovino as $bovinos) {
                                             $idade = $bovinos['idade'];
                                             $idade_texto = $idade . ' ' . ($idade == 1 ? 'mês' : 'meses');
+                                            $codigo_exibicao = str_pad($bovinos['cod_animal'], 4, '0', STR_PAD_LEFT);
                                     ?>
-
                                             <tr>
+                                                <td style="text-align: center; vertical-align: middle;"><b><?= $codigo_exibicao ?></b></td>
                                                 <td style="text-align: center; vertical-align: middle;"><?= htmlspecialchars($bovinos['brinco']) ?></td>
                                                 <td style="text-align: center; vertical-align: middle;"><?= htmlspecialchars($idade_texto) ?></td>
                                                 <td style="text-align: center; vertical-align: middle;"><?= htmlspecialchars($bovinos['local']) ?></td>
@@ -190,7 +182,7 @@ $pasto_result = mysqli_query($conn, $pasto_query);
                                     <?php
                                         }
                                     } else {
-                                        echo '<tr><td colspan="5"><h5>Nenhum Animal Encontrado</h5></td></tr>';
+                                        echo '<tr><td colspan="6" class="text-center"><h5>Nenhum Animal Encontrado</h5></td></tr>';
                                     }
                                     ?>
                                 </tbody>

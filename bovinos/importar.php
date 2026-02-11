@@ -5,6 +5,7 @@ require 'vendor/autoload.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,15 +15,23 @@ require 'vendor/autoload.php';
     <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
     <title>Importação Excel</title>
     <style>
-        .form-label { font-weight: bold; margin-bottom: 5px; }
-        .card { margin-bottom: 20px; }
+        .form-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
+
+
 <body>
     <?php include('navbar.php'); ?>
     <div class="container mt-4">
         <?php include('mensagem.php'); ?>
-        
+
         <?php if (isset($_GET['import_success']) && $_GET['import_success'] == 'true'): ?>
             <div class="alert alert-success">
                 Dados importados com sucesso! Linhas importadas: <?= htmlspecialchars($_GET['linhas_importadas']) ?>
@@ -31,17 +40,18 @@ require 'vendor/autoload.php';
 
         <div class="row">
             <div class="col-md-12">
-                
+
 
 
                 <div class="card mt-4">
                     <div class="card-header">
                         <h4>IMPORTAR NOVAS OCORRÊNCIAS (INDIVIDUALIZADO)</h4>
                     </div>
+
                     <div class="card-body">
                         <p class="text-muted"><b>Use este formulário para criar novas ocorrências com pesos diferentes para cada animal.</b></p>
                         <p class="small text-secondary">Colunas: <b>A:</b> Brinco | <b>B:</b> Data (AAAA-MM-DD) | <b>C:</b> Local | <b>D:</b> Tipo | <b>E:</b> Peso | <b>F:</b> Descrição | <i style="color: blue;"><b>Arquivo: Importar Novas Ocorrências.xlsx</b></i></p>
-                        
+
                         <form action="importar_ocorrencias_excel.php" method="post" enctype="multipart/form-data">
                             <label class="form-label">Importar Planilha para criar novas Ocorrências:</label>
                             <div class="row">
@@ -85,4 +95,5 @@ require 'vendor/autoload.php';
         </div>
     </div>
 </body>
+
 </html>

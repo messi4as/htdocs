@@ -411,7 +411,7 @@ if (isset($_POST['cad_recibo'])) {
     $data = (mysqli_real_escape_string($conn, trim($_POST['data_recibo'])));
     $valor = (mysqli_real_escape_string($conn, trim($_POST['valor_recibo'])));
     $local = (mysqli_real_escape_string($conn, trim($_POST['local_recibo'])));
-    $valorextrecibo = (mysqli_real_escape_string($conn, trim($_POST['valor_ext_recibo'])));
+    $valorextrecibo = mb_strtoupper(mysqli_real_escape_string($conn, trim($_POST['valor_ext_recibo'])), 'UTF-8');
     $descricao = str_replace("\r\n", "<br>", (mysqli_real_escape_string($conn, $_POST['descricao_recibo'])));
 
     $sql = "INSERT INTO recibo (cod_emitente, cod_emissor, data_recibo, valor_recibo, local_recibo, valor_ext_recibo, descricao_recibo) 
@@ -439,7 +439,7 @@ if (isset($_POST['edit_recibo'])) {
     $data = mysqli_real_escape_string($conn, trim($_POST['data_recibo']));
     $valor = mysqli_real_escape_string($conn, trim($_POST['valor_recibo']));
     $local = mysqli_real_escape_string($conn, trim($_POST['local_recibo']));
-    $valorextrecibo = mysqli_real_escape_string($conn, trim($_POST['valor_ext_recibo']));
+    $valorextrecibo = mb_strtoupper(mysqli_real_escape_string($conn, trim($_POST['valor_ext_recibo'])), 'UTF-8');
     $descricao = str_replace("\r\n", "<br>", (mysqli_real_escape_string($conn, $_POST['descricao_recibo'])));
 
     $sql = "UPDATE recibo SET cod_emitente='$codemitente', cod_emissor='$codemissor', data_recibo='$data', valor_recibo='$valor', local_recibo='$local', valor_ext_recibo='$valorextrecibo', descricao_recibo='$descricao' WHERE cod_recibo = '$id_recibo'";

@@ -17,7 +17,6 @@
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="/financeiro/index.php">Financeiro</a></li>
                             <li><a class="dropdown-item" href="/cartao/lista_compras.php">Cartão de Crédito</a></li>
-                            <li><a class="dropdown-item" href="/contratos/lista_contratos.php">Contratos</a></li>
                         </ul>
 
                     <li class="nav-item dropdown">
@@ -25,18 +24,22 @@
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="/recibo/lista_emitente.php">Dados Prestadores</a></li>
                             <li><a class="dropdown-item" href="/recibo/lista_emissor.php">Dados Sócios M2</a></li>
+                            <li><a class="dropdown-item" href="/contratos/lista_contratos.php">Contratos</a></li>
+                            <li><a class="dropdown-item" href="/arquivo/index.php">Arquivo Morto</a></li>
+
                         </ul>
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Fazenda Rosada</a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="/bovinos/index.php">Gestão de Bovinos</a></li>
+                             <li><a class="dropdown-item" href="/equinos/index.php">Gestão de Equinos</a></li>
                             <li><a class="dropdown-item" href="/vale_refeicao/visualizar_grafico.php">Gestão Vale Alimentação</a></li>
                         </ul>
                     </li>
 
-                    <li class="nav-item"><a class="nav-link" href="/galpao/planta.php">Galpão</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/inventario/inventario_view.php">Inventário</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/galpao/lista_item.php">Galpão</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/inventario/index.php">Inventário</a></li>
             </div>
 
 
