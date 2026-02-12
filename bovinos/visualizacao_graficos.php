@@ -2,11 +2,12 @@
 session_start();
 require 'db_connect.php';
 
-// Função para obter opções únicas de uma coluna
+// Função para obter opções únicas de uma coluna - COM ORDEM ALFABÉTICA
 function getOptions($conn, $column)
 {
     $options = [];
-    $sql = "SELECT DISTINCT $column FROM bovinos WHERE status = 'ATIVO' AND $column IS NOT NULL AND $column != ''";
+    // A cláusula ORDER BY garante que os filtros apareçam de A-Z
+    $sql = "SELECT DISTINCT $column FROM bovinos WHERE status = 'ATIVO' AND $column IS NOT NULL AND $column != '' ORDER BY $column ASC";
     $result = mysqli_query($conn, $sql);
     while ($row = mysqli_fetch_assoc($result)) {
         $options[] = $row[$column];

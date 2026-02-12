@@ -6,7 +6,7 @@ require 'db_connect.php';
 function getOptions($conn, $column)
 {
     $options = [];
-    $sql = "SELECT DISTINCT $column FROM bovinos WHERE status = 'ATIVO' AND $column IS NOT NULL AND $column != ''";
+    $sql = "SELECT DISTINCT $column FROM bovinos WHERE status = 'ATIVO' AND $column IS NOT NULL AND $column != '' ORDER BY $column ASC";
     $result = mysqli_query($conn, $sql);
     while ($row = mysqli_fetch_assoc($result)) {
         $options[] = $row[$column];

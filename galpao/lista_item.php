@@ -103,7 +103,7 @@ function getOptions($conn, $column)
                     <div class="card-header">
                         <h4>LISTA DE ITENS ARMAZENADOS NO GALPÃO
                            
-                            <a href="cadastro_item.php" class="btn btn-primary float-end no-print"><span class="bi-plus-circle-fill"></span>&nbsp;Adicionar Item</a>
+                            <a href="cadastro_item.php" class="btn btn-success float-end text-black no-print"><span class="bi-plus-circle-fill"></span>&nbsp;Adicionar Item</a>
                             <button onclick="window.print()" class="btn btn-info float-end me-2 no-print"><span class="bi-printer-fill"></span>&nbsp;Imprimir</button>
                              <a href="planta.php" class="btn btn-custom float-end me-2 no-print"><span class="bi bi-card-checklist"></span>&nbsp;Planta</a>
                         </h4>
@@ -129,8 +129,9 @@ function getOptions($conn, $column)
                                     </select>
                                 </div>
                                 <div class="col-md-4 no-print">
-                                    <button type="submit" class="btn btn-info text-white no-print">Pesquisar</button>
-                                    <a href="lista_item.php" class="btn btn-danger no-print">Limpar</a>
+                                   
+                                    <a href="lista_item.php" class="btn btn-secondary float-end text-white no-print"><span class="bi-x-circle-fill"></span>&nbsp;Limpar</a>
+                                     <button type="submit" class="btn btn-warning float-end me-2 text-black no-print"><span class="bi-search"></span>&nbsp;Pesquisar</button>
                                 </div>
 
 
